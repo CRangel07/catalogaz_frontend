@@ -1,5 +1,5 @@
 <template>
-  <div>Configuración De la Plataforma</div>
+  <div></div>
 </template>
 
 <script setup lang="ts"></script>

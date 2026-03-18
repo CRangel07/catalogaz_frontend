@@ -1,18 +1,20 @@
 <template>
   <div>
-    <AppTable :columns="columns" :rows="rows" :skeleton-rows="10"></AppTable>
-    <button @click="openModal(PruebaComponent, {}, { size: 'xl', title: 'Hola mundo' })">
-      Hola
-    </button>
+    <AppTable :columns="columns" :rows="rows" :skeleton-rows="10" has-actions>
+      <template #actions> <ActionsTools @edit="handleModal" /> </template>
+    </AppTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import AppTable from '@/components/ui/AppTable.vue';
-import type { TableColumn } from '@/components/ui/AppTable.vue';
+import ClientForm from '../forms/ClientForm.vue';
+import ActionsTools from '../ui/molecules/ActionsTools.vue';
+
 import { useModal } from '@/composables/useModal';
+
+import type { TableColumn } from '@/components/ui/AppTable.vue';
 import type { NumericBoolean } from '@/types/db';
-import PruebaComponent from '../PruebaComponent.vue';
 
 const { openModal } = useModal();
 
@@ -24,10 +26,6 @@ type Client = {
 };
 
 const columns: TableColumn<Client>[] = [
-  {
-    key: 'id',
-    label: 'Id',
-  },
   {
     key: 'name',
     label: 'Nombre',
@@ -62,6 +60,10 @@ const rows: Client[] = [
     status: 0,
   },
 ];
+
+const handleModal = () => {
+  openModal(ClientForm);
+};
 </script>
 
 <style scoped></style>

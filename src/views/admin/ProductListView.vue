@@ -1,7 +1,9 @@
 <template>
-  <div>prueba de productos viejo</div>
+  <ProductList />
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ProductList from '@/components/products/ProductList.vue';
+</script>
 
 <style scoped></style>
