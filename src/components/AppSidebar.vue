@@ -8,7 +8,7 @@
   </Transition>
 
   <aside
-    class="fixed lg:relative z-40 flex h-full flex-col bg-blue-800 transition-all duration-300 shadow-[4px_0_24px_rgba(30,58,138,0.25)]"
+    class="fixed lg:relative z-40 flex h-full flex-col bg-azul transition-all duration-300 shadow-[4px_0_24px_rgba(30,58,138,0.25)]"
     :class="[
       open ? 'w-60' : 'w-17',
       mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
@@ -24,7 +24,7 @@
       </div>
       <Transition name="label">
         <div v-if="open" class="overflow-hidden">
-          <p class="text-sm font-black tracking-tight text-white leading-none">Mi Pedido</p>
+          <p class="text-sm font-semibold tracking-tight text-white leading-none">Mi Pedido</p>
           <p class="text-[10px] font-medium text-blue-300 tracking-widest uppercase">
             Azteca Abarrotes
           </p>
@@ -38,7 +38,7 @@
         <Transition v-if="open" name="label">
           <p
             v-if="open"
-            class="mb-1.5 px-2 text-[9px] font-bold uppercase tracking-[0.2em] text-blue-400">
+            class="mb-1.5 px-2 text-[10px] font-medium uppercase tracking-[0.2em] text-blue-300">
             {{ section }}
           </p>
         </Transition>

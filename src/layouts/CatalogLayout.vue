@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-dvh bg-slate-100 grid items-center">
     <div class="pt-35">
-      <NavComponent />
+      <NavComponent :links="links" />
       <ProductCatalog />
       <CartDrawer />
       <!-- <FooterComponent /> -->
@@ -10,10 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import NavComponent from '@/components/general/NavComponent.vue';
 import CartDrawer from '@/components/products/CartDrawer.vue';
+import NavComponent, { type NavLink } from '@/components/general/NavComponent.vue';
 import ProductCatalog from '@/components/products/ProductCatalog.vue';
+
+const links: NavLink[] = [
+  { label: 'Catalogo', to: 'catalogAz_catalog' },
+  { label: 'Dashboard', to: 'catalogAz_adm_home' },
+];
 // import FooterComponent from '@/components/general/FooterComponent.vue';
 </script>
-
-<style scoped></style>

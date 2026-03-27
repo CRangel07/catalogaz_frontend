@@ -3,22 +3,18 @@
     <div
       class="relative overflow-hidden rounded-2xl bg-white border border-blue-100 shadow-[0_4px_24px_rgba(30,64,175,0.10)] transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_16px_40px_rgba(30,64,175,0.18)]">
       <!-- Top accent bar -->
-      <div class="h-1.5 w-full bg-gradient-to-r from-blue-700 via-blue-500 to-orange-400" />
+      <div class="h-1.5 w-full bg-linear-to-r from-azul via-azul/90 to-naranja" />
 
       <!-- Header azul -->
-      <div class="bg-blue-700 px-4 py-2 flex items-center justify-between">
+      <div class="bg-azul px-4 py-2 flex items-center justify-between">
         <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">Corona Extra</p>
-        <span
-          class="inline-flex items-center rounded-full bg-orange-400 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow">
-          ★ Popular
-        </span>
       </div>
 
       <!-- Image area -->
       <div
-        class="relative flex items-end justify-center bg-gradient-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500 group-hover:scale-105">
+        class="relative flex items-end justify-center bg-linear-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500 group-hover:scale-105">
         <div
-          class="absolute bottom-0 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-orange-300/20 blur-2xl transition-all duration-500 group-hover:bg-orange-400/30" />
+          class="absolute bottom-0 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-orange-300/20 blur-2xl transition-all duration-500 group-hover:bg-naranja/30" />
         <img
           :src="Cerveza"
           alt="Cerveza Corona Extra Mega 1.2L"
@@ -27,11 +23,10 @@
 
       <!-- Content -->
       <div class="px-5 pb-5 pt-3">
-        <h3 class="font-bold text-lg leading-tight text-blue-900">Mega Botella 1.2L</h3>
+        <h3 class="font-bold text-lg leading-tight text-azul">Mega Botella 1.2L</h3>
 
         <!-- Divider -->
-        <div
-          class="my-3 h-px bg-gradient-to-r from-orange-400/60 via-orange-300/40 to-transparent" />
+        <div class="my-3 h-px bg-linear-to-r from-naranja/60 via-naranja-300/40 to-transparent" />
 
         <!-- Details row -->
         <div class="flex items-center justify-between text-xs text-slate-400">
@@ -46,8 +41,8 @@
         <!-- Price -->
         <div class="mt-3">
           <span class="text-xs text-slate-400 line-through">$59.99</span>
-          <p class="text-2xl font-extrabold tracking-tight text-blue-800">
-            $49<span class="text-base font-semibold text-orange-500">.99</span>
+          <p class="text-2xl font-extrabold tracking-tight text-azul">
+            $49<span class="text-base font-semibold text-naranja">.99</span>
           </p>
           <!-- Subtotal dinámico -->
           <p v-if="quantity > 1" class="text-xs text-blue-500 font-medium mt-0.5">
@@ -80,18 +75,8 @@
           <!-- Botón agregar -->
           <button
             @click="addToCart"
-            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-3 py-2.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95">
-            <svg
-              class="h-4 w-4 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2.5">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-            </svg>
+            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-naranja px-3 py-2.5 text-xs font-bold text-orange-50 shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95">
+            <ShoppingCart :size="16" />
             Agregar
           </button>
         </div>
@@ -127,8 +112,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import Cerveza from '@/assets/CERVEZA_CORONA_EXTRA_MEGA_BOTELLA_1.2L_220x.avif';
+import { ref } from 'vue';
+import { ShoppingCart } from 'lucide-vue-next';
 
 const quantity = ref(0);
 const added = ref(false);

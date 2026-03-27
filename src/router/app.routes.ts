@@ -9,7 +9,6 @@ export const routes: RouteRecordRaw[] = [
   { path: '/catalog', name: 'catalogAz_catalog', component: CatalogLayout },
   {
     path: '/dashboard',
-    name: 'catalogAz_dashboard',
     component: AdminLayout,
     children: [...adminChildren],
   },

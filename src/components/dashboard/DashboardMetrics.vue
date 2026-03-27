@@ -31,9 +31,9 @@
           <div
             class="flex h-10 w-10 items-center justify-center rounded-xl"
             :class="m.color === 'orange' ? 'bg-orange-50' : 'bg-blue-50'">
-            <AppIcon
+            <component
+              :is="m.icon"
               :class="m.color === 'orange' ? 'text-orange-500' : 'text-blue-600'"
-              :path="m.icon"
               :stroke-width="1.8" />
           </div>
         </div>

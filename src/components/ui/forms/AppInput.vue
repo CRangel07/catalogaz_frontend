@@ -1,12 +1,14 @@
 <template>
   <div class="flex flex-col gap-0.5 w-full">
-    <label class="text-blue-800" :for="props.id">{{ props.label }}</label>
+    <label class="text-azul/80 text-sm font-medium" :for="props.id">{{ props.label }}</label>
     <input
-      class="border rounded border-slate-400 block w-full outline-none py-0.5 px-3 text-slate-700"
+      class="border rounded-lg border-slate-300 block w-full outline-none py-1 px-3 text-slate-700"
       :type="props.type"
       v-model="model"
-      v-bind="props.attrs" />
-    <span v-if="props.errors" class="text-sm text-red-400 tracking-wider">{{ props.errors }}</span>
+      v-bind="{ ...props.attrsVee, ...props.attrs }" />
+    <span v-if="props.errors" class="text-[14px] font-light text-red-400 tracking-wider">
+      {{ props.errors }}
+    </span>
   </div>
 </template>
 

@@ -6,7 +6,7 @@ export type Metric = {
   sub: string;
   up: boolean;
   color: 'blue' | 'orange';
-  icon: string;
+  icon: Component;
 };
 
 export type NavItem = {

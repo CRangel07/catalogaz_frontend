@@ -1,34 +1,36 @@
 <template>
   <div>
-    <form @submit="onSubmit" class="w-full">
+    <form @submit="onSubmit" class="w-full flex flex-col gap-3">
       <AppInput
         label="Nombre"
         type="text"
         id="cliente-nombre"
         :attrs-vee="nameAttrs"
         :errors="errors.name"
-        v-model="name" />
+        v-model="name"
+        required />
 
       <AppInput
-        label="Telefono"
+        label="Telefono (Ej: 4431861218)"
         type="tel"
         id="cliente-telefono"
         :attrs-vee="phoneAttrs"
         :errors="errors.phone"
-        v-model="phone" />
+        v-model="phone"
+        required />
 
-      <button type="submit" :disabled="isSubmitting">
-        {{ isSubmitting ? 'Guardando...' : 'Enviar' }}
-      </button>
+      <ButtonUI theme="outline" class="ms-auto">Guardar</ButtonUI>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
+import AppInput from '../ui/forms/AppInput.vue';
+import ButtonUI from '../ui/atoms/ButtonUI.vue';
+
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import AppInput from '../ui/forms/AppInput.vue';
 
 const schema = toTypedSchema(
   z.object({
@@ -36,6 +38,7 @@ const schema = toTypedSchema(
     phone: z
       .string()
       .min(1, 'El teléfono es obligatorio')
+      .max(10, 'Máximo diez digitos')
       .regex(/^\d+$/, 'Solo se permiten números'),
   })
 );
