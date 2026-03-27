@@ -15,15 +15,51 @@
     </div>
 
     <div class="grid grid-cols-4 gap-x-2 gap-y-5">
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
+      <ProductCard
+        :product="{
+          available: true,
+          brand: 'Corona',
+          id: new Date().getMilliseconds().toString(),
+          imageUrl: '',
+          name: 'Corona Extra Alv',
+          price: 49.99,
+        }" />
+      <ProductCard
+        :product="{
+          available: true,
+          brand: 'Corona',
+          id: new Date().getMilliseconds().toString(),
+          imageUrl: '',
+          name: 'Corona Extra Alv',
+          price: 49.99,
+        }" />
+      <ProductCard
+        :product="{
+          available: true,
+          brand: 'Corona',
+          id: new Date().getMilliseconds().toString(),
+          imageUrl: '',
+          name: 'Corona Extra Alv',
+          price: 49.99,
+        }" />
+      <ProductCard
+        :product="{
+          available: true,
+          brand: 'Corona',
+          id: new Date().getMilliseconds().toString(),
+          imageUrl: '',
+          name: 'Corona Extra Alv',
+          price: 49.99,
+        }" />
+      <ProductCard
+        :product="{
+          available: true,
+          brand: 'Corona',
+          id: new Date().getMilliseconds().toString(),
+          imageUrl: '',
+          name: 'Corona Extra Alv',
+          price: 49.99,
+        }" />
     </div>
   </div>
 </template>
@@ -31,5 +67,3 @@
 <script setup lang="ts">
 import ProductCard from './ProductCard.vue';
 </script>
-
-<style scoped></style>

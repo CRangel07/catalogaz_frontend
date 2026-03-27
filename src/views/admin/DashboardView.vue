@@ -1,118 +1,100 @@
 <template>
-  <div class="flex h-screen w-screen overflow-hidden bg-slate-50 font-poppins">
-    <AppSidebar
-      :open="sidebarOpen"
-      :mobile-open="mobileSidebarOpen"
-      :active-nav="activeNav"
-      :nav-items="navItems"
-      @update:active-nav="activeNav = $event"
-      @update:mobile-open="mobileSidebarOpen = $event" />
-
-    <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
-      <AppTopbar
-        :active-nav="activeNav"
-        :notifications="notifications"
-        @toggle-sidebar="toggleSidebar" />
-
-      <main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 font-poppins">
-        <RouterView />
-      </main>
+  <!-- Page header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500">
+        Panel de control
+      </p>
+      <h1 class="text-2xl font-black tracking-tight text-blue-900">Dashboard</h1>
     </div>
   </div>
+
+  <DashboardMetrics :metrics="metrics" />
+
+  <DashboardRecentOrders :orders="recentOrders" />
+
+  <DashboardTopProducts :products="topProducts" :max-sold="210" />
 </template>
 
 <script setup lang="ts">
-import { h, ref } from 'vue';
+import DashboardMetrics from '@/components/dashboard/DashboardMetrics.vue';
+import DashboardTopProducts from '@/components/dashboard/DashboardTopProducts.vue';
+import DashboardRecentOrders from '@/components/dashboard/DashboardRecentOrders.vue';
 
-import AppTopbar from '@/components/AppTopbar.vue';
-import AppSidebar from '@/components/AppSidebar.vue';
+import type { Metric } from '@/types/components';
+import { Grape, Percent, ShoppingBag, SquareUser } from 'lucide-vue-next';
 
-import type { NavItem } from '@/types/components';
-import { Contact, Home, NotebookPen, Package2, Settings } from 'lucide-vue-next';
-
-// ── State ──────────────────────────────────────────────────────────────
-const sidebarOpen = ref(true);
-const mobileSidebarOpen = ref(false);
-const activeNav = ref('dashboard');
-
-// ── Data ──────────────────────────────────────────────────────────────
-const navItems: NavItem[] = [
+const metrics: Metric[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: h(Home, { size: 18 }),
-    routeName: 'catalogAz_adm_home',
-    section: 'Principal',
+    label: 'Ventas Hoy',
+    value: '$4,280',
+    sub: '+12% vs ayer',
+    up: true,
+    color: 'blue' as const,
+    icon: Percent,
   },
   {
-    id: 'productos',
-    label: 'Productos',
-    icon: h(Package2, { size: 18 }),
-    routeName: 'catalogAz_adm_products',
-    section: 'Principal',
-  },
-  {
-    id: 'pedidos',
     label: 'Pedidos',
-    icon: h(NotebookPen, { size: 18 }),
-    routeName: 'catalogAz_adm_orders',
-    section: 'Principal',
+    value: '38',
+    sub: '12 pendientes',
+    up: true,
+    color: 'orange' as const,
+    icon: ShoppingBag,
   },
   {
-    id: 'clientes',
-    label: 'Clientes',
-    icon: h(Contact, { size: 18 }),
-    routeName: 'catalogAz_adm_clients',
-    section: 'Ventas',
+    label: 'Productos',
+    value: '214',
+    sub: '5 bajo stock',
+    up: false,
+    color: 'blue' as const,
+    icon: Grape,
   },
   {
-    id: 'catalogo-cliente',
-    label: 'Ir al Catalogo',
-    icon: h(Contact, { size: 18 }),
-    routeName: 'catalogAz_catalog',
-    section: 'Ventas',
-  },
-  {
-    id: 'config',
-    label: 'Configuración',
-    icon: h(Settings, { size: 18 }),
-    routeName: 'catalogAz_adm_settings',
-    section: 'Sistema',
+    label: 'Clientes Activos',
+    value: '92',
+    sub: '+5 esta semana',
+    up: true,
+    color: 'orange' as const,
+    icon: SquareUser,
   },
 ];
 
-const notifications = [
-  { text: '12 pedidos pendientes de atender', time: 'ahora', dot: 'orange' as const },
-  { text: 'Aguacate con stock crítico (3 u.)', time: '5 min', dot: 'red' as const },
-  { text: 'Juan Pérez realizó un nuevo pedido', time: '28 min', dot: 'blue' as const },
+const topProducts = [
+  { name: 'Corona Extra 1.2L', category: 'Bebidas', sold: 84, stock: 32, revenue: '$4,199' },
+  { name: 'Jitomate kg', category: 'Verduras', sold: 210, stock: 8, revenue: '$1,050' },
+  { name: 'Leche Lala 1L', category: 'Lácteos', sold: 156, stock: 44, revenue: '$2,184' },
+  { name: 'Aguacate pieza', category: 'Verduras', sold: 130, stock: 3, revenue: '$1,950' },
+  { name: 'Coca-Cola 600ml', category: 'Bebidas', sold: 98, stock: 60, revenue: '$1,813' },
 ];
 
-// ── Handlers ──────────────────────────────────────────────────────────
-function toggleSidebar() {
-  sidebarOpen.value = !sidebarOpen.value;
-  mobileSidebarOpen.value = !mobileSidebarOpen.value;
-}
+const recentOrders = [
+  {
+    id: '#1042',
+    client: 'María López',
+    total: '$320.50',
+    status: 'entregado' as const,
+    time: 'hace 10 min',
+  },
+  {
+    id: '#1041',
+    client: 'Juan Pérez',
+    total: '$89.00',
+    status: 'pendiente' as const,
+    time: 'hace 28 min',
+  },
+  {
+    id: '#1040',
+    client: 'Ana Torres',
+    total: '$540.00',
+    status: 'proceso' as const,
+    time: 'hace 1 h',
+  },
+  {
+    id: '#1039',
+    client: 'Luis Ramírez',
+    total: '$145.80',
+    status: 'entregado' as const,
+    time: 'hace 2 h',
+  },
+];
 </script>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.label-enter-active {
-  transition: all 0.2s ease;
-}
-.label-leave-active {
-  transition: all 0.15s ease;
-}
-.label-enter-from,
-.label-leave-to {
-  opacity: 0;
-  transform: translateX(-6px);
-}
-</style>

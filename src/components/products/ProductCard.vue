@@ -7,7 +7,9 @@
 
       <!-- Header azul -->
       <div class="bg-azul px-4 py-2 flex items-center justify-between">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">Corona Extra</p>
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">
+          {{ product.brand }}
+        </p>
       </div>
 
       <!-- Image area -->
@@ -16,14 +18,14 @@
         <div
           class="absolute bottom-0 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-orange-300/20 blur-2xl transition-all duration-500 group-hover:bg-naranja/30" />
         <img
-          :src="Cerveza"
-          alt="Cerveza Corona Extra Mega 1.2L"
+          :src="product.imageUrl"
+          :alt="product.name"
           class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]" />
       </div>
 
       <!-- Content -->
       <div class="px-5 pb-5 pt-3">
-        <h3 class="font-bold text-lg leading-tight text-azul">Mega Botella 1.2L</h3>
+        <h3 class="font-bold text-lg leading-tight text-azul">{{ product.name }}</h3>
 
         <!-- Divider -->
         <div class="my-3 h-px bg-linear-to-r from-naranja/60 via-naranja-300/40 to-transparent" />
@@ -31,22 +33,28 @@
         <!-- Details row -->
         <div class="flex items-center justify-between text-xs text-slate-400">
           <span class="flex items-center gap-1">
-            <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-            Disponible
+            <span
+              class="inline-block h-1.5 w-1.5 rounded-full"
+              :class="product.available ? 'bg-green-500' : 'bg-red-400'" />
+            {{ product.available ? 'Disponible' : 'Agotado' }}
           </span>
-          <span>4.5% Alc.</span>
-          <span>1,200 ml</span>
+          <span v-if="product.detail">{{ product.detail }}</span>
         </div>
 
         <!-- Price -->
         <div class="mt-3">
-          <span class="text-xs text-slate-400 line-through">$59.99</span>
+          <span v-if="product.originalPrice" class="text-xs text-slate-400 line-through">
+            ${{ product.originalPrice.toFixed(2) }}
+          </span>
           <p class="text-2xl font-extrabold tracking-tight text-azul">
-            $49<span class="text-base font-semibold text-naranja">.99</span>
+            ${{ Math.floor(product.price)
+            }}<span class="text-base font-semibold text-naranja">
+              .{{ String(product.price.toFixed(2)).split('.')[1] }}
+            </span>
           </p>
           <!-- Subtotal dinámico -->
           <p v-if="quantity > 1" class="text-xs text-blue-500 font-medium mt-0.5">
-            Subtotal: ${{ (49.99 * quantity).toFixed(2) }}
+            Subtotal: ${{ (product.price * quantity).toFixed(2) }}
           </p>
         </div>
 
@@ -75,7 +83,8 @@
           <!-- Botón agregar -->
           <button
             @click="addToCart"
-            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-naranja px-3 py-2.5 text-xs font-bold text-orange-50 shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95">
+            :disabled="!product.available"
+            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-naranja px-3 py-2.5 text-xs font-bold text-orange-50 shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
             <ShoppingCart :size="16" />
             Agregar
           </button>
@@ -112,28 +121,62 @@
 </template>
 
 <script setup lang="ts">
-import Cerveza from '@/assets/CERVEZA_CORONA_EXTRA_MEGA_BOTELLA_1.2L_220x.avif';
 import { ref } from 'vue';
 import { ShoppingCart } from 'lucide-vue-next';
 
-const quantity = ref(0);
+// ── Tipos ─────────────────────────────────────────────────────────────────────
+export interface ProductCardData {
+  id: string;
+  brand: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  originalPrice?: number;
+  available: boolean;
+  /** Texto libre para info extra (ej: "1,200 ml", "4.5% Alc.") */
+  detail?: string;
+}
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+const props = defineProps<{
+  product: ProductCardData;
+}>();
+
+// ── Emits ─────────────────────────────────────────────────────────────────────
+const emit = defineEmits<{
+  // Emite el id del producto y la cantidad al agregar al carrito
+  'add-to-cart': [productId: string, quantity: number];
+}>();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+
+// Inicia en 1 — si iniciara en 0, "Agregar" enviaría 0 unidades
+const quantity = ref(1);
 const added = ref(false);
 const lastAdded = ref(1);
 let timer: ReturnType<typeof setTimeout> | null = null;
 
-const increment = () => {
+// ── Handlers ──────────────────────────────────────────────────────────────────
+function increment() {
   if (quantity.value < 99) quantity.value++;
-};
+}
 
-const decrement = () => {
-  if (quantity.value > 0) quantity.value--;
-};
+function decrement() {
+  // El botón ya está disabled cuando quantity <= 1, pero esta guardia
+  // previene llamadas programáticas accidentales
+  if (quantity.value > 1) quantity.value--;
+}
 
-const addToCart = () => {
+function addToCart() {
+  if (!props.product.available) return;
+
   lastAdded.value = quantity.value;
+  emit('add-to-cart', props.product.id, quantity.value);
+
   added.value = true;
   quantity.value = 1;
+
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => (added.value = false), 2500);
-};
+}
 </script>
