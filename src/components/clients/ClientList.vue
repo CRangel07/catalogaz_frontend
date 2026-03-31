@@ -1,31 +1,29 @@
 <template>
   <div>
+    <ButtonUI :icon="Plus" @click="handleModal()">Nuevo Cliente</ButtonUI>
     <AppTable :columns="columns" :rows="rows" :skeleton-rows="10" has-actions>
-      <template #actions> <ActionsTools @edit="handleModal" /> </template>
+      <template #actions="{ row }">
+        <ActionsTools @edit="handleModal(row)" />
+      </template>
     </AppTable>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Customer } from '@/types/db';
+import type { TableColumn } from '@/components/ui/AppTable.vue';
+
 import AppTable from '@/components/ui/AppTable.vue';
+import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import ClientForm from '../forms/ClientForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
 
+import { Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
-
-import type { TableColumn } from '@/components/ui/AppTable.vue';
-import type { NumericBoolean } from '@/types/db';
 
 const { openModal } = useModal();
 
-type Client = {
-  id: string;
-  name: string;
-  phone: string;
-  status: NumericBoolean;
-};
-
-const columns: TableColumn<Client>[] = [
+const columns: TableColumn<Customer>[] = [
   {
     key: 'name',
     label: 'Nombre',
@@ -35,34 +33,40 @@ const columns: TableColumn<Client>[] = [
     label: 'Telefono',
   },
   {
-    key: 'status',
+    key: 'isActive',
     label: 'Estatus',
   },
 ];
 
-const rows: Client[] = [
+const rows: Customer[] = [
   {
-    id: 'dkjsakdas',
+    id: 23,
     name: 'Carlos Rangel',
     phone: '43322424',
-    status: 1,
+    isActive: true,
+    createdAt: '',
+    updatedAt: '',
   },
   {
-    id: 'dkjsdasakdas',
+    id: 43,
     name: 'Luisa Ferrer',
     phone: '43322424212',
-    status: 1,
+    isActive: true,
+    createdAt: '',
+    updatedAt: '',
   },
   {
-    id: 'dkjhgfdhsakdas',
+    id: 12,
     name: 'Erika Taboada',
     phone: '43322424',
-    status: 0,
+    isActive: false,
+    createdAt: '',
+    updatedAt: '',
   },
 ];
 
-const handleModal = () => {
-  openModal(ClientForm);
+const handleModal = (customer?: Customer) => {
+  openModal(ClientForm, { customer: customer });
 };
 </script>
 

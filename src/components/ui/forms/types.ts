@@ -1,6 +1,6 @@
 import type { BaseFieldProps, GenericObject } from 'vee-validate';
 
-export type InputType = 'text' | 'date' | 'number' | 'tel';
+export type InputType = 'text' | 'date' | 'number' | 'tel' | 'email';
 
 export type InputProps = {
   id: string;

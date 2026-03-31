@@ -129,44 +129,28 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Record<string, unknown>">
-export interface TableColumn<Row = Record<string, unknown>> {
-  /** Clave del campo en cada row */
+<script setup lang="ts" generic="T extends Object">
+export interface TableColumn<Row extends object = Record<string, unknown>> {
   key: keyof Row;
-  /** Encabezado visible */
   label: string;
-  /** Clases CSS extra para th y td de esta columna */
   class?: string;
-  /** Clases CSS para el th únicamente */
   headerClass?: string;
-  /** Clases CSS para los td únicamente */
   cellClass?: string;
-  /** Alineación de la columna */
   align?: 'left' | 'center' | 'right';
-  /** Ancho fijo, ej: 'w-32' o 'w-[120px]' */
   width?: string;
-  /** Ocultar en mobile (< sm) */
   hideOnMobile?: boolean;
-  /** Función para formatear el valor crudo */
   format?: (value: unknown, row: Row) => string;
 }
 
 interface Props {
   columns: TableColumn<T>[];
   rows: T[];
-  /** Texto cuando no hay filas */
   emptyText?: string;
-  /** Mostrar columna de acciones al final */
   hasActions?: boolean;
-  /** Label del encabezado de la columna de acciones */
   actionsLabel?: string;
-  /** Mostrar skeleton loader */
   loading?: boolean;
-  /** Número de filas skeleton al cargar */
   skeletonRows?: number;
-  /** Zebra striping */
   striped?: boolean;
-  /** Hacer las filas clickeables (emite row-click) */
   clickable?: boolean;
 }
 
@@ -190,7 +174,7 @@ function alignClass(align?: 'left' | 'center' | 'right') {
 }
 
 function getCellValue(row: T, col: TableColumn<T>): string {
-  const raw = row[col.key];
+  const raw = row[col.key as keyof T];
   if (col.format) return col.format(raw, row);
   if (raw === null || raw === undefined) return '—';
   return String(raw);

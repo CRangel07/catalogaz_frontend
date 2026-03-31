@@ -59,7 +59,7 @@
     <AppFileInput
       label="Imagen"
       id="producto-imagen"
-      :preview="props.product?.imageUrl ?? null"
+      :preview="props.product?.imageThumbnailUrl ?? null"
       :errors="errors.image"
       v-model="imageFile"
       @update:model-value="setFieldValue('image', $event ?? undefined)" />
@@ -74,9 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
+import { computed, ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 
 import AppInput from '../ui/forms/AppInput.vue';
@@ -124,11 +124,9 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
   validationSchema: schema,
   // Si hay producto (edición), prellenamos los campos con sus valores actuales
   initialValues: {
-    brand: props.product?.brand ?? '',
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
     price: props.product?.price ?? undefined,
-    available: props.product?.available ?? undefined,
   },
 });
 

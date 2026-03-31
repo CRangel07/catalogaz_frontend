@@ -1,6 +1,10 @@
 <template>
   <div>
     <form @submit="onSubmit" class="w-full flex flex-col gap-3">
+      <p class="text-sm text-slate-500 tracking-wide">
+        {{ isEditing ? 'Edita los datos del cliente' : 'Completa los datos del nuevo cliente' }}
+      </p>
+
       <AppInput
         label="Nombre"
         type="text"
@@ -19,7 +23,12 @@
         v-model="phone"
         required />
 
-      <ButtonUI theme="outline" class="ms-auto">Guardar</ButtonUI>
+      <div class="flex justify-end gap-2 pt-1">
+        <ButtonUI type="button" theme="ghost" @click="emit('close')">Cancelar</ButtonUI>
+        <ButtonUI type="submit" theme="primary" :loading="isSubmitting">
+          {{ isEditing ? 'Actualizar' : 'Guardar' }}
+        </ButtonUI>
+      </div>
     </form>
   </div>
 </template>
@@ -28,8 +37,11 @@
 import AppInput from '../ui/forms/AppInput.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 
+import type { Customer } from '@/types/db';
+
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
+import { computed } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 
 const schema = toTypedSchema(
@@ -42,6 +54,16 @@ const schema = toTypedSchema(
       .regex(/^\d+$/, 'Solo se permiten números'),
   })
 );
+
+const props = defineProps<{
+  customer?: Customer;
+}>();
+
+const emit = defineEmits<{
+  close: [];
+}>();
+
+const isEditing = computed(() => !!props.customer);
 
 const { handleSubmit, defineField, errors, isSubmitting } = useForm({
   validationSchema: schema,
