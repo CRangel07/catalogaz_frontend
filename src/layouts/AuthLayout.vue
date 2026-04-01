@@ -1,8 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-50 flex">
-    <!-- Panel izquierdo: branding -->
     <div
-      class="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-12 relative overflow-hidden">
+      class="hidden lg:flex lg:w-1/2 bg-azul flex-col justify-between p-12 relative overflow-hidden">
       <!-- Patrón de fondo sutil -->
       <div class="absolute inset-0 opacity-5">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -26,18 +25,17 @@
       <!-- Mensaje central -->
       <div class="relative z-10">
         <h1 class="text-white text-4xl font-bold leading-tight tracking-tight mb-4">
-          Tu catálogo,<br />
-          <span class="text-slate-400">donde quiera.</span>
+          Nuestro Catálogo<br />
+          <span class="text-slate-400">Cuidando tu economía</span>
         </h1>
-        <p class="text-slate-500 text-base leading-relaxed max-w-sm">
-          Gestiona productos, clientes y pedidos desde un solo lugar. Rápido, seguro y siempre
-          disponible.
+        <p class="text-slate-400 text-base leading-relaxed max-w-sm">
+          Surte tu pedido con nosotros!
         </p>
       </div>
 
       <!-- Footer branding -->
       <div class="relative z-10">
-        <p class="text-slate-600 text-sm">© {{ currentYear }} Abarrotes Azteca</p>
+        <p class="text-slate-400 text-sm">© {{ currentYear }} Abarrotes Azteca</p>
       </div>
     </div>
 

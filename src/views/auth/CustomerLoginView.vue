@@ -137,7 +137,9 @@
     <div class="mt-8 pt-6 border-t border-slate-200">
       <p class="text-center text-sm text-slate-400">
         ¿Eres administrador?
-        <RouterLink to="/auth/admin" class="text-slate-700 font-medium hover:underline">
+        <RouterLink
+          :to="{ name: 'catalogAz_admin-login' }"
+          class="text-slate-700 font-medium hover:underline">
           Inicia sesión aquí
         </RouterLink>
       </p>

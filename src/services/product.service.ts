@@ -3,10 +3,11 @@ import { http } from './http';
 import type { Product } from '@/types/db';
 
 export interface CreateProductDto {
+  code: string;
   name: string;
-  description: string;
+  description?: string | null;
   price: number;
-  image: File;
+  image: File | null;
 }
 
 export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'image'>> {
@@ -25,9 +26,10 @@ export const ProductService = {
   create(dto: CreateProductDto): Promise<Product> {
     const form = new FormData();
     form.append('name', dto.name);
-    form.append('description', dto.description);
+    form.append('code', dto.code);
+    form.append('description', dto.description ?? '');
     form.append('price', String(dto.price));
-    form.append('image', dto.image);
+    form.append('image', dto.image ?? '');
     return http<Product>('/products', { method: 'POST', body: form });
   },
 

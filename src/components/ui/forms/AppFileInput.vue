@@ -13,7 +13,7 @@
         <div v-if="previewUrl" class="relative">
           <img
             :src="previewUrl"
-            alt="Preview"
+            :alt="props.id"
             class="h-60 w-60 object-cover rounded-lg shadow-sm" />
           <button
             type="button"

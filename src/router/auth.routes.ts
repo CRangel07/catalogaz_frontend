@@ -6,13 +6,13 @@ export const authRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: 'admin',
-        name: 'admin-login',
+        name: 'catalogAz_admin-login',
         component: () => import('@/views/auth/AdminLoginView.vue'),
         meta: { requiresGuest: true },
       },
       {
         path: 'cliente',
-        name: 'customer-login',
+        name: 'catalogAz_customer-login',
         component: () => import('@/views/auth/CustomerLoginView.vue'),
         meta: { requiresGuest: true },
       },

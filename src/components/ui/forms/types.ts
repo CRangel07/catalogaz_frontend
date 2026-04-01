@@ -9,6 +9,7 @@ export type InputProps = {
   attrsVee: BaseFieldProps & GenericObject;
   attrs?: Record<string, unknown>;
   errors?: string;
+  optional?: boolean;
   required?: boolean;
 };
 

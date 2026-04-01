@@ -1,7 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 const getToken = (): string | null => {
-  return localStorage.getItem('token');
+  // return localStorage.getItem('token');
+  return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiYWRtaW5fY2F0YWxvZ28iLCJpYXQiOjE3NzUwNjUzMDIsImV4cCI6MTc3NTE1MTcwMn0.Lt72B8cwcATYjNbt-BMBuhXFtdTkzw6Is25t7EUTr4c';
 };
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

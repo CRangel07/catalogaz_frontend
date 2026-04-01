@@ -5,12 +5,12 @@
     </p>
 
     <AppInput
-      label="Marca"
+      label="Código"
       type="text"
-      id="producto-marca"
-      :attrs-vee="brandAttrs"
-      :errors="errors.brand"
-      v-model="brand" />
+      id="producto-código"
+      :attrs-vee="codeAttrs"
+      :errors="errors.code"
+      v-model="code" />
 
     <AppInput
       label="Nombre"
@@ -26,7 +26,8 @@
       id="producto-descripcion"
       :attrs-vee="descriptionAttrs"
       :errors="errors.description"
-      v-model="description" />
+      v-model="description"
+      optional />
 
     <AppInput
       label="Precio"
@@ -80,14 +81,14 @@ import { computed, ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 
 import AppInput from '../ui/forms/AppInput.vue';
+import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import AppSelect from '../ui/forms/AppSelect.vue';
 import AppFileInput from '../ui/forms/AppFileInput.vue';
-import ButtonUI from '../ui/atoms/ButtonUI.vue';
 
 import type { Product } from '@/types/db';
+import { ProductSchema } from '@/types/validation';
+import { useProducts } from '@/composables/useProducts';
 
-// ── Props ─────────────────────────────────────────────────────────────────────
-// product es opcional: si llega estamos en modo edición, si no en modo creación
 const props = defineProps<{
   product?: Product;
 }>();
@@ -96,23 +97,14 @@ const emit = defineEmits<{
   close: [];
 }>();
 
+const { createProduct } = useProducts();
+
 const isEditing = computed(() => !!props.product);
 
 const imageFile = ref<File | null>(null);
 
-// ── Schema ────────────────────────────────────────────────────────────────────
 const schema = toTypedSchema(
-  z.object({
-    brand: z.string().min(1, 'La marca es obligatoria').max(50, 'Máximo 50 caracteres'),
-
-    name: z.string().min(1, 'El nombre es obligatorio').max(60, 'Máximo 60 caracteres'),
-
-    description: z.string().max(120, 'Máximo 120 caracteres').nullable().optional(),
-
-    price: z.number().min(0.01, 'El precio debe ser mayor a 0'),
-
-    available: z.number().min(0).max(1),
-
+  ProductSchema.extend({
     image: isEditing.value
       ? z.instanceof(File).optional()
       : z.instanceof(File, { message: 'La imagen es obligatoria' }),
@@ -127,29 +119,27 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
     price: props.product?.price ?? undefined,
+    available: props.product?.isActive ?? undefined,
   },
 });
 
-const [brand, brandAttrs] = defineField('brand');
+const [code, codeAttrs] = defineField('code');
 const [name, nameAttrs] = defineField('name');
 const [description, descriptionAttrs] = defineField('description');
 const [price, priceAttrs] = defineField('price');
 const [available, availableAttrs] = defineField('available');
 
 // ── Submit ────────────────────────────────────────────────────────────────────
-const onSubmit = handleSubmit(async (values) => {
-  // Aquí armarás el FormData para enviar al backend con la imagen
-  const formData = new FormData();
-  formData.append('brand', values.brand);
-  formData.append('name', values.name);
-  if (values.description) formData.append('description', values.description);
-  formData.append('price', String(values.price));
-  formData.append('available', String(values.available));
-  if (values.image) formData.append('image', values.image);
-
-  // TODO: llamar al servicio de API
-  // await productService.create(formData)   — modo creación
-  // await productService.update(props.product!.id, formData) — modo edición
-  console.table(Object.fromEntries(formData));
+const onSubmit = handleSubmit(async () => {
+  if (!isEditing.value) {
+    await createProduct({
+      code: code.value!,
+      description: description.value,
+      image: imageFile.value,
+      name: name.value!,
+      price: price.value!,
+    });
+  } else {
+  }
 });
 </script>

@@ -35,7 +35,7 @@ export interface Product {
   imageName: string | null;
   imageThumbnailUrl: string | null;
   imageFullUrl: string | null;
-  isActive: boolean;
+  isActive: NumericBoolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,7 +47,7 @@ export interface ProductCard {
   price: number;
   stock: number;
   imageThumbnailUrl: string | null;
-  isActive: boolean;
+  isActive: NumericBoolean;
 }
 
 export interface OrderItem {
