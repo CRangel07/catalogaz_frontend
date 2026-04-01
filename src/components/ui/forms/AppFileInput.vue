@@ -60,10 +60,12 @@ import { ref, watch } from 'vue';
 import { ImageUp, X } from 'lucide-vue-next';
 import type { FileInputProps } from './types';
 
+const BASE = import.meta.env.VITE_ASSETS_URL;
+
 const props = defineProps<FileInputProps>();
 const model = defineModel<File | null>();
 
-const previewUrl = ref<string | null>(props.preview ?? null);
+const previewUrl = ref<string | null>(props.preview ? `${BASE}${props.preview}` : null);
 const isDragging = ref(false);
 
 // Si viene una URL externa (modo edición), mostrarla como preview inicial

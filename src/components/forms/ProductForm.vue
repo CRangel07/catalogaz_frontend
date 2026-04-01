@@ -39,6 +39,7 @@
       v-model="price" />
 
     <AppSelect
+      v-if="isEditing"
       label="Estatus"
       id="producto-estatus"
       :attrs-vee="availableAttrs"
@@ -91,13 +92,17 @@ import { useProducts } from '@/composables/useProducts';
 
 const props = defineProps<{
   product?: Product;
+  onUpdated?: () => void;
+  onSaved?: () => void;
 }>();
 
 const emit = defineEmits<{
   close: [];
+  update: [];
+  saved: [];
 }>();
 
-const { createProduct } = useProducts();
+const { createProduct, updateProduct } = useProducts();
 
 const isEditing = computed(() => !!props.product);
 
@@ -119,7 +124,8 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
     price: props.product?.price ?? undefined,
-    available: props.product?.isActive ?? undefined,
+    available: Number(props.product?.isActive) ?? undefined,
+    code: props.product?.code,
   },
 });
 
@@ -132,14 +138,30 @@ const [available, availableAttrs] = defineField('available');
 // ── Submit ────────────────────────────────────────────────────────────────────
 const onSubmit = handleSubmit(async () => {
   if (!isEditing.value) {
-    await createProduct({
+    const ok = await createProduct({
       code: code.value!,
       description: description.value,
       image: imageFile.value,
       name: name.value!,
       price: price.value!,
     });
+    if (ok) {
+      emit('saved');
+      emit('close');
+    }
   } else {
+    const ok = await updateProduct(props.product?.id!, {
+      code: code.value!,
+      description: description.value,
+      image: imageFile.value ?? undefined,
+      name: name.value!,
+      price: price.value!,
+      isActive: !!available.value,
+    });
+    if (ok) {
+      emit('update');
+      emit('close');
+    }
   }
 });
 </script>

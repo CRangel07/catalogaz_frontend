@@ -11,6 +11,7 @@ export interface CreateProductDto {
 }
 
 export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'image'>> {
+  isActive: boolean;
   image?: File;
 }
 
@@ -35,10 +36,13 @@ export const ProductService = {
 
   update(id: number, dto: UpdateProductDto): Promise<Product> {
     const form = new FormData();
+    console.log(dto);
     if (dto.name) form.append('name', dto.name);
+    if (dto.code) form.append('code', dto.code);
     if (dto.description) form.append('description', dto.description);
     if (dto.price) form.append('price', String(dto.price));
     if (dto.image) form.append('image', dto.image);
+    form.append('isActive', String(dto.isActive));
     return http<Product>(`/products/${id}`, { method: 'PATCH', body: form });
   },
 

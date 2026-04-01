@@ -13,7 +13,14 @@ export function useModal() {
     props?: Record<string, unknown>,
     options?: ModalOptions
   ): string {
-    return store.open(component, props, options);
+    return store.open(
+      component,
+      {
+        ...props,
+        onClose: closeModal,
+      },
+      options
+    );
   }
 
   function closeModal(id?: string) {

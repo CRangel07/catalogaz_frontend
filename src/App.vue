@@ -1,10 +1,10 @@
-<script setup lang="ts">
-import AppModalContainer from './components/modal/AppModalContainer.vue';
-</script>
-
 <template>
   <RouterView class="font-poppins" />
   <AppModalContainer />
+  <AppToastContainer />
 </template>
 
-<style scoped></style>
+<script setup lang="ts">
+import AppModalContainer from './components/modal/AppModalContainer.vue';
+import AppToastContainer from './components/ui/molecules/AppToastContainer.vue';
+</script>

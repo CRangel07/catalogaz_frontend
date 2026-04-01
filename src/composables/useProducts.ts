@@ -1,9 +1,13 @@
-import { ref } from 'vue';
-import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
 import type { Product } from '@/types/db';
+import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
+
+import { ref } from 'vue';
+import { useToastStore } from '@/stores/toast.store';
 import { ProductService } from '@/services/product.service';
 
 export function useProducts() {
+  const toast = useToastStore();
+
   const products = ref<Product[]>([]);
   const product = ref<Product | null>(null);
   const loading = ref(false);
@@ -28,6 +32,7 @@ export function useProducts() {
       product.value = await ProductService.getOne(id);
     } catch (e) {
       error.value = (e as Error).message;
+      toast.error('No se pudieron cargar los productos');
     } finally {
       loading.value = false;
     }
@@ -39,9 +44,12 @@ export function useProducts() {
     try {
       const created = await ProductService.create(dto);
       products.value.push(created);
+      toast.success('Producto Creado Correctamente');
+      fetchProducts();
       return true;
     } catch (e) {
       error.value = (e as Error).message;
+      toast.error((e as Error).message);
       return false;
     } finally {
       loading.value = false;
@@ -53,11 +61,13 @@ export function useProducts() {
     error.value = null;
     try {
       const updated = await ProductService.update(id, dto);
-      const idx = products.value.findIndex((p) => p.id === id);
+      const idx = products.value.findIndex((p) => p.id == id);
       if (idx !== -1) products.value[idx] = updated;
+      toast.success('Producto Actualizado Correctamente');
       return true;
     } catch (e) {
       error.value = (e as Error).message;
+      toast.error((e as Error).message);
       return false;
     } finally {
       loading.value = false;
@@ -70,9 +80,11 @@ export function useProducts() {
     try {
       await ProductService.delete(id);
       products.value = products.value.filter((p) => p.id !== id);
+      toast.success('Producto Desactivado Correctamente');
       return true;
     } catch (e) {
       error.value = (e as Error).message;
+      toast.error((e as Error).message);
       return false;
     } finally {
       loading.value = false;
