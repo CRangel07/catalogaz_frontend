@@ -19,7 +19,7 @@ export const authRoutes: RouteRecordRaw[] = [
       {
         // Redirección de /auth → /auth/cliente por defecto
         path: '',
-        redirect: { name: 'customer-login' },
+        redirect: { name: 'catalogAz_customer-login' },
       },
     ],
   },

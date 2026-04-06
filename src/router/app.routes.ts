@@ -5,6 +5,7 @@ import { authRoutes } from './auth.routes';
 
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogLayout from '@/layouts/CatalogLayout.vue';
+import NotFoundView from '@/views/NotFoundView.vue';
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'catalogAz_catalog' } },
@@ -15,4 +16,9 @@ export const routes: RouteRecordRaw[] = [
     children: [...adminChildren],
   },
   ...authRoutes,
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'catalogAz_not_found',
+    component: () => import('@/views/NotFoundView.vue'),
+  },
 ];

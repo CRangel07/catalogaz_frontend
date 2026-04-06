@@ -24,7 +24,17 @@ import { Loader2 } from 'lucide-vue-next';
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
 type ButtonType = 'button' | 'submit' | 'reset';
-type ButtonTheme = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
+type ButtonTheme =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'ghost'
+  | 'outline'
+  | 'success'
+  | 'cyan'
+  | 'info'
+  | 'warning'
+  | 'neutral';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type IconPosition = 'left' | 'right';
 
@@ -104,12 +114,28 @@ const themeClasses = computed(() => {
   const map: Record<ButtonTheme, string> = {
     primary:
       'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 focus:ring-indigo-500',
+
     secondary: 'bg-gray-100 text-gray-800 hover:bg-gray-200 active:bg-gray-300 focus:ring-gray-400',
+
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-red-500',
+
+    success:
+      'bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 focus:ring-emerald-500',
+
+    cyan: 'bg-cyan-600 text-white hover:bg-cyan-700 active:bg-cyan-800 focus:ring-cyan-500',
+
+    info: 'bg-sky-600 text-white hover:bg-sky-700 active:bg-sky-800 focus:ring-sky-500',
+
+    warning: 'bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700 focus:ring-amber-400',
+
+    neutral: 'bg-gray-800 text-white hover:bg-gray-900 active:bg-black focus:ring-gray-700',
+
     ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus:ring-gray-400',
+
     outline:
       'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-400',
   };
+
   return map[props.theme];
 });
 </script>

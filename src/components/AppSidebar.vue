@@ -19,8 +19,8 @@
     <!-- Logo -->
     <div class="flex h-16 shrink-0 items-center gap-3 px-4 border-b border-white/10">
       <div
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500 shadow-[0_2px_12px_rgba(249,115,22,0.5)]">
-        <ShoppingBasket class="text-orange-200" />
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500 shadow-[0_2px_12px_rgba(249,115,22,0.5)]">
+        <img :src="Logo" alt="logo" />
       </div>
       <Transition name="label">
         <div v-if="open" class="overflow-hidden">
@@ -93,7 +93,7 @@ import { computed } from 'vue';
 
 import type { NavItem } from '@/types/components';
 
-import { ShoppingBasket } from 'lucide-vue-next';
+import Logo from '@/assets/logo.png';
 
 const props = defineProps<{
   open: boolean;

@@ -3,7 +3,7 @@
     <!-- Paso 1: Teléfono -->
     <template v-if="step === 'phone'">
       <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Bienvenido</h2>
+        <h2 class="text-2xl font-bold text-naranja tracking-tight">Bienvenido</h2>
         <p class="text-slate-500 text-sm mt-1">
           Ingresa tu número de WhatsApp para recibir tu código de acceso.
         </p>
@@ -48,10 +48,15 @@
           <p class="text-red-600 text-sm">{{ globalError }}</p>
         </div>
 
-        <AppButton type="submit" :loading="isLoading" full-width class="mt-1">
-          <MessageCircle class="w-4 h-4" />
+        <ButtonUI
+          :icon="MessageCircle"
+          :loading="isLoading"
+          type="submit"
+          theme="success"
+          full-width
+          class="mt-1">
           Enviar código por WhatsApp
-        </AppButton>
+        </ButtonUI>
       </form>
     </template>
 
@@ -110,14 +115,15 @@
           <p class="text-red-600 text-sm">{{ globalError }}</p>
         </div>
 
-        <AppButton
+        <ButtonUI
           type="submit"
           :loading="isLoading"
           :disabled="otpCode.length < 6"
           full-width
+          theme="cyan"
           class="mt-1">
           Verificar y entrar
-        </AppButton>
+        </ButtonUI>
 
         <!-- Reenviar código -->
         <div class="text-center">
@@ -148,10 +154,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { MessageCircle, AlertCircle, ArrowLeft } from 'lucide-vue-next';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+
+import { useRouter } from 'vue-router';
+import { ref, computed, onUnmounted } from 'vue';
+import { MessageCircle, AlertCircle, ArrowLeft } from 'lucide-vue-next';
+import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
 // import AppButton from '@/components/ui/AppButton.vue';
 
 type Step = 'phone' | 'otp';

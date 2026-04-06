@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-slate-50 flex">
     <div
       class="hidden lg:flex lg:w-1/2 bg-azul flex-col justify-between p-12 relative overflow-hidden">
-      <!-- Patrón de fondo sutil -->
       <div class="absolute inset-0 opacity-5">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -14,15 +13,13 @@
         </svg>
       </div>
 
-      <!-- Logo / Marca -->
       <div class="relative z-10 flex items-center gap-3">
-        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-          <ShoppingBasket class="w-5 h-5 text-slate-900" />
+        <div class="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center">
+          <img :src="Logo" alt="logoazteca" />
         </div>
         <span class="text-white font-semibold text-lg tracking-tight">Abarrotes Azteca</span>
       </div>
 
-      <!-- Mensaje central -->
       <div class="relative z-10">
         <h1 class="text-white text-4xl font-bold leading-tight tracking-tight mb-4">
           Nuestro Catálogo<br />
@@ -33,18 +30,15 @@
         </p>
       </div>
 
-      <!-- Footer branding -->
       <div class="relative z-10">
         <p class="text-slate-400 text-sm">© {{ currentYear }} Abarrotes Azteca</p>
       </div>
     </div>
 
-    <!-- Panel derecho: slot del formulario -->
     <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 sm:p-12">
-      <!-- Logo visible solo en mobile -->
       <div class="flex lg:hidden items-center gap-2 mb-10">
-        <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-          <ShoppingBasket class="w-4 h-4 text-white" />
+        <div class="w-14 h-14 bg-transparent rounded-lg flex items-center justify-center">
+          <img :src="Logo" alt="logoazteca" />
         </div>
         <span class="text-slate-900 font-semibold text-base tracking-tight">Abarrotes Azteca</span>
       </div>
@@ -58,7 +52,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ShoppingBasket } from 'lucide-vue-next';
+
+import Logo from '@/assets/logo.png';
 
 const currentYear = computed(() => new Date().getFullYear());
 </script>

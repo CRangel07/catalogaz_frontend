@@ -20,6 +20,7 @@ export function useProducts() {
       products.value = await ProductService.getAll();
     } catch (e) {
       error.value = (e as Error).message;
+      toast.error(error.value, 6000);
     } finally {
       loading.value = false;
     }

@@ -1,7 +1,10 @@
 <template>
   <div>
-    <ButtonUI :icon="Plus" @click="handleModal()">Nuevo Cliente</ButtonUI>
-    <AppTable :columns="columns" :rows="rows" :skeleton-rows="10" has-actions>
+    <ButtonUI :icon="Plus" @click="handleModal()" class="ms-auto md:mb-5 mb-3">
+      Nuevo Cliente
+    </ButtonUI>
+    <AppTable :columns="columns" :rows="customers" :skeleton-rows="10" has-actions>
+      <template #cell-status>hola</template>
       <template #actions="{ row }">
         <ActionsTools @edit="handleModal(row)" />
       </template>
@@ -20,8 +23,12 @@ import ActionsTools from '../ui/molecules/ActionsTools.vue';
 
 import { Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
+import { useCustomers } from '@/composables/useCustomers';
+import { onBeforeMount } from 'vue';
 
 const { openModal } = useModal();
+
+const { fetchCustomers, customers } = useCustomers();
 
 const columns: TableColumn<Customer>[] = [
   {
@@ -38,36 +45,16 @@ const columns: TableColumn<Customer>[] = [
   },
 ];
 
-const rows: Customer[] = [
-  {
-    id: 23,
-    name: 'Carlos Rangel',
-    phone: '43322424',
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: 43,
-    name: 'Luisa Ferrer',
-    phone: '43322424212',
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: 12,
-    name: 'Erika Taboada',
-    phone: '43322424',
-    isActive: false,
-    createdAt: '',
-    updatedAt: '',
-  },
-];
-
 const handleModal = (customer?: Customer) => {
-  openModal(ClientForm, { customer: customer });
+  openModal(ClientForm, {
+    customer: customer,
+    onSave: () => {
+      fetchCustomers();
+    },
+  });
 };
+
+onBeforeMount(() => fetchCustomers());
 </script>
 
 <style scoped></style>

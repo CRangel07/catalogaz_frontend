@@ -38,11 +38,15 @@ import AppInput from '../ui/forms/AppInput.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 
 import type { Customer } from '@/types/db';
+import type { CreateCustomerDto } from '@/services/client.service';
 
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { computed } from 'vue';
+import { useCustomers } from '@/composables/useCustomers';
 import { toTypedSchema } from '@vee-validate/zod';
+
+const { createCustomer, updateCustomer } = useCustomers();
 
 const schema = toTypedSchema(
   z.object({
@@ -57,6 +61,7 @@ const schema = toTypedSchema(
 
 const props = defineProps<{
   customer?: Customer;
+  onSave?: () => void;
 }>();
 
 const emit = defineEmits<{
@@ -67,13 +72,25 @@ const isEditing = computed(() => !!props.customer);
 
 const { handleSubmit, defineField, errors, isSubmitting } = useForm({
   validationSchema: schema,
-  initialValues: { name: '', phone: '' },
+  initialValues: { name: props.customer?.name, phone: props.customer?.phone },
 });
 
 const [name, nameAttrs] = defineField('name');
 const [phone, phoneAttrs] = defineField('phone');
 
-const onSubmit = handleSubmit(async (values) => {
-  console.table(values);
+const onSubmit = handleSubmit(async () => {
+  const payload = {
+    name: name.value,
+    phone: phone.value,
+  };
+
+  const ok = await (isEditing.value && props.customer
+    ? updateCustomer(props.customer.id, payload)
+    : createCustomer(payload as NonNullable<CreateCustomerDto>));
+
+  if (ok) {
+    props.onSave?.();
+    emit('close');
+  }
 });
 </script>

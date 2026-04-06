@@ -6,7 +6,7 @@
       <p class="text-slate-500 text-sm mt-1">Ingresa tus credenciales para continuar.</p>
     </div>
 
-    <form @submit="onSubmit" class="flex flex-col gap-3">
+    <form @submit.prevent="onSubmit" class="flex flex-col gap-3">
       <input
         id="phone"
         type="text"
@@ -31,7 +31,7 @@
           'focus:ring-2 focus:ring-slate-900 focus:border-transparent',
         ]" />
       <span v-if="errors.password" :class="errorClass">{{ errors.password }}</span>
-      <button type="submit" class="border">Ingresar</button>
+      <ButtonUI theme="cyan" type="submit"> Ingresar </ButtonUI>
     </form>
 
     <!-- Separador visual -->
@@ -49,11 +49,11 @@
 </template>
 
 <script setup lang="ts">
+import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 import { useForm } from 'vee-validate';
 import { LoginAdminSchema } from '@/types/validation';
-import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-vue-next';
 import { toTypedSchema } from '@vee-validate/zod';
 
 const errorClass = 'text-red-400 text-xs';
