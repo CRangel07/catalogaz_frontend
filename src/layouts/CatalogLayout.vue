@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-dvh bg-slate-100 grid items-center">
+  <div class="min-h-dvh bg-slate-100">
     <div class="pt-35">
       <NavComponent :links="links" />
       <ProductCatalog />

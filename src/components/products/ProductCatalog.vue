@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-295 m-auto">
+  <div class="max-w-295 w-full m-auto">
     <div class="mb-8">
       <p class="text-xs font-bold uppercase tracking-[0.2em] text-orange-500 mb-1">
         Nuestros productos
@@ -14,56 +14,19 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-x-2 gap-y-5">
-      <ProductCard
-        :product="{
-          available: true,
-          brand: 'Corona',
-          id: new Date().getMilliseconds().toString(),
-          imageUrl: '',
-          name: 'Corona Extra Alv',
-          price: 49.99,
-        }" />
-      <ProductCard
-        :product="{
-          available: true,
-          brand: 'Corona',
-          id: new Date().getMilliseconds().toString(),
-          imageUrl: '',
-          name: 'Corona Extra Alv',
-          price: 49.99,
-        }" />
-      <ProductCard
-        :product="{
-          available: true,
-          brand: 'Corona',
-          id: new Date().getMilliseconds().toString(),
-          imageUrl: '',
-          name: 'Corona Extra Alv',
-          price: 49.99,
-        }" />
-      <ProductCard
-        :product="{
-          available: true,
-          brand: 'Corona',
-          id: new Date().getMilliseconds().toString(),
-          imageUrl: '',
-          name: 'Corona Extra Alv',
-          price: 49.99,
-        }" />
-      <ProductCard
-        :product="{
-          available: true,
-          brand: 'Corona',
-          id: new Date().getMilliseconds().toString(),
-          imageUrl: '',
-          name: 'Corona Extra Alv',
-          price: 49.99,
-        }" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-5">
+      <ProductCard v-for="p in products" :key="p.id" :product="p" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import ProductCard from './ProductCard.vue';
+
+import { useProducts } from '@/composables/useProducts';
+import { onBeforeMount } from 'vue';
+
+const { fetchProducts, products } = useProducts();
+
+onBeforeMount(() => fetchProducts());
 </script>

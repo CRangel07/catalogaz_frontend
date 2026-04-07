@@ -7,18 +7,17 @@
 
       <!-- Header azul -->
       <div class="bg-azul px-4 py-2 flex items-center justify-between">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">
-          {{ product.brand }}
-        </p>
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">marca agregar</p>
       </div>
 
       <!-- Image area -->
       <div
-        class="relative flex items-end justify-center bg-linear-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500 group-hover:scale-105">
+        class="relative flex items-end justify-center bg-linear-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500 group-hover:scale-105"
+        @click.stop="handleClick">
         <div
           class="absolute bottom-0 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-orange-300/20 blur-2xl transition-all duration-500 group-hover:bg-naranja/30" />
         <img
-          :src="product.imageUrl"
+          :src="`${BASE_ASSETS}${product.imageThumbnailUrl}`"
           :alt="product.name"
           class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]" />
       </div>
@@ -35,20 +34,17 @@
           <span class="flex items-center gap-1">
             <span
               class="inline-block h-1.5 w-1.5 rounded-full"
-              :class="product.available ? 'bg-green-500' : 'bg-red-400'" />
-            {{ product.available ? 'Disponible' : 'Agotado' }}
+              :class="!!product.isActive ? 'bg-green-500' : 'bg-red-400'" />
+            {{ !!product.isActive ? 'Disponible' : 'Agotado' }}
           </span>
-          <span v-if="product.detail">{{ product.detail }}</span>
+          <span v-if="product.description">{{ product.description }}</span>
         </div>
 
         <!-- Price -->
         <div class="mt-3">
-          <span v-if="product.originalPrice" class="text-xs text-slate-400 line-through">
-            ${{ product.originalPrice.toFixed(2) }}
-          </span>
           <p class="text-2xl font-extrabold tracking-tight text-azul">
-            ${{ Math.floor(product.price)
-            }}<span class="text-base font-semibold text-naranja">
+            {{ product.price.toFixed(2).split('.')[0] }}
+            <span class="text-base font-semibold text-naranja">
               .{{ String(product.price.toFixed(2)).split('.')[1] }}
             </span>
           </p>
@@ -83,7 +79,7 @@
           <!-- Botón agregar -->
           <button
             @click="addToCart"
-            :disabled="!product.available"
+            :disabled="!!!product.isActive"
             class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-naranja px-3 py-2.5 text-xs font-bold text-orange-50 shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
             <ShoppingCart :size="16" />
             Agregar
@@ -121,36 +117,29 @@
 </template>
 
 <script setup lang="ts">
+import ProductFullImage from './ProductFullImage.vue';
+
+import type { Product } from '@/types/db';
+
 import { ref } from 'vue';
+import { useModal } from '@/composables/useModal';
 import { ShoppingCart } from 'lucide-vue-next';
 
-// ── Tipos ─────────────────────────────────────────────────────────────────────
-export interface ProductCardData {
-  id: string;
-  brand: string;
-  name: string;
-  imageUrl: string;
-  price: number;
-  originalPrice?: number;
-  available: boolean;
-  /** Texto libre para info extra (ej: "1,200 ml", "4.5% Alc.") */
-  detail?: string;
-}
+const BASE_ASSETS = import.meta.env.VITE_ASSETS_URL;
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 const props = defineProps<{
-  product: ProductCardData;
+  product: Product;
 }>();
+
+const { openModal } = useModal();
 
 // ── Emits ─────────────────────────────────────────────────────────────────────
 const emit = defineEmits<{
   // Emite el id del producto y la cantidad al agregar al carrito
-  'add-to-cart': [productId: string, quantity: number];
+  'add-to-cart': [productId: number, quantity: number];
 }>();
 
-// ── State ─────────────────────────────────────────────────────────────────────
-
-// Inicia en 1 — si iniciara en 0, "Agregar" enviaría 0 unidades
 const quantity = ref(1);
 const added = ref(false);
 const lastAdded = ref(1);
@@ -168,7 +157,7 @@ function decrement() {
 }
 
 function addToCart() {
-  if (!props.product.available) return;
+  if (!!!props.product.isActive) return;
 
   lastAdded.value = quantity.value;
   emit('add-to-cart', props.product.id, quantity.value);
@@ -179,4 +168,15 @@ function addToCart() {
   if (timer) clearTimeout(timer);
   timer = setTimeout(() => (added.value = false), 2500);
 }
+
+const handleClick = () => {
+  openModal(
+    ProductFullImage,
+    {
+      name: props.product.name,
+      imageFullUrl: props.product.imageFullUrl,
+    },
+    { closeOnBackdrop: true, closeOnEsc: true, size: 'xl' }
+  );
+};
 </script>

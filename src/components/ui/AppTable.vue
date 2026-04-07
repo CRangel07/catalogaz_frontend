@@ -4,7 +4,7 @@
     <div
       class="relative rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_rgba(30,58,138,0.07)] overflow-hidden">
       <!-- Top accent bar -->
-      <div class="h-0.75 w-full bg-linear-to-r from-blue-700 via-blue-500 to-orange-400" />
+      <div class="h-0.75 w-full bg-linear-to-r from-blue-700 via-azul to-naranja" />
 
       <!-- Scroll container (horizontal en mobile) -->
       <div class="overflow-x-auto">
@@ -84,7 +84,7 @@
                 v-for="col in columns"
                 :key="col.key"
                 :class="[
-                  'px-5 py-3.5 text-slate-700 font-medium leading-tight',
+                  'px-5 py-3.5 text-sm text-slate-600 font-semibold leading-tight',
                   colClasses(col, 'td'),
                 ]">
                 <!-- Custom cell slot: #cell-{key} -->

@@ -51,6 +51,7 @@ const { products, fetchProducts } = useProducts();
 const columns: TableColumn<Product>[] = [
   { key: 'imageThumbnailUrl', label: 'Imagen', align: 'center' },
   { key: 'code', label: 'Código' },
+  { key: 'name', label: 'Nombre' },
   {
     key: 'price',
     label: 'Precio',

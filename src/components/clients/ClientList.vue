@@ -4,7 +4,15 @@
       Nuevo Cliente
     </ButtonUI>
     <AppTable :columns="columns" :rows="customers" :skeleton-rows="10" has-actions>
-      <template #cell-status>hola</template>
+      <template #cell-isActive="{ value }">
+        <span
+          :class="{
+            'text-green-600': !!value == true,
+            'text-red-600': !!value == false,
+          }">
+          {{ !!value ? 'Activo' : 'Inactivo' }}
+        </span>
+      </template>
       <template #actions="{ row }">
         <ActionsTools @edit="handleModal(row)" />
       </template>
