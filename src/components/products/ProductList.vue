@@ -43,7 +43,7 @@ const { openModal } = useModal();
 const BASE = import.meta.env.VITE_ASSETS_URL;
 
 const handleModalProduct = (product?: Product) => {
-  openModal(ProductForm, { product, onUpdate: () => fetchProducts() });
+  openModal(ProductForm, { product, onSave: () => fetchProducts() });
 };
 
 const { products, fetchProducts } = useProducts();

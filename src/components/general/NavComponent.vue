@@ -14,11 +14,11 @@
         <!-- Icono naranja -->
         <span
           class="flex h-9 w-9 items-center justify-center rounded-xl bg-naranja shadow-[0_2px_12px_rgba(249,115,22,0.5)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_4px_18px_rgba(249,115,22,0.65)]">
-          <Store class="text-orange-50" :stroke-width="2.5" />
+          <img :src="Logo" alt="Logo" />
         </span>
         <div class="flex flex-col leading-none">
           <span
-            class="text-base font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-orange-300">
+            class="text-base font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-naranja">
             {{ logo.text }}
           </span>
           <span class="text-[10px] font-medium tracking-widest text-blue-300 uppercase">
@@ -148,7 +148,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { CircleArrowRight, Menu, ShoppingCart, Store, X } from 'lucide-vue-next';
+import { CircleArrowRight, Menu, ShoppingCart, X } from 'lucide-vue-next';
+
+import Logo from '@/assets/logo.png';
 
 export interface NavLink {
   label: string;

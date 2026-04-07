@@ -42,14 +42,14 @@
       v-if="isEditing"
       label="Estatus"
       id="producto-estatus"
-      :attrs-vee="availableAttrs"
-      :errors="errors.available"
+      :attrs-vee="isActiveAttrs"
+      :errors="errors.isActive"
       placeholder="Selecciona un estatus"
       :options="[
-        { label: 'Activo', value: 1 },
-        { label: 'Inactivo', value: 0 },
+        { label: 'Activo', value: true },
+        { label: 'Inactivo', value: false },
       ]"
-      v-model="available" />
+      v-model="isActive" />
 
     <!--
       AppFileInput usa defineModel internamente.
@@ -78,6 +78,8 @@
 <script setup lang="ts">
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
+import { useProducts } from '@/composables/useProducts';
+import { ProductSchema } from '@/types/validation';
 import { computed, ref } from 'vue';
 import { toTypedSchema } from '@vee-validate/zod';
 
@@ -86,9 +88,7 @@ import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import AppSelect from '../ui/forms/AppSelect.vue';
 import AppFileInput from '../ui/forms/AppFileInput.vue';
 
-import type { Product } from '@/types/db';
-import { ProductSchema } from '@/types/validation';
-import { useProducts } from '@/composables/useProducts';
+import type { CreateProductDto, Product } from '@/types/db';
 
 const props = defineProps<{
   product?: Product;
@@ -98,8 +98,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [];
-  update: [];
-  saved: [];
+  save: [];
 }>();
 
 const { createProduct, updateProduct } = useProducts();
@@ -119,12 +118,11 @@ const schema = toTypedSchema(
 // ── Formulario ────────────────────────────────────────────────────────────────
 const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useForm({
   validationSchema: schema,
-  // Si hay producto (edición), prellenamos los campos con sus valores actuales
   initialValues: {
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
     price: props.product?.price ?? undefined,
-    available: Number(props.product?.isActive) ?? undefined,
+    isActive: props.product?.isActive ?? undefined,
     code: props.product?.code,
   },
 });
@@ -133,35 +131,28 @@ const [code, codeAttrs] = defineField('code');
 const [name, nameAttrs] = defineField('name');
 const [description, descriptionAttrs] = defineField('description');
 const [price, priceAttrs] = defineField('price');
-const [available, availableAttrs] = defineField('available');
+const [isActive, isActiveAttrs] = defineField('isActive');
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 const onSubmit = handleSubmit(async () => {
-  if (!isEditing.value) {
-    const ok = await createProduct({
-      code: code.value!,
-      description: description.value,
-      image: imageFile.value,
-      name: name.value!,
-      price: price.value!,
-    });
-    if (ok) {
-      emit('saved');
-      emit('close');
-    }
-  } else {
-    const ok = await updateProduct(props.product?.id!, {
-      code: code.value!,
-      description: description.value,
-      image: imageFile.value ?? undefined,
-      name: name.value!,
-      price: price.value!,
-      isActive: !!available.value,
-    });
-    if (ok) {
-      emit('update');
-      emit('close');
-    }
+  const payload = {
+    name: name.value,
+    code: code.value,
+    description: description.value,
+    isActive: Boolean(!!isActive.value) ?? false,
+    price: price.value,
+  };
+
+  const ok = await (isEditing.value && props.product
+    ? updateProduct(props.product.id, payload)
+    : createProduct({
+        ...(payload as NonNullable<CreateProductDto>),
+        image: imageFile.value,
+      }));
+
+  if (ok) {
+    emit('save');
+    emit('close');
   }
 });
 </script>

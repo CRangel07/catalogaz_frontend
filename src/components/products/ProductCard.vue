@@ -34,11 +34,14 @@
           <span class="flex items-center gap-1">
             <span
               class="inline-block h-1.5 w-1.5 rounded-full"
-              :class="!!product.isActive ? 'bg-green-500' : 'bg-red-400'" />
-            {{ !!product.isActive ? 'Disponible' : 'Agotado' }}
+              :class="product.isActive ? 'bg-green-500' : 'bg-red-400'" />
+            {{ product.isActive ? 'Disponible' : 'Agotado' }}
           </span>
-          <span v-if="product.description">{{ product.description }}</span>
         </div>
+
+        <span class="text-slate-500 text-sm" v-if="product.description">
+          {{ product.description }}
+        </span>
 
         <!-- Price -->
         <div class="mt-3">
@@ -48,41 +51,56 @@
               .{{ String(product.price.toFixed(2)).split('.')[1] }}
             </span>
           </p>
-          <!-- Subtotal dinámico -->
-          <p v-if="quantity > 1" class="text-xs text-blue-500 font-medium mt-0.5">
-            Subtotal: ${{ (product.price * quantity).toFixed(2) }}
+          <!-- Subtotal dinámico basado en la cantidad LOCAL (antes de agregar) -->
+          <p v-if="qty > 1" class="text-xs text-blue-500 font-medium mt-0.5">
+            Subtotal: ${{ (product.price * qty).toFixed(2) }}
           </p>
         </div>
 
         <!-- Quantity selector + CTA -->
         <div class="mt-4 flex items-center justify-between gap-2">
-          <!-- Contador numérico -->
+          <!--
+            El contador controla localQty (cuánto quieres agregar).
+            NO toca el store hasta que presiones "Agregar".
+          -->
           <div class="flex items-center rounded-xl border-2 border-blue-100 overflow-hidden">
             <button
               @click="decrement"
               class="w-8 h-9 flex items-center justify-center text-blue-700 font-bold text-lg hover:bg-blue-50 transition-colors duration-150 active:scale-90 disabled:opacity-30"
-              :disabled="quantity <= 1">
+              :disabled="qty <= cartStore.MIN_QTY">
               −
             </button>
+
             <span
               class="w-9 h-9 flex items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums">
-              {{ quantity }}
+              {{ qty }}
             </span>
+
             <button
               @click="increment"
               class="w-8 h-9 flex items-center justify-center text-orange-500 font-bold text-lg hover:bg-orange-50 transition-colors duration-150 active:scale-90 disabled:opacity-30"
-              :disabled="quantity >= 99">
+              :disabled="qty >= cartStore.MAX_QTY">
               +
             </button>
           </div>
 
           <!-- Botón agregar -->
           <button
+            v-if="!inCart"
             @click="addToCart"
-            :disabled="!!!product.isActive"
+            :disabled="!product.isActive"
             class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-naranja px-3 py-2.5 text-xs font-bold text-orange-50 shadow-[0_4px_14px_rgba(249,115,22,0.35)] transition-all duration-300 hover:bg-orange-600 hover:shadow-[0_6px_20px_rgba(249,115,22,0.45)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
             <ShoppingCart :size="16" />
             Agregar
+          </button>
+
+          <!-- Botón quitar -->
+          <button
+            v-else
+            @click="removeFromCart"
+            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-100 px-3 py-2.5 text-xs font-bold text-blue-700 transition-all duration-300 hover:bg-red-50 hover:text-red-500 active:scale-95">
+            <ShoppingCart :size="16" />
+            Quitar
           </button>
         </div>
 
@@ -117,13 +135,18 @@
 </template>
 
 <script setup lang="ts">
-import ProductFullImage from './ProductFullImage.vue';
-
-import type { Product } from '@/types/db';
-
-import { ref } from 'vue';
-import { useModal } from '@/composables/useModal';
+import { computed, ref, watch } from 'vue';
 import { ShoppingCart } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
+import ProductFullImage from './ProductFullImage.vue';
+import { useModal } from '@/composables/useModal';
+import { useCartStore } from '@/stores/cart.store';
+import type { Product, ProductCard } from '@/types/db';
+
+// ── Store ─────────────────────────────────────────────────────────────────────
+const cartStore = useCartStore();
+const { items } = storeToRefs(cartStore);
 
 const BASE_ASSETS = import.meta.env.VITE_ASSETS_URL;
 
@@ -132,44 +155,83 @@ const props = defineProps<{
   product: Product;
 }>();
 
+// ── Modal ─────────────────────────────────────────────────────────────────────
 const { openModal } = useModal();
 
-// ── Emits ─────────────────────────────────────────────────────────────────────
-const emit = defineEmits<{
-  // Emite el id del producto y la cantidad al agregar al carrito
-  'add-to-cart': [productId: number, quantity: number];
-}>();
-
-const quantity = ref(1);
+// ── Estado local ──────────────────────────────────────────────────────────────
+const localQty = ref(1);
 const added = ref(false);
 const lastAdded = ref(1);
-let timer: ReturnType<typeof setTimeout> | null = null;
 
-// ── Handlers ──────────────────────────────────────────────────────────────────
+let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+// ── Computed ──────────────────────────────────────────────────────────────────
+
+// item del carrito si existe
+const cartItem = computed(() => items.value.find((i) => i.id === props.product.id));
+
+// está en carrito
+const inCart = computed(() => !!cartItem.value);
+
+// cantidad SIEMPRE sincronizada
+const qty = computed({
+  get() {
+    return cartItem.value?.qty ?? localQty.value;
+  },
+  set(value: number) {
+    if (!cartItem.value) {
+      localQty.value = value;
+      return;
+    }
+
+    const delta = value - cartItem.value.qty;
+    cartStore.changeQty(cartItem.value.id, delta);
+  },
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function increment() {
-  if (quantity.value < 99) quantity.value++;
+  if (qty.value < cartStore.MAX_QTY) {
+    qty.value = qty.value + 1;
+  }
 }
 
 function decrement() {
-  // El botón ya está disabled cuando quantity <= 1, pero esta guardia
-  // previene llamadas programáticas accidentales
-  if (quantity.value > 1) quantity.value--;
+  if (qty.value > cartStore.MIN_QTY) {
+    qty.value = qty.value - 1;
+  }
 }
+
+// ── Actions ───────────────────────────────────────────────────────────────────
 
 function addToCart() {
-  if (!!!props.product.isActive) return;
+  if (!props.product.isActive) return;
 
-  lastAdded.value = quantity.value;
-  emit('add-to-cart', props.product.id, quantity.value);
+  const productCard: ProductCard = {
+    id: props.product.id,
+    name: props.product.name,
+    code: props.product.code,
+    price: props.product.price,
+    stock: props.product.stock,
+    imageThumbnailUrl: props.product.imageThumbnailUrl,
+    isActive: props.product.isActive,
+  };
+
+  lastAdded.value = localQty.value;
+  cartStore.addItem(productCard, localQty.value);
 
   added.value = true;
-  quantity.value = 1;
-
-  if (timer) clearTimeout(timer);
-  timer = setTimeout(() => (added.value = false), 2500);
+  if (feedbackTimer) clearTimeout(feedbackTimer);
+  feedbackTimer = setTimeout(() => (added.value = false), 2500);
 }
 
-const handleClick = () => {
+function removeFromCart() {
+  cartStore.removeItem(props.product.id);
+  localQty.value = 1;
+}
+
+function handleClick() {
   openModal(
     ProductFullImage,
     {
@@ -178,5 +240,11 @@ const handleClick = () => {
     },
     { closeOnBackdrop: true, closeOnEsc: true, size: 'xl' }
   );
-};
+}
+
+watch(cartItem, (item) => {
+  if (!item) {
+    localQty.value = 1;
+  }
+});
 </script>

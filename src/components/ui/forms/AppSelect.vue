@@ -8,7 +8,7 @@
         v-model="model"
         v-bind="{ ...props.attrsVee, ...props.attrs }">
         <option v-if="props.placeholder" value="" disabled>{{ props.placeholder }}</option>
-        <option v-for="option in props.options" :key="option.value" :value="option.value">
+        <option v-for="option in props.options" :key="option.label" :value="option.value">
           {{ option.label }}
         </option>
       </select>
@@ -27,5 +27,5 @@ import { ChevronDown } from 'lucide-vue-next';
 import type { SelectProps } from './types';
 
 const props = defineProps<SelectProps>();
-const model = defineModel<string | number | null>();
+const model = defineModel<string | number | null | boolean>();
 </script>

@@ -46,7 +46,6 @@ export function useProducts() {
       const created = await ProductService.create(dto);
       products.value.push(created);
       toast.success('Producto Creado Correctamente');
-      fetchProducts();
       return true;
     } catch (e) {
       error.value = (e as Error).message;

@@ -15,7 +15,7 @@ export type InputProps = {
 
 export type SelectOption = {
   label: string;
-  value: string | number;
+  value: string | number | boolean;
 };
 
 export type SelectProps = {

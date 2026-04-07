@@ -2,7 +2,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 const getToken = (): string | null => {
   // return localStorage.getItem('token');
-  return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiYWRtaW5fY2F0YWxvZ28iLCJpYXQiOjE3NzU0OTk0MTYsImV4cCI6MTc3NTU4NTgxNn0.O_iOZ8rbPybBIaK1uH_5Kuzbn0YhUMM0wiQfQ5nNPCk';
+  return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiYWRtaW5fY2F0YWxvZ28iLCJpYXQiOjE3NzU1ODYwNjgsImV4cCI6MTc3NTY3MjQ2OH0.otfFT7wlqymk9cMbklTPB4EsybuL8SPFXOb1-8xQjgA';
 };
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
