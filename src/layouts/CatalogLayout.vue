@@ -2,7 +2,7 @@
   <div class="min-h-dvh bg-slate-100">
     <div class="pt-35">
       <NavComponent :links="links" />
-      <ProductCatalog />
+      <RouterView />
       <CartDrawer />
       <!-- <FooterComponent /> -->
     </div>
@@ -12,10 +12,10 @@
 <script setup lang="ts">
 import CartDrawer from '@/components/products/CartDrawer.vue';
 import NavComponent, { type NavLink } from '@/components/general/NavComponent.vue';
-import ProductCatalog from '@/components/products/ProductCatalog.vue';
 
 const links: NavLink[] = [
-  { label: 'Catalogo', to: 'catalogAz_catalog' },
+  { label: 'Catalogo', to: 'catalogaz_catalog_list' },
+  { label: 'Mis Ordenes', to: 'catalogAz_my_orders' },
   { label: 'Dashboard', to: 'catalogAz_adm_home' },
 ];
 // import FooterComponent from '@/components/general/FooterComponent.vue';

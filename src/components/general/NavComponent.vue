@@ -66,12 +66,9 @@
       <div class="flex items-center gap-3 shrink-0">
         <!-- Cart icon (desktop) -->
         <button
-          class="hidden md:flex relative items-center justify-center h-8 w-8 rounded-xl text-blue-200 transition-all duration-150 hover:bg-white/10 hover:text-white active:scale-90 cursor-pointer">
-          <ShoppingCart />
-          <span
-            class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[11px] text-white">
-            9
-          </span>
+          class="hidden md:flex relative items-center justify-center bg-sky-700 h-8 w-8 rounded-md text-sky-100 transition-all duration-150 hover:bg-white/10 hover:text-white active:scale-90 cursor-pointer"
+          @click="openCart">
+          <ShoppingCart :stroke-width="2.5" />
         </button>
 
         <!-- Hamburger (mobile) -->
@@ -95,7 +92,7 @@
       leave-to-class="max-h-0 opacity-0">
       <div
         v-if="menuOpen"
-        class="overflow-hidden md:hidden border-t border-white/10 bg-blue-800/98 backdrop-blur-md">
+        class="overflow-hidden md:hidden border-t border-white/10 bg-azul backdrop-blur-md">
         <ul class="list-none m-0 px-4 py-3 flex flex-col gap-1">
           <li
             v-for="(link, i) in links"
@@ -129,12 +126,9 @@
           <span class="text-xs text-blue-300">Realiza tu pedido</span>
           <div class="flex items-center gap-3">
             <button
-              class="relative text-blue-300 cursor-pointer hover:text-white transition-colors">
+              class="relative text-blue-300 cursor-pointer hover:text-white transition-colors"
+              @click="openCart">
               <ShoppingCart class="text-blue-100" />
-              <span
-                class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-medium text-white">
-                3
-              </span>
             </button>
           </div>
         </div>
@@ -151,6 +145,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { CircleArrowRight, Menu, ShoppingCart, X } from 'lucide-vue-next';
 
 import Logo from '@/assets/logo.png';
+import { useCartStore } from '@/stores/cart.store';
+
+const cartStore = useCartStore();
+
+const openCart = () => (cartStore.isOpen = true);
 
 export interface NavLink {
   label: string;

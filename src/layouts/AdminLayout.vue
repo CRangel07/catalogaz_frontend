@@ -69,7 +69,7 @@ const navItems: NavItem[] = [
     id: 'catalogo-cliente',
     label: 'Ir al Catalogo',
     icon: h(Contact, { size: 18 }),
-    routeName: 'catalogAz_catalog',
+    routeName: 'catalogaz_catalog_list',
     section: 'Ventas',
   },
   {

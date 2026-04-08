@@ -91,7 +91,7 @@
               class="relative h-16 w-14 shrink-0 overflow-hidden rounded-xl bg-linear-to-b from-blue-50 to-white flex items-center justify-center">
               <img
                 v-if="item.imageThumbnailUrl"
-                :src="item.imageThumbnailUrl"
+                :src="`${BASE}${item.imageThumbnailUrl}`"
                 :alt="item.name"
                 class="h-14 w-auto object-contain drop-shadow-sm" />
               <Package v-else class="h-8 w-8 text-blue-200" />
@@ -147,7 +147,7 @@
         </div>
 
         <button
-          @click="cart.confirmOrder()"
+          @click="handleConfirmButton"
           class="w-full flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 hover:shadow-[0_8px_28px_rgba(249,115,22,0.5)] active:scale-95">
           <CheckCircle class="h-5 w-5" />
           Confirmar Pedido
@@ -187,10 +187,27 @@
 </template>
 
 <script setup lang="ts">
-import { ShoppingCart, X, Trash2, CheckCircle, Package } from 'lucide-vue-next';
+import ConfirmOrderModal from '../modal/ConfirmOrderModal.vue';
+
+import { useModal } from '@/composables/useModal';
 import { useCartStore } from '@/stores/cart.store';
+import { ShoppingCart, X, Trash2, CheckCircle, Package } from 'lucide-vue-next';
+
+const BASE = import.meta.env.VITE_ASSETS_URL;
+
+const { openModal, closeModal } = useModal();
 
 const cart = useCartStore();
+
+const handleConfirmButton = () => {
+  openModal(
+    ConfirmOrderModal,
+    {
+      onCancel: closeModal,
+    },
+    { size: 'lg' }
+  );
+};
 </script>
 
 <style scoped>
