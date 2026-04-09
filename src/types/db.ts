@@ -1,12 +1,6 @@
 export type NumericBoolean = 1 | 0;
 
-export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'preparing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'cancelled';
 
 export interface Admin {
   id: number;
@@ -72,7 +66,7 @@ export interface OrderItemWithProduct {
   id: number;
   quantity: number;
   unitPrice: number;
-  product: Product;
+  product: Pick<Product, 'id' | 'name' | 'imageThumbnailUrl'>;
 }
 
 export interface OrderFull {
@@ -92,7 +86,6 @@ export interface CreateOrderItemDto {
 }
 
 export interface CreateOrderDto {
-  customerId: number;
   notes?: string;
   items: CreateOrderItemDto[];
 }

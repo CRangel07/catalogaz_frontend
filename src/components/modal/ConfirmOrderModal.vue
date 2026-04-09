@@ -7,7 +7,10 @@
       <button class="bg-slate-200 border-slate-300" :class="baseBtnClass" @click="emit('cancel')">
         No, no estoy seguro
       </button>
-      <button class="bg-naranja border-orange-300 text-white" :class="baseBtnClass">
+      <button
+        class="bg-naranja border-orange-300 text-white"
+        :class="baseBtnClass"
+        @click="emit('confirm')">
         Sí, lo quiero
       </button>
     </div>
@@ -18,7 +21,7 @@
 const baseBtnClass =
   'border outline-none text-lg font-semibold px-4 py-2 rounded-xl active:scale-95 cursor-pointer';
 
-const emit = defineEmits(['cancel']);
+const emit = defineEmits(['cancel', 'confirm']);
 </script>
 
 <style scoped></style>

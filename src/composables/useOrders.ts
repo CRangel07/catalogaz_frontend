@@ -1,10 +1,10 @@
-import type { OrderFull } from '@/types/db';
+import type { CreateOrderDto, OrderFull, UpdateOrderStatusDto } from '@/types/db';
 
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
-import { OrderService, type CreateOrderDto, type UpdateOrderDto } from '@/services/order.service';
+import { OrderService } from '@/services/order.service';
 
-export function useProducts() {
+export function useOrders() {
   const toast = useToastStore();
 
   const orders = ref<OrderFull[]>([]);
@@ -68,7 +68,7 @@ export function useProducts() {
     }
   }
 
-  async function updateOrder(id: number, dto: UpdateOrderDto): Promise<boolean> {
+  async function updateOrder(id: number, dto: UpdateOrderStatusDto): Promise<boolean> {
     loading.value = true;
     error.value = null;
     try {

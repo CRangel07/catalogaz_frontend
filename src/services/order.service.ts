@@ -1,9 +1,6 @@
 import { http } from './http';
 
-import type { OrderFull } from '@/types/db';
-
-export type CreateOrderDto = Pick<OrderFull, 'customer' | 'items' | 'notes'>;
-export type UpdateOrderDto = Partial<OrderFull>;
+import type { CreateOrderDto, OrderFull, UpdateOrderStatusDto } from '@/types/db';
 
 const BASE = '/orders';
 
@@ -24,7 +21,7 @@ export const OrderService = {
     return http<OrderFull>(`${BASE}`, { method: 'POST', body: dto });
   },
 
-  update(id: number, dto: UpdateOrderDto): Promise<OrderFull> {
+  update(id: number, dto: UpdateOrderStatusDto): Promise<OrderFull> {
     return http<OrderFull>(`${BASE}/${id}`, { method: 'PATCH', body: dto });
   },
 

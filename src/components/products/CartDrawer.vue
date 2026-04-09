@@ -135,6 +135,13 @@
 
       <!-- Footer -->
       <div v-if="!cart.isEmpty" class="border-t border-blue-50 bg-white px-5 py-5 space-y-4">
+        <textarea
+          rows="3"
+          id="order-notes"
+          name="order-notes"
+          class="border max-h-50 min-h-10 w-full rounded-sm border-slate-400 py-2 px-4 text-sm outline-none text-slate-700"
+          placeholder="Añade alguna nota (opcional)"
+          v-model.trim="notes"></textarea>
         <div class="space-y-1.5 text-sm">
           <div class="flex justify-between text-slate-400">
             <span>Subtotal ({{ cart.totalItems }} productos)</span>
@@ -148,9 +155,10 @@
 
         <button
           @click="handleConfirmButton"
-          class="w-full flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 hover:shadow-[0_8px_28px_rgba(249,115,22,0.5)] active:scale-95">
+          class="w-full flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 hover:shadow-[0_8px_28px_rgba(249,115,22,0.5)] active:scale-95 cursor-pointer"
+          :disabled="loading">
           <CheckCircle class="h-5 w-5" />
-          Confirmar Pedido
+          {{ loading ? 'Guardando Pedido' : 'Confirmar Pedido' }}
         </button>
 
         <button
@@ -189,21 +197,42 @@
 <script setup lang="ts">
 import ConfirmOrderModal from '../modal/ConfirmOrderModal.vue';
 
+import type { CreateOrderItemDto } from '@/types/db';
+
+import { ref } from 'vue';
 import { useModal } from '@/composables/useModal';
+import { useOrders } from '@/composables/useOrders';
 import { useCartStore } from '@/stores/cart.store';
 import { ShoppingCart, X, Trash2, CheckCircle, Package } from 'lucide-vue-next';
 
 const BASE = import.meta.env.VITE_ASSETS_URL;
 
 const { openModal, closeModal } = useModal();
+const { createOrder, loading } = useOrders();
 
 const cart = useCartStore();
+const notes = ref<string | null>('');
+
+const submitOrder = async () => {
+  closeModal();
+
+  const createdOk = await createOrder({
+    items: cart.items.map<CreateOrderItemDto>((i) => ({ productId: i.id, quantity: i.qty })),
+    notes: notes.value ?? undefined,
+  });
+
+  if (createdOk) {
+    cart.isConfirmed = true;
+    cart.clearCart();
+  }
+};
 
 const handleConfirmButton = () => {
   openModal(
     ConfirmOrderModal,
     {
       onCancel: closeModal,
+      onConfirm: submitOrder,
     },
     { size: 'lg' }
   );
