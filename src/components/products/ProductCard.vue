@@ -5,10 +5,7 @@
       <!-- Top accent bar -->
       <div class="h-1.5 w-full bg-linear-to-r from-azul via-azul/90 to-naranja" />
 
-      <!-- Header azul -->
-      <div class="bg-azul px-4 py-2 flex items-center justify-between">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200">marca agregar</p>
-      </div>
+      <div class="bg-azul px-4 py-2 flex items-center justify-between"></div>
 
       <!-- Image area -->
       <div
@@ -19,7 +16,8 @@
         <img
           :src="`${BASE_ASSETS}${product.imageThumbnailUrl}`"
           :alt="product.name"
-          class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]" />
+          class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]"
+          @error="handleImageError" />
       </div>
 
       <!-- Content -->
@@ -66,19 +64,27 @@
           <div class="flex items-center rounded-xl border-2 border-blue-100 overflow-hidden">
             <button
               @click="decrement"
-              class="w-8 h-9 flex items-center justify-center text-blue-700 font-bold text-lg hover:bg-blue-50 transition-colors duration-150 active:scale-90 disabled:opacity-30"
+              class="w-8 h-9 flex items-center justify-center text-blue-700 font-bold text-lg hover:bg-blue-50 transition-colors duration-150 active:scale-90 disabled:opacity-30 cursor-pointer"
               :disabled="qty <= cartStore.MIN_QTY">
               −
             </button>
 
-            <span
-              class="w-9 h-9 flex items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums">
-              {{ qty }}
-            </span>
+            <input
+              type="number"
+              step="1"
+              :max="999"
+              :min="1"
+              v-model="qty"
+              :class="{
+                'pl-5 w-13': qty < 10,
+                'pl-4 w-13': qty >= 10 && qty < 100,
+                'pl-3 w-14': qty >= 100,
+              }"
+              class="h-9 flex outline-none items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums" />
 
             <button
               @click="increment"
-              class="w-8 h-9 flex items-center justify-center text-orange-500 font-bold text-lg hover:bg-orange-50 transition-colors duration-150 active:scale-90 disabled:opacity-30"
+              class="w-8 h-9 flex items-center justify-center text-orange-500 font-bold text-lg hover:bg-orange-50 transition-colors duration-150 active:scale-90 disabled:opacity-30 cursor-pointer"
               :disabled="qty >= cartStore.MAX_QTY">
               +
             </button>
@@ -135,14 +141,16 @@
 </template>
 
 <script setup lang="ts">
+import ProductFullImage from './ProductFullImage.vue';
+import ImageNotFound from '@/assets/noImage400x400.svg';
+import type { Product, ProductCard } from '@/types/db';
+
 import { computed, ref, watch } from 'vue';
 import { ShoppingCart } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
-import ProductFullImage from './ProductFullImage.vue';
 import { useModal } from '@/composables/useModal';
 import { useCartStore } from '@/stores/cart.store';
-import type { Product, ProductCard } from '@/types/db';
 
 // ── Store ─────────────────────────────────────────────────────────────────────
 const cartStore = useCartStore();
@@ -241,6 +249,13 @@ function handleClick() {
     { closeOnBackdrop: true, closeOnEsc: true, size: 'xl' }
   );
 }
+
+const handleImageError = (e: Event) => {
+  if (!e.target) return null;
+  const img = e.target as HTMLImageElement;
+  img.onerror = null;
+  img.src = ImageNotFound;
+};
 
 watch(cartItem, (item) => {
   if (!item) {

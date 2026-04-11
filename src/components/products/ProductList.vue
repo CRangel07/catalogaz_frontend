@@ -1,13 +1,19 @@
 <template>
   <div>
-    <ButtonUI
-      size="sm"
-      theme="primary"
-      :icon="Plus"
-      class="ms-auto mb-5"
-      @click="handleModalProduct()">
-      Nuevo Producto
-    </ButtonUI>
+    <PageTitle
+      title="Catalogo de productos"
+      description="Gestiona los productos que se muestran en el catalogo">
+      <template #actions>
+        <ButtonUI
+          size="sm"
+          theme="primary"
+          :icon="Plus"
+          class="ms-auto mb-5"
+          @click="handleModalProduct()">
+          Nuevo Producto
+        </ButtonUI>
+      </template>
+    </PageTitle>
     <AppTable :columns="columns" :rows="products" has-actions>
       <template #cell-imageThumbnailUrl="{ value }">
         <div class="max-w-37.5">
@@ -30,13 +36,14 @@ import ProductForm from '../forms/ProductForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
 
 import type { Product } from '@/types/db';
-import AppTable, { type TableColumn } from '../ui/AppTable.vue';
+import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
 import { Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
+import PageTitle from '../ui/molecules/PageTitle.vue';
 
 const { openModal } = useModal();
 

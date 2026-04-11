@@ -2,8 +2,8 @@
   <OrderList
     :orders="orders"
     :title-props="{
-      title: 'Listando tus pedidos',
-      description: 'Consulta el historial de pedidos que haz realizado',
+      title: 'Listando todos los pedidos',
+      description: 'Consulta los pedidos que han realizado tus clientes',
     }" />
 </template>
 
@@ -13,9 +13,9 @@ import OrderList from '@/components/orders/OrderList.vue';
 import { useOrders } from '@/composables/useOrders';
 import { onBeforeMount } from 'vue';
 
-const { fetchOrdersCustomer, orders } = useOrders();
+const { fetchOrdersAdm, orders } = useOrders();
 
 onBeforeMount(() => {
-  fetchOrdersCustomer();
+  fetchOrdersAdm();
 });
 </script>

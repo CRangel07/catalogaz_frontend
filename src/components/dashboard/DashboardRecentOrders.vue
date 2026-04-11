@@ -36,8 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import AppCard from '@/components/ui/AppCard.vue';
-import AppBadge from '@/components/ui/AppBadge.vue';
+import AppCard from '@/components/ui/molecules/AppCard.vue';
+import AppBadge from '../ui/molecules/AppBadge.vue';
 
 interface Order {
   id: string;

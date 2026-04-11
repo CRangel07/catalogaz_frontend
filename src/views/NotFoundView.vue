@@ -17,7 +17,7 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const handleNavigate = () => {
-  router.replace({ name: 'catalogAz_catalog' });
+  router.replace({ name: 'catalogaz_catalog_list' });
 };
 </script>
 

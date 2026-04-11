@@ -2,7 +2,7 @@
   <!-- Botón flotante del carrito -->
   <button
     @click="cart.isOpen = true"
-    class="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-2xl bg-azul px-5 py-3.5 text-white shadow-[0_8px_30px_rgba(30,64,175,0.45)] transition-all duration-300 hover:bg-blue-800 hover:shadow-[0_12px_36px_rgba(30,64,175,0.55)] hover:-translate-y-1 active:scale-95">
+    class="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-2xl bg-azul px-5 py-3.5 text-white shadow-[0_8px_30px_rgba(30,64,175,0.45)] transition-all duration-300 hover:bg-sky-700 cursor-pointer hover:shadow-[0_12px_36px_rgba(30,64,175,0.55)] hover:-translate-y-1 active:scale-95">
     <div class="relative">
       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
         <path
@@ -73,8 +73,8 @@
               Agrega productos desde el catálogo para comenzar tu pedido
             </p>
             <button
-              @click="cart.isOpen = false"
-              class="mt-2 rounded-xl bg-naranja px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-orange-600 active:scale-95 transition-all">
+              @click="handleShowCatalog"
+              class="mt-2 rounded-xl cursor-pointer bg-naranja px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-orange-600 active:scale-95 transition-all">
               Ver catálogo
             </button>
           </div>
@@ -201,6 +201,7 @@ import type { CreateOrderItemDto } from '@/types/db';
 
 import { ref } from 'vue';
 import { useModal } from '@/composables/useModal';
+import { useRouter } from 'vue-router';
 import { useOrders } from '@/composables/useOrders';
 import { useCartStore } from '@/stores/cart.store';
 import { ShoppingCart, X, Trash2, CheckCircle, Package } from 'lucide-vue-next';
@@ -212,6 +213,7 @@ const { createOrder, loading } = useOrders();
 
 const cart = useCartStore();
 const notes = ref<string | null>('');
+const router = useRouter();
 
 const submitOrder = async () => {
   closeModal();
@@ -236,6 +238,11 @@ const handleConfirmButton = () => {
     },
     { size: 'lg' }
   );
+};
+
+const handleShowCatalog = () => {
+  router.push({ name: 'catalogaz_catalog_list' });
+  cart.isOpen = false;
 };
 </script>
 

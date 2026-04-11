@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import AppCard from '@/components/ui/AppCard.vue';
+import AppCard from '@/components/ui/molecules/AppCard.vue';
 
 import { ArrowUp } from 'lucide-vue-next';
 import { type Metric } from '@/types/components';

@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import type { Customer } from '@/types/db';
-import type { TableColumn } from '@/components/ui/AppTable.vue';
+import type { TableColumn } from '@/components/ui/molecules/AppTable.vue';
 
-import AppTable from '@/components/ui/AppTable.vue';
+import AppTable from '@/components/ui/molecules/AppTable.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import ClientForm from '../forms/ClientForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
