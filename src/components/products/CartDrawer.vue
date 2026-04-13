@@ -89,12 +89,7 @@
             <!-- Imagen -->
             <div
               class="relative h-16 w-14 shrink-0 overflow-hidden rounded-xl bg-linear-to-b from-blue-50 to-white flex items-center justify-center">
-              <img
-                v-if="item.imageThumbnailUrl"
-                :src="`${BASE}${item.imageThumbnailUrl}`"
-                :alt="item.name"
-                class="h-14 w-auto object-contain drop-shadow-sm" />
-              <Package v-else class="h-8 w-8 text-blue-200" />
+              <ImageNotFound :url="item.imageThumbnailUrl" :alt="item.name + 'imagen'" />
             </div>
 
             <!-- Info -->
@@ -195,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import ConfirmOrderModal from '../modal/ConfirmOrderModal.vue';
 
 import type { CreateOrderItemDto } from '@/types/db';
@@ -204,9 +200,7 @@ import { useModal } from '@/composables/useModal';
 import { useRouter } from 'vue-router';
 import { useOrders } from '@/composables/useOrders';
 import { useCartStore } from '@/stores/cart.store';
-import { ShoppingCart, X, Trash2, CheckCircle, Package } from 'lucide-vue-next';
-
-const BASE = import.meta.env.VITE_ASSETS_URL;
+import { ShoppingCart, X, Trash2, CheckCircle } from 'lucide-vue-next';
 
 const { openModal, closeModal } = useModal();
 const { createOrder, loading } = useOrders();

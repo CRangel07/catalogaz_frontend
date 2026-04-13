@@ -16,7 +16,7 @@ import NavComponent, { type NavLink } from '@/components/general/NavComponent.vu
 const links: NavLink[] = [
   { label: 'Catalogo', to: 'catalogaz_catalog_list' },
   { label: 'Mis Ordenes', to: 'catalogAz_my_orders' },
-  { label: 'Dashboard', to: 'catalogAz_adm_home' },
+  { label: 'Dashboard', to: 'catalogAz_adm_home', needsAdmin: true },
 ];
 // import FooterComponent from '@/components/general/FooterComponent.vue';
 </script>

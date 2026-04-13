@@ -69,8 +69,8 @@ export const http = async <T>(path: string, options: RequestOptions = {}): Promi
     const authStore = useAuthStore();
     authStore.$patch({ user: null });
 
-    if (router.currentRoute.value.name !== 'login') {
-      await router.push({ name: 'login' });
+    if (router.currentRoute.value.name !== 'catalogAz_customer-login') {
+      await router.replace({ name: 'catalogAz_customer-login' });
     }
 
     // Reseteamos el flag después de la navegación

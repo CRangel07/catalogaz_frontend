@@ -1,12 +1,17 @@
 // types/auth.types.ts
 
-export interface User {
-  id: string;
-  phone: string;
-  name: string;
-  role: 'ADMIN' | 'CLIENT';
-  createdAt: string;
-}
+export type User =
+  | {
+      sub: number;
+      role: 'admin';
+      username: string;
+    }
+  | {
+      sub: number;
+      role: 'customer';
+      phone: string;
+      name: string;
+    };
 
 export interface AuthState {
   user: User | null;

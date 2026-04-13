@@ -13,11 +13,7 @@
         @click.stop="handleClick">
         <div
           class="absolute bottom-0 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-orange-300/20 blur-2xl transition-all duration-500 group-hover:bg-naranja/30" />
-        <img
-          :src="`${BASE_ASSETS}${product.imageThumbnailUrl}`"
-          :alt="product.name"
-          class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]"
-          @error="handleImageError" />
+        <Image :url="product.imageThumbnailUrl" :alt="product.name + 'imagen'" />
       </div>
 
       <!-- Content -->
@@ -141,8 +137,9 @@
 </template>
 
 <script setup lang="ts">
+import Image from '../ui/molecules/ImageNotFound.vue';
 import ProductFullImage from './ProductFullImage.vue';
-import ImageNotFound from '@/assets/noImage400x400.svg';
+
 import type { Product, ProductCard } from '@/types/db';
 
 import { computed, ref, watch } from 'vue';
@@ -155,8 +152,6 @@ import { useCartStore } from '@/stores/cart.store';
 // ── Store ─────────────────────────────────────────────────────────────────────
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
-
-const BASE_ASSETS = import.meta.env.VITE_ASSETS_URL;
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 const props = defineProps<{
@@ -249,13 +244,6 @@ function handleClick() {
     { closeOnBackdrop: true, closeOnEsc: true, size: 'xl' }
   );
 }
-
-const handleImageError = (e: Event) => {
-  if (!e.target) return null;
-  const img = e.target as HTMLImageElement;
-  img.onerror = null;
-  img.src = ImageNotFound;
-};
 
 watch(cartItem, (item) => {
   if (!item) {

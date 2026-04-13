@@ -20,7 +20,7 @@
         ]" />
       <span v-if="errors.username" :class="errorClass">{{ errors.username }}</span>
       <input
-        id="phone"
+        id="password"
         type="password"
         v-model="password"
         v-bind="passwordAttrs"
@@ -53,8 +53,10 @@ import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 import { useForm } from 'vee-validate';
-import { LoginAdminSchema } from '@/types/validation';
 import { toTypedSchema } from '@vee-validate/zod';
+import { LoginAdminSchema } from '@/types/validation';
+import { useAuthStore } from '@/stores/auth.store';
+import { useRoute, useRouter } from 'vue-router';
 
 const errorClass = 'text-red-400 text-xs';
 
@@ -65,5 +67,23 @@ const { defineField, handleSubmit, errors } = useForm({
 const [username, usernameAttrs] = defineField('username');
 const [password, passwordAttrs] = defineField('password');
 
-const onSubmit = () => handleSubmit(() => {});
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+
+const onSubmit = handleSubmit(async (values) => {
+  await authStore.login({
+    type: 'admin',
+    username: values.username,
+    password: values.password,
+  });
+
+  const redirect = route.query.redirect as string | undefined;
+
+  if (authStore.isAuthenticated && authStore.isAdmin) {
+    router.replace({ name: redirect ?? 'catalogAz_adm_home' });
+  } else if (authStore.isAuthenticated && !authStore.isAdmin) {
+    router.replace({ name: redirect ?? 'catalogaz_catalog_list' });
+  }
+});
 </script>

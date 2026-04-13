@@ -48,6 +48,11 @@ export const authService = {
     return response;
   },
 
+  async loginAdmin(data: { username: string; password: string }): Promise<{ message: string }> {
+    const response = await http.post<{ message: string }>('/auth/admin/login', data);
+    return response;
+  },
+
   /**
    * Cierra la sesión.
    * El servidor invalida la cookie enviando:

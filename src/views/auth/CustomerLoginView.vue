@@ -42,10 +42,10 @@
 
         <!-- Error global -->
         <div
-          v-if="globalError"
+          v-if="authStore.error"
           class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
           <AlertCircle class="w-4 h-4 text-red-500 shrink-0" />
-          <p class="text-red-600 text-sm">{{ globalError }}</p>
+          <p class="text-red-600 text-sm">{{ authStore.error }}</p>
         </div>
 
         <ButtonUI
@@ -109,10 +109,10 @@
 
         <!-- Error global -->
         <div
-          v-if="globalError"
+          v-if="authStore.error"
           class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
           <AlertCircle class="w-4 h-4 text-red-500 shrink-0" />
-          <p class="text-red-600 text-sm">{{ globalError }}</p>
+          <p class="text-red-600 text-sm">{{ authStore.error }}</p>
         </div>
 
         <ButtonUI
@@ -154,16 +154,16 @@
 </template>
 
 <script setup lang="ts">
+import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
-import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.store';
 import { ref, computed, onUnmounted } from 'vue';
 import { MessageCircle, AlertCircle, ArrowLeft } from 'lucide-vue-next';
-import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
-// import AppButton from '@/components/ui/AppButton.vue';
+import { useRouter } from 'vue-router';
 
 type Step = 'phone' | 'otp';
-
+const authStore = useAuthStore();
 const router = useRouter();
 
 // --- Paso actual ---
@@ -217,8 +217,7 @@ async function handleRequestOtp() {
 
   isLoading.value = true;
   try {
-    // TODO: conectar con useCustomerAuth composable
-    // await authService.requestOtp(`+52${phone.value}`)
+    await authStore.requestOtp(phone.value);
     step.value = 'otp';
     startCooldown(60);
   } catch {
@@ -240,9 +239,17 @@ async function handleVerifyOtp() {
 
   isLoading.value = true;
   try {
-    // TODO: conectar con useCustomerAuth composable
-    // await authService.verifyOtp(`+52${phone.value}`, otpCode.value)
-    await router.push('/catalogo');
+    await authStore.login({
+      type: 'otp',
+      code: otpCode.value,
+      phone: phone.value,
+    });
+
+    if (authStore.isAuthenticated && authStore.isAdmin) {
+      router.replace({ name: 'catalogAz_adm_home' });
+    } else if (authStore.isAuthenticated && !authStore.isAdmin) {
+      router.replace({ name: 'catalogaz_catalog_list' });
+    }
   } catch {
     globalError.value = 'Código incorrecto o expirado. Intenta de nuevo.';
     otpDigits.value = ['', '', '', '', '', ''];

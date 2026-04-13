@@ -5,63 +5,69 @@ import type { User } from '@/types/auth.types';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
-export const useAuthStore = defineStore('auth', () => {
+// ─── Tipos de autenticación ────────────────────────────────────────────────
+
+type AuthType = 'otp' | 'admin' | null;
+
+type LoginPayload =
+  | { type: 'admin'; username: string; password: string }
+  | { type: 'otp'; phone: string; code: string };
+
+// ─── Store ─────────────────────────────────────────────────────────────────
+
+export const useAuthStore = defineStore('catalog_auth_store', () => {
   const user = ref<User | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const authType = ref<AuthType>(null);
 
-  // ─── Getters (computed) ───────────────────────────────────────────────────
+  // ─── Getters ─────────────────────────────────────────────────────────────
 
   const isAuthenticated = computed(() => user.value !== null);
 
-  const isAdmin = computed(() => user.value?.role === 'ADMIN');
+  const isAdmin = computed(() => user.value?.role === 'admin');
 
   const userInitials = computed(() => {
-    if (!user.value?.name) return '';
-    return user.value.name
+    if (user.value?.role == 'admin' && !user.value.username) return '';
+    if (user.value?.role == 'customer' && !user.value.name) return '';
+
+    const name = user.value?.role == 'admin' ? user.value.username : (user.value?.name ?? '');
+
+    return name
       .split(' ')
-      .map((n: unknown) => String(n)[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
   });
 
-  // ─── Actions ──────────────────────────────────────────────────────────────
+  // ─── Actions ─────────────────────────────────────────────────────────────
 
   /**
-   * Solicita el envío de un OTP vía WhatsApp.
-   * El backend genera el código, lo guarda en BD con expiración y lo envía.
+   * LOGIN UNIFICADO (ESCALABLE)
    */
-  async function requestOtp(phone: string): Promise<void> {
+  async function login(payload: LoginPayload): Promise<void> {
     isLoading.value = true;
     error.value = null;
 
     try {
-      await authService.requestOtp(phone);
-    } catch (err) {
-      error.value = getErrorMessage(err);
-      throw err; // Re-lanzamos para que el componente pueda manejarlo también
-    } finally {
-      // `finally` garantiza que isLoading se resetea siempre,
-      // incluso si hay error. Patrón importante en async/await.
-      isLoading.value = false;
-    }
-  }
+      if (payload.type === 'admin') {
+        await authService.loginAdmin({
+          username: payload.username,
+          password: payload.password,
+        });
 
-  /**
-   * Verifica el OTP. Si es válido, el backend responde con Set-Cookie
-   * que el navegador guarda automáticamente (HttpOnly, no accesible desde JS).
-   *
-   * Luego llamamos /auth/me para obtener los datos del usuario y poblar el store.
-   */
-  async function verifyOtp(phone: string, code: string): Promise<void> {
-    isLoading.value = true;
-    error.value = null;
+        authType.value = 'admin';
+      }
 
-    try {
-      // El backend setea la cookie aquí. Nosotros solo recibimos los datos del usuario.
-      const loggedUser = await authService.verifyOtp(phone, code);
-      user.value = loggedUser;
+      if (payload.type === 'otp') {
+        await authService.verifyOtp(payload.phone, payload.code);
+        authType.value = 'otp';
+      }
+
+      const currentUser = await authService.getMe();
+      console.log(currentUser);
+      user.value = currentUser;
     } catch (err) {
       error.value = getErrorMessage(err);
       throw err;
@@ -71,15 +77,24 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * Verifica si hay una sesión activa al cargar la app.
-   *
-   * ¿Por qué necesitamos esto?
-   * Porque el token está en una cookie que JS no puede leer. Al refrescar la
-   * página perdemos el estado del store (la memoria de JS se limpia), pero la
-   * cookie sigue ahí. Este endpoint le dice al servidor "¿esta cookie sigue
-   * siendo válida?" y nos devuelve los datos del usuario si lo es.
-   *
-   * Llama a esto en el App.vue o en el router (navigation guard).
+   * Solicitar OTP (flujo cliente)
+   */
+  async function requestOtp(phone: string): Promise<void> {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      await authService.requestOtp(phone);
+    } catch (err) {
+      error.value = getErrorMessage(err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
+   * Verificar sesión (persistencia con cookies)
    */
   async function checkSession(): Promise<void> {
     isLoading.value = true;
@@ -88,18 +103,19 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const currentUser = await authService.getMe();
       user.value = currentUser;
+
+      // Opcional: inferir tipo si backend no lo manda
+      authType.value = currentUser.role === 'admin' ? 'admin' : 'otp';
     } catch {
-      // Si falla (401 Unauthorized), simplemente no hay sesión activa.
-      // No es un error que mostrar al usuario.
       user.value = null;
+      authType.value = null;
     } finally {
       isLoading.value = false;
     }
   }
 
   /**
-   * Cierra sesión. El backend invalida la cookie (la borra o la marca como
-   * expirada). El store se limpia en el frontend.
+   * Logout
    */
   async function logout(): Promise<void> {
     isLoading.value = true;
@@ -107,33 +123,35 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await authService.logout();
     } finally {
-      // Limpiamos el store aunque falle la petición al servidor
       user.value = null;
+      authType.value = null;
       isLoading.value = false;
     }
   }
 
   /**
-   * Limpia errores manualmente (útil para resetear el estado de un formulario).
+   * Reset error
    */
   function clearError(): void {
     error.value = null;
   }
 
-  // ─── Helper privado ───────────────────────────────────────────────────────
-  //
-  // Tip: TypeScript no sabe el tipo de `err` en un catch por defecto.
-  // Esta función extrae el mensaje de forma segura.
+  // ─── Helper privado ──────────────────────────────────────────────────────
+
   function getErrorMessage(err: unknown): string {
     if (err instanceof Error) return err.message;
     if (typeof err === 'string') return err;
     return 'Ocurrió un error inesperado';
   }
 
+  // ─── Exposición ──────────────────────────────────────────────────────────
+
   return {
+    // State
     user: computed(() => user.value),
     isLoading: computed(() => isLoading.value),
     error: computed(() => error.value),
+    authType: computed(() => authType.value),
 
     // Getters
     isAuthenticated,
@@ -141,8 +159,8 @@ export const useAuthStore = defineStore('auth', () => {
     userInitials,
 
     // Actions
+    login,
     requestOtp,
-    verifyOtp,
     checkSession,
     logout,
     clearError,

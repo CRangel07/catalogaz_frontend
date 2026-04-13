@@ -17,7 +17,7 @@
     <AppTable :columns="columns" :rows="products" has-actions>
       <template #cell-imageThumbnailUrl="{ value }">
         <div class="max-w-37.5">
-          <img :src="`${BASE}${value}`" alt="miniatura" class="w-full object-cover block" />
+          <ImageNotFound :url="String(value)" alt="producto-imagen" />
         </div>
       </template>
       <template #cell-isActive="{ value }">
@@ -32,8 +32,10 @@
 
 <script setup lang="ts">
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
+import PageTitle from '../ui/molecules/PageTitle.vue';
 import ProductForm from '../forms/ProductForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
+import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 
 import type { Product } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
@@ -43,11 +45,8 @@ import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
-import PageTitle from '../ui/molecules/PageTitle.vue';
 
 const { openModal } = useModal();
-
-const BASE = import.meta.env.VITE_ASSETS_URL;
 
 const handleModalProduct = (product?: Product) => {
   openModal(ProductForm, { product, onSave: () => fetchProducts() });
