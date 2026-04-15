@@ -8,7 +8,7 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-xs">
+      <table class="w-full text-base">
         <thead>
           <tr class="border-b border-slate-100 bg-slate-50/70">
             <th
@@ -23,11 +23,11 @@
           <tr v-for="(o, i) in orders" :key="i" class="hover:bg-blue-50/40 transition-colors">
             <td class="px-5 py-3 font-black text-blue-700">{{ o.id }}</td>
             <td class="px-4 py-3 font-semibold text-slate-700">{{ o.client }}</td>
-            <td class="px-4 py-3 font-black text-slate-800">{{ o.total }}</td>
+            <td class="px-4 py-3 font-bold text-teal-600 text-xl">{{ formatMXN(o.total) }}</td>
             <td class="px-4 py-3">
-              <AppBadge :variant="statusVariant[o.status]">{{ o.status }}</AppBadge>
+              <AppBadge :variant="statusVariant[o.status]" size="md">{{ o.status }}</AppBadge>
             </td>
-            <td class="px-4 py-3 text-slate-400">{{ o.time }}</td>
+            <td class="px-4 py-3 text-slate-600">{{ getRelativeTime(o.time) }}</td>
           </tr>
         </tbody>
       </table>
@@ -39,6 +39,8 @@
 import AppCard from '@/components/ui/molecules/AppCard.vue';
 import AppBadge from '../ui/molecules/AppBadge.vue';
 import type { OrderStatus } from '@/types/db';
+import { getRelativeTime } from '@/helpers/dates';
+import { formatMXN } from '@/helpers/currencyMxn';
 
 export interface Order {
   id: number;

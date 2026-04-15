@@ -1,6 +1,6 @@
 <template>
   <header
-    class="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300"
+    class="fixed top-0 left-0 right-0 z-500 w-full transition-all duration-300"
     :class="
       scrolled ? 'bg-azul/95 backdrop-blur-md shadow-[0_4px_24px_rgba(30,58,138,0.35)]' : 'bg-azul'
     ">

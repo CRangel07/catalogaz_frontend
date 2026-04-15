@@ -2,8 +2,8 @@
   <AppCard>
     <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
       <div>
-        <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-orange-500">Esta semana</p>
-        <p class="text-sm font-black text-blue-900">Productos Más Vendidos</p>
+        <p class="text-[12px] font-bold uppercase tracking-[0.15em] text-orange-500">Esta semana</p>
+        <p class="text-base font-black text-blue-900">Productos Más Vendidos</p>
       </div>
       <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
         Ver catálogo →
@@ -11,7 +11,7 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="w-full text-base">
         <thead>
           <tr class="border-b border-slate-100 bg-slate-50/70">
             <th
@@ -27,24 +27,24 @@
             v-for="(p, i) in products"
             :key="i"
             class="group hover:bg-blue-50/40 transition-colors">
-            <td class="px-5 py-3 font-black text-slate-300">
+            <td class="px-5 py-3 font-black text-slate-600">
               {{ p.id }}
             </td>
             <td class="px-4 py-3 font-bold text-slate-800">
-              <span class="font-mono text-sm text-slate-600">{{ p.code }}</span>
+              <span class="font-mono text-slate-600">{{ p.code }}</span>
             </td>
-            <td class="px-4 py-3 font-bold text-slate-800">{{ p.name }}</td>
+            <td class="px-4 py-3 font-bold text-slate-600">{{ p.name }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-2">
-                <div class="h-1.5 w-20 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-3.5 w-20 rounded-full bg-slate-200 overflow-hidden">
                   <div
-                    class="h-full rounded-full bg-linear-to-r from-blue-500 to-blue-400"
+                    class="h-full rounded-full bg-linear-to-r from-teal-500 to-teal-400"
                     :style="`width:${Math.min(100, (p.sold / (maxSold ?? 210)) * 100)}%`" />
                 </div>
-                <span class="font-black text-blue-800">{{ p.sold }}</span>
+                <span class="font-black text-teal-600 text-xl">{{ p.sold }}</span>
               </div>
             </td>
-            <td class="px-4 py-3 font-black text-slate-800">
+            <td class="px-4 py-3 font-bold text-xl text-teal-600">
               {{ formatMXN(p.revenue) }}
             </td>
           </tr>
