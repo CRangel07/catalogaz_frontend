@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2">
+    <div class="fixed bottom-5 right-5 z-2000 flex flex-col gap-2">
       <AppToast v-for="toast in toastStore.toasts" :key="toast.id" :toast="toast" />
     </div>
   </Teleport>

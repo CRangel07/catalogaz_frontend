@@ -29,14 +29,14 @@
     <div
       v-if="cart.isOpen"
       @click="cart.isOpen = false"
-      class="fixed inset-0 z-40 bg-blue-950/60 backdrop-blur-sm" />
+      class="fixed inset-0 z-200 bg-blue-950/60 backdrop-blur-sm" />
   </transition>
 
   <!-- Drawer lateral -->
   <transition name="slide">
     <div
       v-if="cart.isOpen"
-      class="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-[-8px_0_48px_rgba(30,64,175,0.18)]">
+      class="fixed right-0 top-0 z-210 flex h-full w-full max-w-sm flex-col bg-white shadow-[-8px_0_48px_rgba(30,64,175,0.18)]">
       <!-- Header -->
       <div class="relative overflow-hidden bg-azul px-6 py-5">
         <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-700/70" />

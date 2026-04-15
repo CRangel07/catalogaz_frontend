@@ -22,7 +22,7 @@ export const OrderService = {
   },
 
   update(id: number, dto: UpdateOrderStatusDto): Promise<OrderFull> {
-    return http<OrderFull>(`${BASE}/${id}`, { method: 'PATCH', body: dto });
+    return http<OrderFull>(`${BASE}/${id}/status`, { method: 'PATCH', body: dto });
   },
 
   delete(id: number): Promise<void> {

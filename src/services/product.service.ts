@@ -36,7 +36,6 @@ export const ProductService = {
 
   update(id: number, dto: UpdateProductDto): Promise<Product> {
     const form = new FormData();
-    console.log(dto);
     if (dto.name) form.append('name', dto.name);
     if (dto.code) form.append('code', dto.code);
     if (dto.description) form.append('description', dto.description);

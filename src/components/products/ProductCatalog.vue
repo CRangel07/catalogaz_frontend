@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full">
+    <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
       <ProductCard
         class="col-span-full sm:col-span-4 lg:col-span-3"
         v-for="p in products"

@@ -32,6 +32,14 @@
         ]" />
       <span v-if="errors.password" :class="errorClass">{{ errors.password }}</span>
       <ButtonUI theme="cyan" type="submit"> Ingresar </ButtonUI>
+
+      <!-- Error global -->
+      <div
+        v-if="authStore.error"
+        class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <AlertCircle class="w-4 h-4 text-red-500 shrink-0" />
+        <p class="text-red-600 text-sm">{{ authStore.error }}</p>
+      </div>
     </form>
 
     <!-- Separador visual -->

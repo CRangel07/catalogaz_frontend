@@ -66,7 +66,6 @@ export const useAuthStore = defineStore('catalog_auth_store', () => {
       }
 
       const currentUser = await authService.getMe();
-      console.log(currentUser);
       user.value = currentUser;
     } catch (err) {
       error.value = getErrorMessage(err);

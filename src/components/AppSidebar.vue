@@ -80,7 +80,7 @@
         <Transition name="label">
           <div v-if="open" class="min-w-0">
             <p class="truncate text-xs font-bold text-white leading-none">Admin</p>
-            <p class="truncate text-[10px] text-blue-300">admin@mitienda.mx</p>
+            <p class="truncate text-[10px] text-blue-300">admin@azteca.com</p>
           </div>
         </Transition>
       </div>

@@ -23,6 +23,18 @@
         v-model="phone"
         required />
 
+      <AppSelect
+        v-if="isEditing"
+        :id="'cliente-estatus'"
+        label="Estatus del cliente"
+        :attrs-vee="activeAttrs"
+        :errors="errors.isActive"
+        :options="[
+          { label: 'Activo', value: true },
+          { label: 'Inactivo', value: false },
+        ]"
+        v-model="active" />
+
       <div class="flex justify-end gap-2 pt-1">
         <ButtonUI type="button" theme="ghost" @click="emit('close')">Cancelar</ButtonUI>
         <ButtonUI type="submit" theme="primary" :loading="isSubmitting">
@@ -40,48 +52,46 @@ import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import type { Customer } from '@/types/db';
 import type { CreateCustomerDto } from '@/services/client.service';
 
-import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { computed } from 'vue';
 import { useCustomers } from '@/composables/useCustomers';
 import { toTypedSchema } from '@vee-validate/zod';
+import { CreateClientSchema, UpdateClientSchema } from '@/types/validation';
+import AppSelect from '../ui/forms/AppSelect.vue';
 
 const { createCustomer, updateCustomer } = useCustomers();
-
-const schema = toTypedSchema(
-  z.object({
-    name: z.string().min(1, 'El nombre es obligatorio').max(30, 'Máximo 30 caracteres'),
-    phone: z
-      .string()
-      .min(1, 'El teléfono es obligatorio')
-      .max(10, 'Máximo diez digitos')
-      .regex(/^\d+$/, 'Solo se permiten números'),
-  })
-);
 
 const props = defineProps<{
   customer?: Customer;
   onSave?: () => void;
 }>();
 
+const isEditing = computed(() => !!props.customer);
+
+const schema = toTypedSchema(isEditing.value ? UpdateClientSchema : CreateClientSchema);
+
 const emit = defineEmits<{
   close: [];
 }>();
 
-const isEditing = computed(() => !!props.customer);
-
 const { handleSubmit, defineField, errors, isSubmitting } = useForm({
   validationSchema: schema,
-  initialValues: { name: props.customer?.name, phone: props.customer?.phone },
+  initialValues: {
+    name: props.customer?.name,
+    phone: props.customer?.phone,
+    isActive: props.customer?.isActive,
+  },
 });
 
 const [name, nameAttrs] = defineField('name');
 const [phone, phoneAttrs] = defineField('phone');
+const [active, activeAttrs] = defineField('isActive');
 
 const onSubmit = handleSubmit(async () => {
   const payload = {
     name: name.value,
     phone: phone.value,
+    isActive: active.value,
   };
 
   const ok = await (isEditing.value && props.customer

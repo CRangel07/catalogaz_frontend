@@ -13,7 +13,10 @@
       <Transition name="modal-panel">
         <div
           v-if="true"
-          :class="['relative w-full rounded-2xl bg-white shadow-2xl dark:bg-zinc-900', sizeClass]"
+          :class="[
+            'relative w-full rounded-2xl bg-white shadow-2xl dark:bg-zinc-900 max-h-[85dvh] overflow-auto',
+            sizeClass,
+          ]"
           role="dialog"
           aria-modal="true"
           @click.stop>

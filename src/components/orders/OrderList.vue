@@ -1,12 +1,8 @@
 <template>
   <div class="max-w-350 m-auto">
-    <PageTitle
-      :icon="ShoppingCart"
-      :icon-variant="'teal'"
-      v-bind="$props.titleProps"
-      class="mb-5" />
+    <PageTitle :icon="ShoppingCart" :icon-variant="'teal'" class="mb-5" title="Pedidos" />
 
-    <AppTable :columns="columns" :rows="orders">
+    <AppTable :columns="columns" :rows="orders" :has-actions="authStore.isAdmin">
       <template #cell-id="{ row }">
         <p class="text-xs text-slate-400">
           Id Pedido:
@@ -78,24 +74,51 @@
           </div>
         </div>
       </template>
+
+      <template #actions="{ row }">
+        <ActionsTools @edit="handleEditOrder(row)" />
+      </template>
     </AppTable>
   </div>
 </template>
 
 <script setup lang="ts">
+import PageTitle from '../ui/molecules/PageTitle.vue';
+import OrderForm from '../forms/OrderForm.vue';
+import ActionsTools from '../ui/molecules/ActionsTools.vue';
+
 import type { OrderFull, OrderStatus } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
-import PageTitle, { type TitleProps } from '../ui/molecules/PageTitle.vue';
-
+import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
+import { useOrders } from '@/composables/useOrders';
 import { formatDate } from '@/helpers/dates';
 import { ShoppingCart } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth.store';
+import { onBeforeMount } from 'vue';
 import { getOrderStatusLabel } from '@/types/components';
-
-defineProps<{ orders: OrderFull[]; titleProps: TitleProps }>();
+import { useRoute } from 'vue-router';
 
 const BASE = import.meta.env.VITE_ASSETS_URL;
+const authStore = useAuthStore();
+const { openModal } = useModal();
+const { fetchOrdersAdm, fetchOrdersCustomer, orders } = useOrders();
+
+const handleEditOrder = (order: OrderFull) => {
+  openModal(
+    OrderForm,
+    {
+      order,
+      onSavew: async () => {
+        await makeFetch();
+      },
+    },
+    { size: 'sm' }
+  );
+};
+
+const route = useRoute();
 
 const columns: TableColumn<OrderFull>[] = [
   { key: 'id', label: 'ID Orden' },
@@ -103,4 +126,14 @@ const columns: TableColumn<OrderFull>[] = [
   { key: 'status', label: 'Estatus Pedido' },
   { key: 'items', label: 'Articulos' },
 ];
+
+const makeFetch = async () => {
+  authStore.isAdmin && route.name !== 'catalogAz_my_orders'
+    ? await fetchOrdersAdm()
+    : await fetchOrdersCustomer();
+};
+
+onBeforeMount(() => {
+  makeFetch();
+});
 </script>
