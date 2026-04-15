@@ -38,12 +38,13 @@
 <script setup lang="ts">
 import AppCard from '@/components/ui/molecules/AppCard.vue';
 import AppBadge from '../ui/molecules/AppBadge.vue';
+import type { OrderStatus } from '@/types/db';
 
-interface Order {
-  id: string;
+export interface Order {
+  id: number;
   client: string;
-  total: string;
-  status: 'entregado' | 'pendiente' | 'proceso';
+  total: number;
+  status: OrderStatus;
   time: string;
 }
 

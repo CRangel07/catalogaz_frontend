@@ -5,7 +5,7 @@ export type Metric = {
   label: string;
   value: string;
   sub: string;
-  up: boolean;
+  up?: boolean;
   color: 'blue' | 'orange';
   icon: Component;
 };

@@ -124,3 +124,24 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
 }
+
+export interface DashboardSummary {
+  sales: { today: number; changePercent: number };
+  orders: { today: number; pending: number };
+  products: { activeCount: number };
+  customers: { activeCount: number; newThisWeek: number };
+  recentOrders: {
+    id: number;
+    status: string;
+    total: number;
+    createdAt: string;
+    customer: { id: number; name: string };
+  }[];
+  topProducts: {
+    productId: number;
+    code: string;
+    name: string;
+    soldQty: number;
+    revenue: number;
+  }[];
+}
