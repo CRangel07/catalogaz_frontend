@@ -1,6 +1,6 @@
 import { http } from './http';
 
-import type { Customer } from '@/types/db';
+import type { Customer, PaginatedResponse } from '@/types/db';
 
 export interface CreateCustomerDto {
   name: string;
@@ -11,8 +11,8 @@ export interface CreateCustomerDto {
 export interface UpdateCustomerDto extends Partial<CreateCustomerDto> {}
 
 export const CustomerService = {
-  getAll(): Promise<Customer[]> {
-    return http<Customer[]>('/customers');
+  getAll(): Promise<PaginatedResponse<Customer>> {
+    return http<PaginatedResponse<Customer>>('/customers');
   },
 
   getOne(id: number): Promise<Customer> {

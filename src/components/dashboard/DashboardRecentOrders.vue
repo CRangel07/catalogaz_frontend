@@ -2,7 +2,9 @@
   <AppCard class="lg:col-span-2">
     <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
       <p class="text-sm font-black text-blue-900">Pedidos Recientes</p>
-      <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
+      <button
+        class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+        @click="handleShowOrders">
         Ver todos →
       </button>
     </div>
@@ -41,6 +43,7 @@ import AppBadge from '../ui/molecules/AppBadge.vue';
 import type { OrderStatus } from '@/types/db';
 import { getRelativeTime } from '@/helpers/dates';
 import { formatMXN } from '@/helpers/currencyMxn';
+import { useRouter } from 'vue-router';
 
 export interface Order {
   id: number;
@@ -54,9 +57,13 @@ defineProps<{
   orders: Order[];
 }>();
 
+const router = useRouter();
+
 const statusVariant: Record<string, 'green' | 'orange' | 'blue'> = {
   entregado: 'green',
   pendiente: 'orange',
   proceso: 'blue',
 };
+
+const handleShowOrders = () => router.replace({ name: 'catalogAz_adm_orders' });
 </script>

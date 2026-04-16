@@ -4,7 +4,7 @@ import {
   type UpdateCustomerDto,
 } from '@/services/client.service';
 
-import type { Customer } from '@/types/db';
+import type { Customer, PaginatedResponse } from '@/types/db';
 
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
@@ -12,8 +12,14 @@ import { useToastStore } from '@/stores/toast.store';
 export function useCustomers() {
   const toast = useToastStore();
 
-  const customers = ref<Customer[]>([]);
-  const product = ref<Customer | null>(null);
+  const customers = ref<PaginatedResponse<Customer>>({
+    data: [],
+    limit: 0,
+    page: 0,
+    total: 0,
+    totalPages: 0,
+  });
+  const customer = ref<Customer | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -34,7 +40,7 @@ export function useCustomers() {
     loading.value = true;
     error.value = null;
     try {
-      product.value = await CustomerService.getOne(id);
+      customer.value = await CustomerService.getOne(id);
     } catch (e) {
       error.value = (e as Error).message;
       toast.error('No se pudieron cargar los clientes');
@@ -48,7 +54,7 @@ export function useCustomers() {
     error.value = null;
     try {
       const created = await CustomerService.create(dto);
-      customers.value.push(created);
+      customers.value.data.push(created);
       toast.success('Cliente Creado Correctamente');
       return true;
     } catch (e) {
@@ -65,8 +71,8 @@ export function useCustomers() {
     error.value = null;
     try {
       const updated = await CustomerService.update(id, dto);
-      const idx = customers.value.findIndex((p) => p.id == id);
-      if (idx !== -1) customers.value[idx] = updated;
+      const idx = customers.value.data.findIndex((p) => p.id == id);
+      if (idx !== -1) customers.value.data[idx] = updated;
       toast.success('Cliente Actualizado Correctamente');
       return true;
     } catch (e) {
@@ -83,7 +89,7 @@ export function useCustomers() {
     error.value = null;
     try {
       await CustomerService.delete(id);
-      customers.value = customers.value.filter((p) => p.id !== id);
+      customers.value.data = customers.value.data.filter((p) => p.id !== id);
       toast.success('Cliente Desactivado Correctamente');
       return true;
     } catch (e) {
@@ -97,7 +103,7 @@ export function useCustomers() {
 
   return {
     customers,
-    product,
+    customer,
     loading,
     error,
     fetchCustomers,

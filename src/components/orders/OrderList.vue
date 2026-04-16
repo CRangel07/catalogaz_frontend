@@ -4,27 +4,34 @@
 
     <AppTable :columns="columns" :rows="orders" :has-actions="authStore.isAdmin">
       <template #cell-id="{ row }">
-        <p class="text-xs text-slate-400">
+        <p class="text-slate-400">
           Id Pedido:
-          <span class="text-sm block text-teal-600"> # {{ row.id }} </span>
+          <span class="text-teal-600"> # {{ row.id }} </span>
         </p>
 
-        <p v-if="row.notes" class="text-xs text-slate-400 mt-2">
+        <p v-if="row.notes" class="text-slate-400 mt-2">
           Notas Pedido:
-          <span class="text-sm italic block text-slate-500"> {{ row.notes }} </span>
+          <span class="italic text-slate-500"> {{ row.notes }} </span>
+        </p>
+
+        <p v-if="authStore.isAdmin" class="text-slate-400 mt-2">
+          Pedido de:
+          <span class="italic text-slate-500">
+            {{ row.customer.name }} {{ row.customer.phone }}
+          </span>
         </p>
       </template>
 
       <template #cell-createdAt="{ row }">
         <p class="text-xs text-slate-400">
           Creado:
-          <span class="text-sm block text-slate-600">
+          <span class="text-sm block text-slate-500">
             {{ formatDate(row.createdAt) }}
           </span>
         </p>
         <p class="mt-2 text-slate-400 text-xs">
           Actualizado:
-          <span class="block text-sm text-slate-600">
+          <span class="block text-sm text-slate-500">
             {{ formatDate(row.updatedAt) }}
           </span>
         </p>

@@ -5,7 +5,9 @@
         <p class="text-[12px] font-bold uppercase tracking-[0.15em] text-orange-500">Esta semana</p>
         <p class="text-base font-black text-blue-900">Productos Más Vendidos</p>
       </div>
-      <button class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
+      <button
+        class="text-xs font-bold text-blue-600 cursor-pointer hover:text-blue-800 transition-colors"
+        @click="handleShowProducts">
         Ver catálogo →
       </button>
     </div>
@@ -57,6 +59,7 @@
 <script setup lang="ts">
 import AppCard from '@/components/ui/molecules/AppCard.vue';
 import { formatMXN } from '@/helpers/currencyMxn';
+import { useRouter } from 'vue-router';
 
 export interface ProductMetric {
   id: number;
@@ -66,8 +69,12 @@ export interface ProductMetric {
   revenue: number;
 }
 
+const router = useRouter();
+
 defineProps<{
   products: ProductMetric[];
   maxSold?: number;
 }>();
+
+const handleShowProducts = () => router.replace({ name: 'catalogAz_adm_orders' });
 </script>

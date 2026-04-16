@@ -1,23 +1,30 @@
-import type { Product } from '@/types/db';
+import type { PaginatedResponse, Product } from '@/types/db';
 import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
 
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
 import { ProductService } from '@/services/product.service';
+import type { BasicSearch } from '@/components/filters/types';
 
 export function useProducts() {
   const toast = useToastStore();
 
-  const products = ref<Product[]>([]);
+  const productsData = ref<PaginatedResponse<Product>>({
+    data: [],
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
   const product = ref<Product | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  async function fetchProducts() {
+  async function fetchProducts(query?: BasicSearch) {
     loading.value = true;
     error.value = null;
     try {
-      products.value = await ProductService.getAll();
+      productsData.value = await ProductService.getAll(query);
     } catch (e) {
       error.value = (e as Error).message;
       toast.error(error.value, 6000);
@@ -44,7 +51,7 @@ export function useProducts() {
     error.value = null;
     try {
       const created = await ProductService.create(dto);
-      products.value.push(created);
+      productsData.value.data.push(created);
       toast.success('Producto Creado Correctamente');
       return true;
     } catch (e) {
@@ -61,8 +68,8 @@ export function useProducts() {
     error.value = null;
     try {
       const updated = await ProductService.update(id, dto);
-      const idx = products.value.findIndex((p) => p.id == id);
-      if (idx !== -1) products.value[idx] = updated;
+      const idx = productsData.value.data.findIndex((p) => p.id == id);
+      if (idx !== -1) productsData.value.data[idx] = updated;
       toast.success('Producto Actualizado Correctamente');
       return true;
     } catch (e) {
@@ -79,7 +86,7 @@ export function useProducts() {
     error.value = null;
     try {
       await ProductService.delete(id);
-      products.value = products.value.filter((p) => p.id !== id);
+      productsData.value.data = productsData.value.data.filter((p) => p.id !== id);
       toast.success('Producto Desactivado Correctamente');
       return true;
     } catch (e) {
@@ -92,7 +99,7 @@ export function useProducts() {
   }
 
   return {
-    products,
+    productsData,
     product,
     loading,
     error,

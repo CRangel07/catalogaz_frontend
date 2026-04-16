@@ -114,17 +114,6 @@ export interface UpdateProductDto {
   isActive?: boolean;
 }
 
-export interface ApiResponse<T> {
-  data: T;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
 export interface DashboardSummary {
   sales: { today: number; changePercent: number };
   orders: { today: number; pending: number };
@@ -144,4 +133,16 @@ export interface DashboardSummary {
     soldQty: number;
     revenue: number;
   }[];
+}
+
+export interface ApiResponse<T> {
+  data: T;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }

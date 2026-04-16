@@ -3,20 +3,24 @@
     <ButtonUI :icon="Plus" @click="handleModal()" class="ms-auto md:mb-5 mb-3">
       Nuevo Cliente
     </ButtonUI>
-    <AppTable :columns="columns" :rows="customers" :skeleton-rows="10" has-actions>
-      <template #cell-isActive="{ value }">
-        <span
-          :class="{
-            'text-green-600': !!value == true,
-            'text-red-600': !!value == false,
-          }">
-          {{ !!value ? 'Activo' : 'Inactivo' }}
-        </span>
+    <PaginatedTable :response="customers">
+      <template #table>
+        <AppTable :columns="columns" :rows="customers.data" :skeleton-rows="10" has-actions>
+          <template #cell-isActive="{ value }">
+            <span
+              :class="{
+                'text-green-600': !!value == true,
+                'text-red-600': !!value == false,
+              }">
+              {{ !!value ? 'Activo' : 'Inactivo' }}
+            </span>
+          </template>
+          <template #actions="{ row }">
+            <ActionsTools @edit="handleModal(row)" />
+          </template>
+        </AppTable>
       </template>
-      <template #actions="{ row }">
-        <ActionsTools @edit="handleModal(row)" />
-      </template>
-    </AppTable>
+    </PaginatedTable>
   </div>
 </template>
 
@@ -28,6 +32,7 @@ import AppTable from '@/components/ui/molecules/AppTable.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import ClientForm from '../forms/ClientForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
+import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
 import { Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
@@ -64,5 +69,3 @@ const handleModal = (customer?: Customer) => {
 
 onBeforeMount(() => fetchCustomers());
 </script>
-
-<style scoped></style>

@@ -6,7 +6,7 @@ export type InputProps = {
   id: string;
   label: string;
   type: InputType;
-  attrsVee: BaseFieldProps & GenericObject;
+  attrsVee?: BaseFieldProps & GenericObject;
   attrs?: Record<string, unknown>;
   errors?: string;
   optional?: boolean;

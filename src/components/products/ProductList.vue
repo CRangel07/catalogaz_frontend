@@ -14,19 +14,26 @@
         </ButtonUI>
       </template>
     </PageTitle>
-    <AppTable :columns="columns" :rows="products" has-actions>
-      <template #cell-imageThumbnailUrl="{ value }">
-        <div class="max-w-37.5">
-          <ImageNotFound :url="String(value)" alt="producto-imagen" />
-        </div>
+
+    <ProductFilter class="my-10" @filter="(q) => fetchProducts({ search: q })" />
+
+    <PaginatedTable :response="productsData">
+      <template #table>
+        <AppTable :columns="columns" :rows="productsData.data" has-actions>
+          <template #cell-imageThumbnailUrl="{ value }">
+            <div class="max-w-20">
+              <ImageNotFound :url="String(value)" alt="producto-imagen" />
+            </div>
+          </template>
+          <template #cell-isActive="{ value }">
+            <span>{{ !!value ? 'Activo' : 'Inactivo' }}</span>
+          </template>
+          <template #actions="{ row }">
+            <ActionsTools @edit="handleModalProduct(row)" />
+          </template>
+        </AppTable>
       </template>
-      <template #cell-isActive="{ value }">
-        <span>{{ !!value ? 'Activo' : 'Inactivo' }}</span>
-      </template>
-      <template #actions="{ row }">
-        <ActionsTools @edit="handleModalProduct(row)" />
-      </template>
-    </AppTable>
+    </PaginatedTable>
   </div>
 </template>
 
@@ -36,6 +43,8 @@ import PageTitle from '../ui/molecules/PageTitle.vue';
 import ProductForm from '../forms/ProductForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
+import ProductFilter from '../filters/productFilter.vue';
+import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
 import type { Product } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
@@ -52,7 +61,7 @@ const handleModalProduct = (product?: Product) => {
   openModal(ProductForm, { product, onSave: () => fetchProducts() });
 };
 
-const { products, fetchProducts } = useProducts();
+const { productsData, fetchProducts } = useProducts();
 
 const columns: TableColumn<Product>[] = [
   { key: 'imageThumbnailUrl', label: 'Imagen', align: 'center' },

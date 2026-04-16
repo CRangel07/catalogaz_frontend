@@ -2,7 +2,7 @@
   <img
     :src="`${BASE_ASSETS}${url}`"
     :alt="alt"
-    class="relative z-10 h-52 w-auto object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]"
+    class="relative z-10 h-full w-full object-contain drop-shadow-[0_8px_16px_rgba(30,64,175,0.2)]"
     @error="handleImageError" />
 </template>
 

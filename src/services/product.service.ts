@@ -1,6 +1,7 @@
+import type { BasicSearch } from '@/components/filters/types';
 import { http } from './http';
 
-import type { Product } from '@/types/db';
+import type { PaginatedResponse, Product } from '@/types/db';
 
 export interface CreateProductDto {
   code: string;
@@ -16,8 +17,9 @@ export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'image'
 }
 
 export const ProductService = {
-  getAll(): Promise<Product[]> {
-    return http<Product[]>('/products');
+  getAll(query?: BasicSearch): Promise<PaginatedResponse<Product>> {
+    const params = new URLSearchParams({ ...query });
+    return http<PaginatedResponse<Product>>(`/products?${params.toString()}`);
   },
 
   getOne(id: number): Promise<Product> {
