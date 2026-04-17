@@ -1,7 +1,7 @@
-import type { BasicSearch } from '@/components/filters/types';
 import { http } from './http';
 
 import type { PaginatedResponse, Product } from '@/types/db';
+import type { BasicSearch } from '@/components/filters/types';
 
 export interface CreateProductDto {
   code: string;
@@ -49,5 +49,15 @@ export const ProductService = {
 
   delete(id: number): Promise<void> {
     return http<void>(`/products/${id}`, { method: 'DELETE' });
+  },
+
+  importProductsExcel(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return http.post<unknown>(`/products/import-excel`, formData);
+  },
+
+  downloadProductsTemplate(): Promise<unknown> {
+    return http<unknown>(`/products/excel-template`);
   },
 };

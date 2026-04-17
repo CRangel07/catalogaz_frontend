@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { authGuard } from './auth.guard';
 
 const router = createRouter({
-  history: createWebHistory('/'),
+  history: createWebHistory('/catalogo'),
   routes: [...routes],
 });
 

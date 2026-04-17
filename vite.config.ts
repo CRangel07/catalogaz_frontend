@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/catalogo/',
   plugins: [vue(), vueDevTools(), tailwindcss()],
   resolve: {
     alias: {

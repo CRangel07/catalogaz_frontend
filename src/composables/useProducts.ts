@@ -98,13 +98,47 @@ export function useProducts() {
     }
   }
 
+  async function uploadExcel(file: File): Promise<boolean> {
+    loading.value = true;
+    error.value = null;
+    try {
+      await ProductService.importProductsExcel(file);
+      toast.success('Excel Subido Correctamente');
+      return true;
+    } catch (e) {
+      error.value = (e as Error).message;
+      toast.error((e as Error).message);
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function downloadExcel(): Promise<boolean> {
+    loading.value = true;
+    error.value = null;
+    try {
+      await ProductService.downloadProductsTemplate();
+      toast.success('Se descargó el Excel Correctamente');
+      return true;
+    } catch (e) {
+      error.value = (e as Error).message;
+      toast.error((e as Error).message);
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     productsData,
     product,
     loading,
     error,
-    fetchProducts,
+    uploadExcel,
     fetchProduct,
+    downloadExcel,
+    fetchProducts,
     createProduct,
     updateProduct,
     deleteProduct,

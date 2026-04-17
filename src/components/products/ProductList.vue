@@ -12,6 +12,14 @@
           @click="handleModalProduct()">
           Nuevo Producto
         </ButtonUI>
+        <ButtonUI
+          size="sm"
+          theme="success"
+          :icon="Plus"
+          class="ms-auto mb-5"
+          @click="handleModalExcelProduct()">
+          Subir Desde Excel
+        </ButtonUI>
       </template>
     </PageTitle>
 
@@ -54,11 +62,16 @@ import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
+import ImportProductsExcel from './ImportProductsExcel.vue';
 
 const { openModal } = useModal();
 
 const handleModalProduct = (product?: Product) => {
   openModal(ProductForm, { product, onSave: () => fetchProducts() });
+};
+
+const handleModalExcelProduct = () => {
+  openModal(ImportProductsExcel);
 };
 
 const { productsData, fetchProducts } = useProducts();

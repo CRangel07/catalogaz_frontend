@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 w-full">
+    <!-- Tabla -->
+    <slot name="header"></slot>
     <!-- Tabla -->
     <slot name="table"></slot>
 

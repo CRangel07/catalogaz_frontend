@@ -5,14 +5,14 @@
       <div class="mb-8">
         <h2 class="text-2xl font-bold text-naranja tracking-tight">Bienvenido</h2>
         <p class="text-slate-500 text-sm mt-1">
-          Ingresa tu número de WhatsApp para recibir tu código de acceso.
+          Ingresa tu número de celular para recibir tu código de acceso.
         </p>
       </div>
 
       <form class="flex flex-col gap-5" @submit.prevent="handleRequestOtp">
         <div class="flex flex-col gap-1.5">
           <label for="phone" class="text-sm font-medium text-slate-700">
-            Número de WhatsApp <span class="text-red-500">*</span>
+            Número <span class="text-red-500">*</span>
           </label>
 
           <!-- Selector de lada + input teléfono -->
@@ -55,7 +55,7 @@
           theme="success"
           full-width
           class="mt-1">
-          Enviar código por WhatsApp
+          Enviar código
         </ButtonUI>
       </form>
     </template>
@@ -72,7 +72,9 @@
           Cambiar número
         </button>
 
-        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Revisa tu WhatsApp</h2>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+          Revisa tu bandeja de Mensajes SMS
+        </h2>
         <p class="text-slate-500 text-sm mt-1">
           Enviamos un código de 6 dígitos al número
           <span class="font-medium text-slate-700">+52 {{ phone }}</span>

@@ -14,13 +14,20 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
-      <ProductCard
-        class="col-span-full sm:col-span-4 lg:col-span-3"
-        v-for="p in productsData.data"
-        :key="p.id"
-        :product="p" />
-    </div>
+    <PaginatedTable :response="productsData">
+      <template #header>
+        <ProductFilter />
+      </template>
+      <template #table>
+        <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
+          <ProductCard
+            class="col-span-full sm:col-span-4 lg:col-span-3"
+            v-for="p in productsData.data"
+            :key="p.id"
+            :product="p" />
+        </div>
+      </template>
+    </PaginatedTable>
   </div>
 </template>
 
@@ -29,6 +36,8 @@ import ProductCard from './ProductCard.vue';
 
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
+import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
+import ProductFilter from '../filters/ProductFilter.vue';
 
 const { fetchProducts, productsData } = useProducts();
 

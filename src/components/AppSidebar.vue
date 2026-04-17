@@ -49,7 +49,7 @@
             <RouterLink
               :to="{ name: item.routeName }"
               @click="emit('update:activeNav', item.id)"
-              class="group relative cursor-pointer w-full flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-semibold transition-all duration-150 text-left"
+              class="group relative cursor-pointer w-full flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-xs font-semibold transition-all duration-150 text-left"
               :class="
                 activeNav === item.id
                   ? 'bg-white/15 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]'
