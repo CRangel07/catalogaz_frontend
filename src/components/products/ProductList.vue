@@ -43,7 +43,7 @@ import PageTitle from '../ui/molecules/PageTitle.vue';
 import ProductForm from '../forms/ProductForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
-import ProductFilter from '../filters/productFilter.vue';
+import ProductFilter from '../filters/ProductFilter.vue';
 import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
 import type { Product } from '@/types/db';

@@ -1,6 +1,12 @@
 <template>
   <div class="max-w-350 m-auto">
-    <PageTitle :icon="ShoppingCart" :icon-variant="'teal'" class="mb-5" title="Pedidos" />
+    <PageTitle :icon="ShoppingCart" :icon-variant="'teal'" class="mb-5" title="Pedidos">
+      <template #actions>
+        <ButtonUI :icon="RefreshCcw" :disabled="loading" @click="handleUpdate">
+          {{ loading ? 'Actualizando' : 'Actualizar' }}
+        </ButtonUI>
+      </template>
+    </PageTitle>
 
     <AppTable :columns="columns" :rows="orders" :has-actions="authStore.isAdmin">
       <template #cell-id="{ row }">
@@ -90,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import PageTitle from '../ui/molecules/PageTitle.vue';
 import OrderForm from '../forms/OrderForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
@@ -97,27 +104,29 @@ import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import type { OrderFull, OrderStatus } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
+import { useRoute } from 'vue-router';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useOrders } from '@/composables/useOrders';
 import { formatDate } from '@/helpers/dates';
-import { ShoppingCart } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth.store';
 import { onBeforeMount } from 'vue';
+import { useToastStore } from '@/stores/toast.store';
 import { getOrderStatusLabel } from '@/types/components';
-import { useRoute } from 'vue-router';
+import { RefreshCcw, ShoppingCart } from 'lucide-vue-next';
 
 const BASE = import.meta.env.VITE_ASSETS_URL;
 const authStore = useAuthStore();
+const toast = useToastStore();
 const { openModal } = useModal();
-const { fetchOrdersAdm, fetchOrdersCustomer, orders } = useOrders();
+const { fetchOrdersAdm, fetchOrdersCustomer, orders, loading } = useOrders();
 
 const handleEditOrder = (order: OrderFull) => {
   openModal(
     OrderForm,
     {
       order,
-      onSavew: async () => {
+      onSave: async () => {
         await makeFetch();
       },
     },
@@ -138,6 +147,11 @@ const makeFetch = async () => {
   authStore.isAdmin && route.name !== 'catalogAz_my_orders'
     ? await fetchOrdersAdm()
     : await fetchOrdersCustomer();
+};
+
+const handleUpdate = async () => {
+  await makeFetch();
+  toast.info('Actualizado correctamente');
 };
 
 onBeforeMount(() => {

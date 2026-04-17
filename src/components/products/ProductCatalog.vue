@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-350 w-full flex flex-col items-center m-auto px-5">
+  <div class="max-w-350 w-full flex flex-col items-center m-auto px-5 pb-20">
     <div class="mb-8 md:self-start">
       <p class="text-xs font-bold uppercase tracking-[0.2em] text-naranja mb-1">
         Nuestros productos
@@ -17,7 +17,7 @@
     <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
       <ProductCard
         class="col-span-full sm:col-span-4 lg:col-span-3"
-        v-for="p in products"
+        v-for="p in productsData.data"
         :key="p.id"
         :product="p" />
     </div>
@@ -30,7 +30,7 @@ import ProductCard from './ProductCard.vue';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
 
-const { fetchProducts, products } = useProducts();
+const { fetchProducts, productsData } = useProducts();
 
 onBeforeMount(() => fetchProducts());
 </script>

@@ -1,35 +1,27 @@
-// router/guards/auth.guard.ts
-
-import type { RouteLocation, RouteLocationNormalized } from 'vue-router';
+import type { NavigationGuard } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import type { Role } from './types';
 
 let isCheckingSession = false;
 
-export async function authGuard(
-  to: RouteLocationNormalized
-): Promise<boolean | Partial<RouteLocation>> {
+export const authGuard: NavigationGuard = async (to) => {
   const auth = useAuthStore();
 
   const requiresAuth = Boolean(to.meta.requiresAuth);
   const allowedRoles = to.meta.roles as Role[] | undefined;
 
   try {
-    // 🔁 Check sesión solo una vez
     if (!auth.user && !isCheckingSession) {
       isCheckingSession = true;
       await auth.checkSession();
       isCheckingSession = false;
     }
 
-    // ─── 1. Ruta pública ─────────────────────────
     if (!requiresAuth) {
-      return true; // ✅ NO redirigir
+      return true;
     }
 
-    // ─── 2. No autenticado ───────────────────────
     if (!auth.isAuthenticated) {
-      // ⚠️ evitar loop si ya estás en login
       if (to.name === 'catalogAz_customer-login') return true;
 
       return {
@@ -38,7 +30,6 @@ export async function authGuard(
       };
     }
 
-    // ─── 3. Validar roles ────────────────────────
     if (allowedRoles && allowedRoles.length > 0) {
       const userRole = auth.user?.role;
 
@@ -49,7 +40,6 @@ export async function authGuard(
       }
     }
 
-    // ─── 4. Todo OK ──────────────────────────────
     return true;
   } catch (error) {
     console.error('Auth Guard Error:', error);
@@ -61,4 +51,4 @@ export async function authGuard(
       query: { redirect: to.fullPath },
     };
   }
-}
+};

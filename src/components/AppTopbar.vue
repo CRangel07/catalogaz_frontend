@@ -15,7 +15,7 @@
           :to="{ name: r.name }"
           exact-active-class="text-azul!"
           class="text-sm font-medium text-slate-500">
-          {{ RoutesNames[String(r.name)] ?? r.name }}
+          {{ RoutesNames[r.name as keyof typeof RoutesNames] ?? r.name }}
         </RouterLink>
         <ChevronRight class="text-naranja" v-if="idx < routes.length - 1" />
       </template>
