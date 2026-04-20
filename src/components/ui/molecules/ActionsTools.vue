@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center gap-1.5">
-    <ButtonUI size="sm" theme="outline" :icon="Pen" @click="emit('edit')"> Editar </ButtonUI>
+    <ButtonUI size="xs" theme="warning" :icon="Pen" @click="emit('edit')"> Editar </ButtonUI>
     <ButtonUI v-if="enableDelete" size="sm" theme="danger" :icon="Trash2" @click="confirmDelete">
       Eliminar
     </ButtonUI>

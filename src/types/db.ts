@@ -19,28 +19,29 @@ export interface Customer {
   updatedAt: string;
 }
 
-export interface Product {
+export type Product = {
   id: number;
   name: string;
   code: string;
   description: string | null;
   price: number;
-  stock: number;
+  normalPrice: number | null;
+  maxQuantity: number | null;
   imageName: string | null;
   imageThumbnailUrl: string | null;
   imageFullUrl: string | null;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export interface ProductCard {
   id: number;
   name: string;
   code: string;
   price: number;
-  stock: number;
   imageThumbnailUrl: string | null;
+  maxQuantity: number | null;
   isActive: boolean;
 }
 

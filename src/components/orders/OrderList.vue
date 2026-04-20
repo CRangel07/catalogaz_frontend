@@ -54,36 +54,24 @@
         </span>
       </template>
 
-      <template #cell-items="{ value, row }">
-        <div class="relative">
-          <span class="text-teal-600">Total: {{ formatMXN(row.total) }}</span>
-          <div v-if="Array.isArray(value)" class="space-y-2 overflow-y-auto max-h-30">
-            <div
-              v-for="item in value"
-              :key="item.id"
-              class="flex items-center gap-3 p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition">
-              <img
-                :src="`${BASE}${item.product.imageThumbnailUrl}` || ''"
-                :alt="item.product.name"
-                class="w-10 h-10 rounded-md object-cover border border-slate-200"
-                loading="lazy" />
-
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-slate-700 truncate">
-                  {{ item.product.name }}
-                </p>
-
-                <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
-                  <span class="bg-slate-100 px-1.5 py-0.5 rounded"> x{{ item.quantity }} </span>
-
-                  <span> ${{ item.unitPrice.toFixed(2) }} </span>
-                </div>
-              </div>
-
-              <div class="text-sm font-semibold text-slate-700">
-                ${{ (item.quantity * item.unitPrice).toFixed(2) }}
-              </div>
-            </div>
+      <template #cell-items="{ row }">
+        <div>
+          <p class="text-xs text-slate-400">
+            Número de articulos:
+            <span v-if="row.items" class="text-sm text-teal-600">
+              {{ row.items.length }}
+            </span>
+          </p>
+          <p class="text-xs text-slate-400">
+            Total:
+            <span v-if="row.items" class="text-sm text-teal-600">
+              {{ formatMXN(row.total) }}
+            </span>
+          </p>
+          <div class="mt-2">
+            <ButtonUI theme="cyan" size="xs" :icon="Eye" @click="handleOrderBreakdown(row)">
+              Ver desglose
+            </ButtonUI>
           </div>
         </div>
       </template>
@@ -100,22 +88,22 @@ import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import PageTitle from '../ui/molecules/PageTitle.vue';
 import OrderForm from '../forms/OrderForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
+import OrderBreakdown from './OrderBreakdown.vue';
 
 import type { OrderFull, OrderStatus } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
 import { useRoute } from 'vue-router';
 import { useModal } from '@/composables/useModal';
-import { formatMXN } from '@/helpers/currencyMxn';
 import { useOrders } from '@/composables/useOrders';
+import { formatMXN } from '@/helpers/currencyMxn';
 import { formatDate } from '@/helpers/dates';
 import { useAuthStore } from '@/stores/auth.store';
 import { onBeforeMount } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
 import { getOrderStatusLabel } from '@/types/components';
-import { RefreshCcw, ShoppingCart } from 'lucide-vue-next';
+import { Eye, RefreshCcw, ShoppingCart } from 'lucide-vue-next';
 
-const BASE = import.meta.env.VITE_ASSETS_URL;
 const authStore = useAuthStore();
 const toast = useToastStore();
 const { openModal } = useModal();
@@ -131,6 +119,16 @@ const handleEditOrder = (order: OrderFull) => {
       },
     },
     { size: 'sm' }
+  );
+};
+
+const handleOrderBreakdown = (order: OrderFull) => {
+  openModal(
+    OrderBreakdown,
+    {
+      items: order.items,
+    },
+    { size: 'lg' }
   );
 };
 

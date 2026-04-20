@@ -23,9 +23,22 @@
       </template>
     </PageTitle>
 
-    <ProductFilter class="my-10" @filter="(q) => fetchProducts({ search: q })" />
+    <ProductFilter
+      @filter="
+        (q) => {
+          update({ search: q, page: 1 });
+          fetchProductsWithQuery();
+        }
+      " />
 
-    <PaginatedTable :response="productsData">
+    <PaginatedTable
+      :response="productsData"
+      @change="
+        ({ page, limit }) => {
+          update({ page, limit });
+          fetchProductsWithQuery();
+        }
+      ">
       <template #table>
         <AppTable :columns="columns" :rows="productsData.data" has-actions>
           <template #cell-imageThumbnailUrl="{ value }">
@@ -53,6 +66,7 @@ import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import ProductFilter from '../filters/ProductFilter.vue';
 import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
+import ImportProductsExcel from './ImportProductsExcel.vue';
 
 import type { Product } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
@@ -62,9 +76,16 @@ import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
-import ImportProductsExcel from './ImportProductsExcel.vue';
+import { useQueryState } from '@/composables/useQueryState';
+import type { PaginatedSearch } from '../filters/types';
 
 const { openModal } = useModal();
+
+const { query, update } = useQueryState<PaginatedSearch>({
+  search: '',
+  page: 1,
+  limit: 10,
+});
 
 const handleModalProduct = (product?: Product) => {
   openModal(ProductForm, { product, onSave: () => fetchProducts() });
@@ -73,6 +94,10 @@ const handleModalProduct = (product?: Product) => {
 const handleModalExcelProduct = () => {
   openModal(ImportProductsExcel);
 };
+
+async function fetchProductsWithQuery() {
+  await fetchProducts(query.value);
+}
 
 const { productsData, fetchProducts } = useProducts();
 
@@ -91,5 +116,5 @@ const columns: TableColumn<Product>[] = [
   { key: 'description', label: 'Descripción' },
 ];
 
-onBeforeMount(() => fetchProducts());
+onBeforeMount(() => fetchProductsWithQuery());
 </script>

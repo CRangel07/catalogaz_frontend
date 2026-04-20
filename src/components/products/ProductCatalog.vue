@@ -14,9 +14,23 @@
       </div>
     </div>
 
-    <PaginatedTable :response="productsData">
+    <PaginatedTable
+      :response="productsData"
+      @change="
+        ({ limit, page }) => {
+          update({ page, limit });
+          fetchProductsWithQuery();
+        }
+      ">
       <template #header>
-        <ProductFilter />
+        <ProductFilter
+          @filter="
+            (q) => {
+              update({ search: q, page: 1 });
+              fetchProductsWithQuery();
+            }
+          "
+          class="sticky top-17 z-20 bg-slate-100" />
       </template>
       <template #table>
         <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
@@ -33,13 +47,26 @@
 
 <script setup lang="ts">
 import ProductCard from './ProductCard.vue';
-
-import { useProducts } from '@/composables/useProducts';
-import { onBeforeMount } from 'vue';
-import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 import ProductFilter from '../filters/ProductFilter.vue';
+import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
+
+import type { PaginatedSearch } from '../filters/types';
+
+import { onBeforeMount } from 'vue';
+import { useProducts } from '@/composables/useProducts';
+import { useQueryState } from '@/composables/useQueryState';
+
+const { query, update } = useQueryState<PaginatedSearch>({
+  search: '',
+  page: 1,
+  limit: 10,
+});
+
+async function fetchProductsWithQuery() {
+  await fetchProducts(query.value);
+}
 
 const { fetchProducts, productsData } = useProducts();
 
-onBeforeMount(() => fetchProducts());
+onBeforeMount(() => fetchProductsWithQuery());
 </script>

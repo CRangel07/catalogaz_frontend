@@ -105,7 +105,8 @@
             <div class="flex flex-col items-center gap-1">
               <button
                 @click="cart.changeQty(item.id, 1)"
-                class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50 text-orange-500 font-bold text-base hover:bg-orange-100 active:scale-90 transition-all">
+                class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50 text-orange-500 font-bold text-base hover:bg-orange-100 active:scale-90 cursor-pointer transition-all disabled:bg-slate-300 disabled:cursor-not-allowed disabled:active:scale-none disabled:text-slate-500"
+                :disabled="item.qty === item.maxQuantity">
                 +
               </button>
               <span class="text-sm font-black text-blue-900 tabular-nums w-5 text-center">

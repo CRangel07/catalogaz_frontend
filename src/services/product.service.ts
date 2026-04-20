@@ -17,8 +17,8 @@ export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'image'
 }
 
 export const ProductService = {
-  getAll(query?: BasicSearch): Promise<PaginatedResponse<Product>> {
-    const params = new URLSearchParams({ ...query });
+  getAll(query?: Record<string, unknown>): Promise<PaginatedResponse<Product>> {
+    const params = new URLSearchParams(query as Record<string, string>);
     return http<PaginatedResponse<Product>>(`/products${query ? `?${params.toString()}` : ''}`);
   },
 

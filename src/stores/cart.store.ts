@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { ProductCard } from '@/types/db';
 
 export interface CartItem extends ProductCard {
@@ -10,10 +10,29 @@ export const useCartStore = defineStore(
   'catalogaz_cart_store',
   () => {
     const items = ref<CartItem[]>([]);
+    const itemsMap = ref(new Map<number, CartItem>());
+
     const isOpen = ref(false);
     const isConfirmed = ref(false);
+
     const MIN_QTY = 1;
     const MAX_QTY = 999;
+
+    function rebuildMap(): void {
+      const map = new Map<number, CartItem>();
+      for (const item of items.value) {
+        map.set(item.id, item);
+      }
+      itemsMap.value = map;
+    }
+
+    watch(
+      items,
+      () => {
+        rebuildMap();
+      },
+      { deep: true, immediate: true }
+    );
 
     const totalItems = computed(() => items.value.reduce((sum, item) => sum + item.qty, 0));
 
@@ -23,37 +42,59 @@ export const useCartStore = defineStore(
 
     const isEmpty = computed(() => items.value.length === 0);
 
+    // -------------------------
+    // 🛒 ACTIONS
+    // -------------------------
     function addItem(product: ProductCard, qty = 1): void {
-      const existing = items.value.find((i) => i.id === product.id);
+      const safeQty = Math.max(1, qty);
+      const existing = itemsMap.value.get(product.id);
+
+      const limit = Math.min(MAX_QTY, product.maxQuantity ?? MAX_QTY);
 
       if (existing) {
-        existing.qty = Math.min(MAX_QTY, existing.qty + qty);
+        const newQty = existing.qty + safeQty;
+
+        if (newQty > limit) return;
+
+        existing.qty = newQty;
       } else {
-        items.value.push({ ...product, qty });
+        const initialQty = Math.min(limit, safeQty);
+
+        if (initialQty < MIN_QTY) return;
+
+        const newItem: CartItem = {
+          ...product,
+          qty: initialQty,
+        };
+
+        items.value.push(newItem);
+        itemsMap.value.set(product.id, newItem);
       }
 
       isOpen.value = true;
     }
 
     function changeQty(productId: number, delta: number): void {
-      const item = items.value.find((i) => i.id === productId);
+      const item = itemsMap.value.get(productId);
       if (!item) return;
 
       const next = item.qty + delta;
 
-      if (next < MIN_QTY) {
-        return;
-      } else if (next <= MAX_QTY) {
-        item.qty = next;
-      }
+      const limit = Math.min(MAX_QTY, item.maxQuantity ?? MAX_QTY);
+
+      if (next < MIN_QTY || next > limit) return;
+
+      item.qty = next;
     }
 
     function removeItem(productId: number): void {
       items.value = items.value.filter((i) => i.id !== productId);
+      itemsMap.value.delete(productId);
     }
 
     function clearCart(): void {
       items.value = [];
+      itemsMap.value.clear();
     }
 
     function confirmOrder(): void {
@@ -67,14 +108,19 @@ export const useCartStore = defineStore(
     }
 
     return {
+      // state
       MIN_QTY,
       MAX_QTY,
       items,
       isOpen,
       isConfirmed,
+
+      // computed
       totalItems,
       totalPrice,
       isEmpty,
+
+      // actions
       addItem,
       changeQty,
       removeItem,

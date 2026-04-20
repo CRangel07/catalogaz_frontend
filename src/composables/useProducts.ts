@@ -1,10 +1,10 @@
+import type { PaginatedSearch } from '@/components/filters/types';
 import type { PaginatedResponse, Product } from '@/types/db';
 import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
 
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
 import { ProductService } from '@/services/product.service';
-import type { BasicSearch } from '@/components/filters/types';
 
 export function useProducts() {
   const toast = useToastStore();
@@ -16,11 +16,12 @@ export function useProducts() {
     total: 0,
     totalPages: 0,
   });
+
   const product = ref<Product | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  async function fetchProducts(query?: BasicSearch) {
+  async function fetchProducts(query?: PaginatedSearch) {
     loading.value = true;
     error.value = null;
     try {
