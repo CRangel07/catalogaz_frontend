@@ -9,10 +9,7 @@
       @update:mobile-open="mobileSidebarOpen = $event" />
 
     <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
-      <AppTopbar
-        :active-nav="activeNav"
-        :notifications="notifications"
-        @toggle-sidebar="toggleSidebar" />
+      <AppTopbar :active-nav="activeNav" @toggle-sidebar="toggleSidebar" />
 
       <main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 font-poppins">
         <RouterView />
@@ -29,6 +26,7 @@ import AppSidebar from '@/components/AppSidebar.vue';
 
 import type { NavItem } from '@/types/components';
 import { Contact, Home, NotebookPen, Package2, Settings } from 'lucide-vue-next';
+import { RouteNames } from '@/router/route.names';
 
 // ── State ──────────────────────────────────────────────────────────────
 const sidebarOpen = ref(true);
@@ -41,50 +39,44 @@ const navItems: NavItem[] = [
     id: 'dashboard',
     label: 'Dashboard',
     icon: h(Home, { size: 18 }),
-    routeName: 'catalogAz_adm_home',
+    routeName: RouteNames.Admin.HOME,
     section: 'Principal',
   },
   {
     id: 'productos',
     label: 'Productos',
     icon: h(Package2, { size: 18 }),
-    routeName: 'catalogAz_adm_products',
+    routeName: RouteNames.Admin.PRODUCTS,
     section: 'Principal',
   },
   {
     id: 'pedidos',
     label: 'Pedidos',
     icon: h(NotebookPen, { size: 18 }),
-    routeName: 'catalogAz_adm_orders',
+    routeName: RouteNames.Admin.ORDERS,
     section: 'Principal',
   },
   {
     id: 'clientes',
     label: 'Clientes',
     icon: h(Contact, { size: 18 }),
-    routeName: 'catalogAz_adm_clients',
+    routeName: RouteNames.Admin.CLIENTS,
     section: 'Ventas',
   },
   {
     id: 'catalogo-cliente',
     label: 'Ir al Catalogo',
     icon: h(Contact, { size: 18 }),
-    routeName: 'catalogaz_catalog_list',
+    routeName: RouteNames.Catalog.PRODUCTS,
     section: 'Ventas',
   },
   {
     id: 'config',
     label: 'Configuración',
     icon: h(Settings, { size: 18 }),
-    routeName: 'catalogAz_adm_settings',
+    routeName: RouteNames.Admin.SETTINGS,
     section: 'Sistema',
   },
-];
-
-const notifications = [
-  { text: '12 pedidos pendientes de atender', time: 'ahora', dot: 'orange' as const },
-  { text: 'Aguacate con stock crítico (3 u.)', time: '5 min', dot: 'red' as const },
-  { text: 'Juan Pérez realizó un nuevo pedido', time: '28 min', dot: 'blue' as const },
 ];
 
 // ── Handlers ──────────────────────────────────────────────────────────

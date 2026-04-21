@@ -193,9 +193,11 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/logo.png';
+
+import { useRouter } from 'vue-router';
+import { RouteNames } from '@/router/route.names';
 import { useCartStore } from '@/stores/cart.store';
 import { useAuthStore } from '@/stores/auth.store';
-import { useRouter } from 'vue-router';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { CircleArrowRight, LogOut, Menu, ShoppingCart, X } from 'lucide-vue-next';
 
@@ -208,7 +210,7 @@ const openCart = () => (cartStore.isOpen = true);
 const handleLogout = async () => {
   try {
     await authStore.logout();
-    router.push({ name: 'catalogAz_customer-login' });
+    router.push({ name: RouteNames.Auth.CUSTOMER_LOGIN });
   } catch (error) {
     alert(error);
   }

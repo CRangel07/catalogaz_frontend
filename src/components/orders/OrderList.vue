@@ -103,6 +103,7 @@ import { onBeforeMount } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
 import { getOrderStatusLabel } from '@/types/components';
 import { Eye, RefreshCcw, ShoppingCart } from 'lucide-vue-next';
+import { RouteNames } from '@/router/route.names';
 
 const authStore = useAuthStore();
 const toast = useToastStore();
@@ -126,7 +127,7 @@ const handleOrderBreakdown = (order: OrderFull) => {
   openModal(
     OrderBreakdown,
     {
-      items: order.items,
+      order,
     },
     { size: 'lg' }
   );
@@ -142,7 +143,7 @@ const columns: TableColumn<OrderFull>[] = [
 ];
 
 const makeFetch = async () => {
-  authStore.isAdmin && route.name !== 'catalogAz_my_orders'
+  authStore.isAdmin && route.name !== RouteNames.Catalog.MY_ORDERS
     ? await fetchOrdersAdm()
     : await fetchOrdersCustomer();
 };

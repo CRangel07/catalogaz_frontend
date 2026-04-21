@@ -1,28 +1,30 @@
 <template>
   <div class="relative">
-    <div v-if="Array.isArray(items)" class="flex flex-col gap-2">
+    <div v-if="Array.isArray(order.items)" class="flex flex-col gap-2">
       <!-- Acción -->
-      <div class="flex justify-end">
-        <ButtonUI theme="success" size="sm" :icon="QrCode" @click="handleQR()">Generar QR</ButtonUI>
+      <div class="flex justify-end" v-if="authStore.isAdmin">
+        <ButtonUI theme="success" size="sm" :icon="QrCode" @click="handleQR(order)">
+          Generar QR
+        </ButtonUI>
       </div>
 
       <!-- Items -->
       <div
-        v-for="item in items"
+        v-for="item in order.items"
         :key="item.id"
         class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-200">
         <!-- Imagen -->
-        <img
-          :src="`${BASE}${item.product.imageThumbnailUrl}`"
-          :alt="item.product.name"
-          class="w-11 h-11 rounded-lg object-cover border border-slate-100 shrink-0"
-          loading="lazy" />
+        <ImageNotFound
+          :url="item.product.imageThumbnailUrl"
+          :alt="item.product.name + 'img'"
+          class="w-11! h-11! rounded-lg object-cover border border-slate-100 shrink-0" />
 
         <!-- Info producto -->
         <div class="flex-1 min-w-0">
-          <p class="font-semibold text-slate-700 truncate leading-tight">
+          <p class="font-semibold text-azul truncate leading-tight">
             {{ item.product.name }}
           </p>
+          <span class="font-mono text-xs text-slate-600"> # {{ item.product.code }} </span>
           <div class="flex items-center gap-1.5 mt-1">
             <span class="text-sm font-bold text-azul">{{ formatMXN(item.unitPrice) }}</span>
             <span class="text-slate-300 text-xs">c/u</span>
@@ -31,17 +33,17 @@
 
         <!-- Cantidad prominente -->
         <div
-          class="shrink-0 flex flex-col items-center justify-center bg-azul/5 border border-azul/15 rounded-xl px-3 py-1.5 min-w-14">
-          <span class="text-2xl font-black text-azul leading-none tabular-nums">
+          class="shrink-0 flex flex-col items-center justify-center bg-naranja/5 border border-naranja/15 rounded-xl px-3 py-1.5 min-w-14">
+          <span class="text-2xl font-black text-naranja leading-none tabular-nums">
             {{ item.quantity }}
           </span>
-          <span class="text-[9px] font-semibold text-azul/80 uppercase tracking-wider mt-0.5">
-            piezas
+          <span class="text-[9px] font-bold text-naranja uppercase tracking-wider mt-0.5">
+            Unidades
           </span>
         </div>
 
         <!-- Checkboxes -->
-        <div class="flex items-center gap-3 shrink-0 select-none">
+        <div class="flex items-center gap-3 shrink-0 select-none" v-if="authStore.isAdmin">
           <!-- No hay -->
           <label class="flex flex-col items-center gap-1 cursor-pointer group">
             <span
@@ -101,28 +103,38 @@
 import QRCode from '../general/QRCode.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 
-import type { OrderItemWithProduct } from '@/types/db';
+import type { OrderFull } from '@/types/db';
 
 import { useModal } from '@/composables/useModal';
 import { reactive } from 'vue';
 import { formatMXN } from '@/helpers/currencyMxn';
+import { useAuthStore } from '@/stores/auth.store';
 import { QrCode, Check, X } from 'lucide-vue-next';
 
 import Logo from '@/assets/logo.png';
-const BASE = import.meta.env.VITE_ASSETS_URL;
+import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
+
+const authStore = useAuthStore();
 
 const { openModal } = useModal();
 
-defineProps<{ items: OrderItemWithProduct[] }>();
+defineProps<{ order: OrderFull }>();
 
-const handleQR = () => {
-  //TODO Terminar QR dinamico
-  openModal(QRCode, {
-    value: `2*7640\r`,
-    size: 300,
-    logoUrl: Logo,
-    downloadName: 'myqrcito',
-  });
+const handleQR = (order: OrderFull) => {
+  const instructionQR = order.items
+    .map<string>((i) => `${i.quantity}*${i.product.code}`)
+    .join('\r');
+
+  openModal(
+    QRCode,
+    {
+      value: instructionQR,
+      size: 300,
+      logoUrl: Logo,
+      downloadName: order.id + order.customer.name,
+    },
+    { closeOnBackdrop: true }
+  );
 };
 
 // Estado local de checkboxes indexado por item.id

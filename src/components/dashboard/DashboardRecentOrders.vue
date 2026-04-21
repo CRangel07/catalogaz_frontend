@@ -38,12 +38,15 @@
 </template>
 
 <script setup lang="ts">
+import type { OrderStatus } from '@/types/db';
+
 import AppCard from '@/components/ui/molecules/AppCard.vue';
 import AppBadge from '../ui/molecules/AppBadge.vue';
-import type { OrderStatus } from '@/types/db';
-import { getRelativeTime } from '@/helpers/dates';
+
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useRouter } from 'vue-router';
+import { getRelativeTime } from '@/helpers/dates';
+import { RouteNames } from '@/router/route.names';
 
 export interface Order {
   id: number;
@@ -65,5 +68,5 @@ const statusVariant: Record<string, 'green' | 'orange' | 'blue'> = {
   proceso: 'blue',
 };
 
-const handleShowOrders = () => router.replace({ name: 'catalogAz_adm_orders' });
+const handleShowOrders = () => router.replace({ name: RouteNames.Admin.ORDERS });
 </script>

@@ -47,7 +47,7 @@
       <p class="text-center text-sm text-slate-400">
         ¿Eres cliente?
         <RouterLink
-          :to="{ name: 'catalogAz_customer-login' }"
+          :to="{ name: RouteNames.Auth.CUSTOMER_LOGIN }"
           class="text-slate-700 font-medium hover:underline">
           Accede aquí
         </RouterLink>
@@ -61,9 +61,10 @@ import ButtonUI from '@/components/ui/atoms/ButtonUI.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 import { useForm } from 'vee-validate';
+import { RouteNames } from '@/router/route.names';
+import { useAuthStore } from '@/stores/auth.store';
 import { toTypedSchema } from '@vee-validate/zod';
 import { LoginAdminSchema } from '@/types/validation';
-import { useAuthStore } from '@/stores/auth.store';
 import { useRoute, useRouter } from 'vue-router';
 
 const errorClass = 'text-red-400 text-xs';
@@ -89,9 +90,9 @@ const onSubmit = handleSubmit(async (values) => {
   const redirect = route.query.redirect as string | undefined;
 
   if (authStore.isAuthenticated && authStore.isAdmin) {
-    router.replace({ name: redirect ?? 'catalogAz_adm_home' });
+    router.replace({ name: redirect ?? RouteNames.Admin.HOME });
   } else if (authStore.isAuthenticated && !authStore.isAdmin) {
-    router.replace({ name: redirect ?? 'catalogaz_catalog_list' });
+    router.replace({ name: redirect ?? RouteNames.Catalog.PRODUCTS });
   }
 });
 </script>

@@ -1,5 +1,5 @@
 import type { PaginatedSearch } from '@/components/filters/types';
-import type { PaginatedResponse, Product } from '@/types/db';
+import type { ImportingExcelResult, PaginatedResponse, Product } from '@/types/db';
 import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
 
 import { ref } from 'vue';
@@ -99,13 +99,13 @@ export function useProducts() {
     }
   }
 
-  async function uploadExcel(file: File): Promise<boolean> {
+  async function uploadExcel(file: File): Promise<ImportingExcelResult | boolean> {
     loading.value = true;
     error.value = null;
     try {
-      await ProductService.importProductsExcel(file);
+      const response = await ProductService.importProductsExcel(file);
       toast.success('Excel Subido Correctamente');
-      return true;
+      return response;
     } catch (e) {
       error.value = (e as Error).message;
       toast.error((e as Error).message);

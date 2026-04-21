@@ -67,7 +67,7 @@ export interface OrderItemWithProduct {
   id: number;
   quantity: number;
   unitPrice: number;
-  product: Pick<Product, 'id' | 'name' | 'imageThumbnailUrl'>;
+  product: Pick<Product, 'id' | 'name' | 'imageThumbnailUrl' | 'code'>;
 }
 
 export interface OrderFull {
@@ -135,6 +135,28 @@ export interface DashboardSummary {
     revenue: number;
   }[];
 }
+
+// _______________ EXCEL TYPES UPLOAD ______________
+
+export interface SkippedRow {
+  rowNumber: number;
+  reason: string;
+  rawData: unknown[];
+}
+
+export interface ImportingExcelResult {
+  message: string;
+  summary: {
+    deactivated: number;
+    imported: number;
+    skipped: number;
+    total: number;
+    updated: number;
+  };
+  errors?: SkippedRow[];
+}
+
+// __________ PAGINATION _____________
 
 export interface ApiResponse<T> {
   data: T;

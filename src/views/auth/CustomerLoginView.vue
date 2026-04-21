@@ -146,7 +146,7 @@
       <p class="text-center text-sm text-slate-400">
         ¿Eres administrador?
         <RouterLink
-          :to="{ name: 'catalogAz_admin-login' }"
+          :to="{ name: RouteNames.Auth.ADMIN_LOGIN }"
           class="text-slate-700 font-medium hover:underline">
           Inicia sesión aquí
         </RouterLink>
@@ -163,6 +163,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { ref, computed, onUnmounted } from 'vue';
 import { MessageCircle, AlertCircle, ArrowLeft } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
+import { RouteNames } from '@/router/route.names';
 
 type Step = 'phone' | 'otp';
 const authStore = useAuthStore();
@@ -248,9 +249,9 @@ async function handleVerifyOtp() {
     });
 
     if (authStore.isAuthenticated && authStore.isAdmin) {
-      router.replace({ name: 'catalogAz_adm_home' });
+      router.replace({ name: RouteNames.Admin.HOME });
     } else if (authStore.isAuthenticated && !authStore.isAdmin) {
-      router.replace({ name: 'catalogaz_catalog_list' });
+      router.replace({ name: RouteNames.Catalog.PRODUCTS });
     }
   } catch {
     globalError.value = 'Código incorrecto o expirado. Intenta de nuevo.';

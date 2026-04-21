@@ -1,7 +1,6 @@
 import { http } from './http';
 
-import type { PaginatedResponse, Product } from '@/types/db';
-import type { BasicSearch } from '@/components/filters/types';
+import type { ImportingExcelResult, PaginatedResponse, Product } from '@/types/db';
 
 export interface CreateProductDto {
   code: string;
@@ -54,7 +53,7 @@ export const ProductService = {
   importProductsExcel(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    return http.post<unknown>(`/products/import-excel`, formData);
+    return http.post<ImportingExcelResult>(`/products/import-excel`, formData);
   },
 
   downloadProductsTemplate(): Promise<unknown> {

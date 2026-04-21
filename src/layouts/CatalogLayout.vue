@@ -12,11 +12,12 @@
 <script setup lang="ts">
 import CartDrawer from '@/components/products/CartDrawer.vue';
 import NavComponent, { type NavLink } from '@/components/general/NavComponent.vue';
+import { RouteNames } from '@/router/route.names';
 
 const links: NavLink[] = [
-  { label: 'Catalogo', to: 'catalogaz_catalog_list' },
-  { label: 'Mis Ordenes', to: 'catalogAz_my_orders' },
-  { label: 'Dashboard', to: 'catalogAz_adm_home', needsAdmin: true },
+  { label: 'Catalogo', to: RouteNames.Catalog.PRODUCTS },
+  { label: 'Mis Ordenes', to: RouteNames.Catalog.MY_ORDERS },
+  { label: 'Dashboard', to: RouteNames.Admin.HOME, needsAdmin: true },
 ];
 // import FooterComponent from '@/components/general/FooterComponent.vue';
 </script>

@@ -1,5 +1,6 @@
 import type { Component } from 'vue';
 import type { OrderStatus } from './db';
+import type { RouteName } from '@/router/route.names';
 
 export type Metric = {
   label: string;
@@ -14,7 +15,7 @@ export type NavItem = {
   id: string;
   label: string;
   icon: Component;
-  routeName: string;
+  routeName: RouteName;
   section?: string;
 };
 

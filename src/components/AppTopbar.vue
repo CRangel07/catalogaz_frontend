@@ -10,14 +10,19 @@
 
     <!-- Breadcrumb -->
     <div class="hidden sm:flex items-center gap-1.5 text-sm">
-      <template v-for="(r, idx) in routes" :key="r.name">
+      <template v-for="(r, idx) in breadcrumbs" :key="r.name">
         <RouterLink
           :to="{ name: r.name }"
-          exact-active-class="text-azul!"
-          class="text-sm font-medium text-slate-500">
-          {{ RoutesNames[r.name as keyof typeof RoutesNames] ?? r.name }}
+          class="text-sm font-medium transition-colors"
+          :class="
+            idx === breadcrumbs.length - 1
+              ? 'text-blue-700 font-semibold'
+              : 'text-slate-500 hover:text-blue-600'
+          ">
+          {{ r.label }}
         </RouterLink>
-        <ChevronRight class="text-naranja" v-if="idx < routes.length - 1" />
+
+        <ChevronRight v-if="idx < breadcrumbs.length - 1" class="text-slate-400" :size="16" />
       </template>
     </div>
 
@@ -26,38 +31,45 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { useRoute, type RouteLocationMatched } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { ChevronRight, Menu } from 'lucide-vue-next';
 
-interface Notification {
-  text: string;
-  time: string;
-  dot: 'orange' | 'red' | 'blue';
-}
-
-enum RoutesNames {
-  catalogAz_adm_orders = 'Ordenes',
-  catalogAz_dashboard = 'Dashboard',
-  catalogAz_adm_products = 'Productos',
-  catalogAz_adm_home = 'Inicio',
-  // catalogAz_adm_home = 'dsa',
-  catalogAz_adm_clients = 'Clientes',
-  catalogAz_adm_settings = 'Configuración',
-}
-
-const route = useRoute();
-
-const routes = computed<RouteLocationMatched[]>(() => {
-  return route.matched;
-});
+import type { RouteName } from '@/router/route.names';
 
 defineProps<{
   activeNav: string;
-  notifications: Notification[];
 }>();
 
 const emit = defineEmits<{
   'toggle-sidebar': [];
 }>();
+
+const route = useRoute();
+
+type Breadcrumb = {
+  name: RouteName;
+  label: string;
+};
+
+const breadcrumbs = computed<Breadcrumb[]>(() => {
+  return route.matched
+    .filter((r) => r.name) // eliminar rutas sin name
+    .map((r) => {
+      const name = r.name as RouteName;
+
+      return {
+        name,
+        label: (r.meta?.label as string) || formatFallbackLabel(name),
+      };
+    });
+});
+
+function formatFallbackLabel(name: string): string {
+  // "catalogaz_admin_products" → "Products"
+  const parts = name.split('_');
+  const last = parts[parts.length - 1] || name;
+
+  return last.charAt(0).toUpperCase() + last.slice(1);
+}
 </script>

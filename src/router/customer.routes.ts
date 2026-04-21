@@ -1,12 +1,14 @@
+import type { RouteRecordRaw } from 'vue-router';
+
 import OrdersCustomerView from '@/views/orders/OrdersCustomerView.vue';
 
-import type { RouteRecordRaw } from 'vue-router';
+import { RouteNames } from './route.names';
 
 export const customerRoutes: RouteRecordRaw[] = [
   {
-    name: 'catalogAz_my_orders',
+    path: 'my-orders',
+    name: RouteNames.Catalog.MY_ORDERS,
     component: OrdersCustomerView,
-    path: '/my-orders',
     meta: {
       requiresAuth: true,
       roles: ['admin', 'customer'],

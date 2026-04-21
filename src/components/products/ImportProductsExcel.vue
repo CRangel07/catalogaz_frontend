@@ -119,17 +119,7 @@
     </Transition>
 
     <!-- Acciones -->
-    <div class="flex items-center justify-between gap-3">
-      <!-- Descargar plantilla -->
-      <ButtonUI
-        theme="ghost"
-        size="sm"
-        :icon="Download"
-        :loading="isDownloading"
-        @click="downloadTemplate">
-        Descargar plantilla
-      </ButtonUI>
-
+    <div class="flex items-center justify-end gap-3">
       <!-- Importar -->
       <ButtonUI
         theme="success"
@@ -145,58 +135,30 @@
 </template>
 
 <script setup lang="ts">
+import type { ImportingExcelResult } from '@/types/db';
+
+import { useProducts } from '@/composables/useProducts';
 import { ref, computed } from 'vue';
-import {
-  FileUp,
-  Sheet,
-  X,
-  CheckCircle,
-  AlertTriangle,
-  ChevronDown,
-  Download,
-} from 'lucide-vue-next';
 import { useToastStore } from '@/stores/toast.store';
-// import {
-//   importProductsExcel,
-//   downloadProductsTemplate,
-// } from '@/modules/products/services/products.service';
+import { X, Sheet, FileUp, ChevronDown, CheckCircle, AlertTriangle } from 'lucide-vue-next';
+
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import ResultBadge from '../ui/molecules/ResultBadge.vue';
-import { useProducts } from '@/composables/useProducts';
-
-// ─── Stores ───────────────────────────────────────────────────────────────────
 
 const toastStore = useToastStore();
 
+const emit = defineEmits<{ (e: 'imported'): void }>();
+
 const { uploadExcel } = useProducts();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Agrega estas dos funciones a tu archivo products.service.ts del frontend
-// (donde ya tienes las demás llamadas a la API de productos)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ─── Estado ───────────────────────────────────────────────────────────────────
 
 const inputId = 'excel-import-input';
 
 const file = ref<File | null>(null);
 const isDragging = ref(false);
-const isImporting = ref(false);
-const isDownloading = ref(false);
 const showErrors = ref(false);
+const isImporting = ref(false);
 
-interface ImportResult {
-  message: string;
-  summary: {
-    total: number;
-    imported: number;
-    updated: number;
-    skipped: number;
-  };
-  errors?: { rowNumber: number; reason: string }[];
-}
-
-const result = ref<ImportResult | null>(null);
+const result = ref<ImportingExcelResult | null>(null);
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
 
@@ -248,12 +210,12 @@ async function importExcel(): Promise<void> {
   result.value = null;
 
   try {
-    await uploadExcel(file.value);
-    // result.value = data;
-    // toastStore.success(data);
+    const response = await uploadExcel(file.value);
+    result.value = response as ImportingExcelResult;
+    emit('imported');
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Error al importar el archivo';
-    toastStore.error(message);
+    console.error(message);
   } finally {
     isImporting.value = false;
   }
@@ -261,24 +223,23 @@ async function importExcel(): Promise<void> {
 
 // ─── Descargar plantilla ──────────────────────────────────────────────────────
 
-async function downloadTemplate(): Promise<void> {
-  isDownloading.value = true;
-
-  //   try {
-  //     // El servicio devuelve un Blob con el archivo Excel.
-  //     // Creamos un enlace temporal en el DOM, lo "clickeamos" programáticamente
-  //     // y lo destruimos. Es la forma estándar de descargar Blobs en el browser.
-  //     const blob = await downloadProductsTemplate();
-  //     const url = URL.createObjectURL(blob);
-  //     const anchor = document.createElement('a');
-  //     anchor.href = url;
-  //     anchor.download = 'plantilla-productos.xlsx';
-  //     anchor.click();
-  //     URL.revokeObjectURL(url);
-  //   } catch {
-  //     toastStore.error('No se pudo descargar la plantilla');
-  //   } finally {
-  //     isDownloading.value = false;
-  //   }
-}
+// async function downloadTemplate(): Promise<void> {
+//   // isDownloading.value = true;
+//   //   try {
+//   //     // El servicio devuelve un Blob con el archivo Excel.
+//   //     // Creamos un enlace temporal en el DOM, lo "clickeamos" programáticamente
+//   //     // y lo destruimos. Es la forma estándar de descargar Blobs en el browser.
+//   //     const blob = await downloadProductsTemplate();
+//   //     const url = URL.createObjectURL(blob);
+//   //     const anchor = document.createElement('a');
+//   //     anchor.href = url;
+//   //     anchor.download = 'plantilla-productos.xlsx';
+//   //     anchor.click();
+//   //     URL.revokeObjectURL(url);
+//   //   } catch {
+//   //     toastStore.error('No se pudo descargar la plantilla');
+//   //   } finally {
+//   //     isDownloading.value = false;
+//   //   }
+// }
 </script>

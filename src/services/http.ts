@@ -1,6 +1,7 @@
 // lib/http.ts
 
 import router from '@/router';
+import { RouteNames } from '@/router/route.names';
 import { useAuthStore } from '@/stores/auth.store';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
@@ -69,8 +70,8 @@ export const http = async <T>(path: string, options: RequestOptions = {}): Promi
     const authStore = useAuthStore();
     authStore.$patch({ user: null });
 
-    if (router.currentRoute.value.name !== 'catalogAz_customer-login') {
-      await router.replace({ name: 'catalogAz_customer-login' });
+    if (router.currentRoute.value.name !== RouteNames.Auth.CUSTOMER_LOGIN) {
+      await router.replace({ name: RouteNames.Auth.CUSTOMER_LOGIN });
     }
 
     // Reseteamos el flag después de la navegación

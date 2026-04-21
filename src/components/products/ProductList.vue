@@ -29,7 +29,8 @@
           update({ search: q, page: 1 });
           fetchProductsWithQuery();
         }
-      " />
+      "
+      class="my-5" />
 
     <PaginatedTable
       :response="productsData"
@@ -92,7 +93,7 @@ const handleModalProduct = (product?: Product) => {
 };
 
 const handleModalExcelProduct = () => {
-  openModal(ImportProductsExcel);
+  openModal(ImportProductsExcel, { onImported: () => fetchProducts() });
 };
 
 async function fetchProductsWithQuery() {

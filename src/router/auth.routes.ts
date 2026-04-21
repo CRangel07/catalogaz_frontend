@@ -1,25 +1,26 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+import { RouteNames } from './route.names';
+
 export const authRoutes: RouteRecordRaw[] = [
   {
     path: '/auth',
     children: [
       {
         path: 'admin',
-        name: 'catalogAz_admin-login',
+        name: RouteNames.Auth.ADMIN_LOGIN,
         component: () => import('@/views/auth/AdminLoginView.vue'),
         meta: { requiresGuest: true },
       },
       {
         path: 'cliente',
-        name: 'catalogAz_customer-login',
+        name: RouteNames.Auth.CUSTOMER_LOGIN,
         component: () => import('@/views/auth/CustomerLoginView.vue'),
         meta: { requiresGuest: true },
       },
       {
-        // Redirección de /auth → /auth/cliente por defecto
         path: '',
-        redirect: { name: 'catalogAz_customer-login' },
+        redirect: { name: RouteNames.Auth.CUSTOMER_LOGIN },
       },
     ],
   },

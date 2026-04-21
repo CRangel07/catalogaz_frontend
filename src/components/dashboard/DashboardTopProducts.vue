@@ -58,8 +58,10 @@
 
 <script setup lang="ts">
 import AppCard from '@/components/ui/molecules/AppCard.vue';
+
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useRouter } from 'vue-router';
+import { RouteNames } from '@/router/route.names';
 
 export interface ProductMetric {
   id: number;
@@ -76,5 +78,5 @@ defineProps<{
   maxSold?: number;
 }>();
 
-const handleShowProducts = () => router.replace({ name: 'catalogAz_adm_orders' });
+const handleShowProducts = () => router.replace({ name: RouteNames.Admin.PRODUCTS });
 </script>

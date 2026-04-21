@@ -1,31 +1,23 @@
 import type { RouteRecordRaw } from 'vue-router';
 
-import { adminChildren } from './admin.routes';
+import { RouteNames } from './route.names';
 import { authRoutes } from './auth.routes';
+import { adminChildren } from './admin.routes';
+import { customerRoutes } from './customer.routes';
+import { AdminCustomerPermission } from './types';
 
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogLayout from '@/layouts/CatalogLayout.vue';
-import NotFoundView from '@/views/NotFoundView.vue';
-import { customerRoutes } from './customer.routes';
 import ProductCatalog from '@/components/products/ProductCatalog.vue';
-import { AdminCustomerPermission } from './types';
 
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: { name: 'catalogaz_catalog_list' },
-    meta: {
-      requiresAuth: true,
-      roles: AdminCustomerPermission,
-    },
-  },
-  {
-    path: '/catalog',
     component: CatalogLayout,
     children: [
       {
-        path: '/products',
-        name: 'catalogaz_catalog_list',
+        path: 'products',
+        name: RouteNames.Catalog.PRODUCTS,
         component: ProductCatalog,
         meta: {
           requiresAuth: true,
@@ -43,12 +35,12 @@ export const routes: RouteRecordRaw[] = [
   ...authRoutes,
   {
     path: '/not-allowed',
-    name: 'catalogaz_unauthorized',
+    name: RouteNames.UNAUTHORIZED,
     component: () => import('@/views/NotAuthorized.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'catalogAz_not_found',
+    name: RouteNames.NOT_FOUND,
     component: () => import('@/views/NotFoundView.vue'),
   },
 ];
