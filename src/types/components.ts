@@ -32,11 +32,6 @@ export const ORDER_STATUS_META: Record<
     class: 'bg-gray-50 text-gray-700',
     dot: 'bg-gray-400',
   },
-  confirmed: {
-    label: 'Confirmado',
-    class: 'bg-blue-50 text-blue-700',
-    dot: 'bg-blue-400',
-  },
   preparing: {
     label: 'Preparando',
     class: 'bg-amber-50 text-amber-700',

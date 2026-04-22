@@ -1,6 +1,6 @@
 export type NumericBoolean = 1 | 0;
 
-export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'cancelled';
+export type OrderStatus = 'pending' | 'preparing' | 'ready' | 'cancelled';
 
 export interface Admin {
   id: number;
@@ -45,13 +45,35 @@ export interface ProductCard {
   isActive: boolean;
 }
 
+// _____________________ ORDENES __________________________
+
 export interface OrderItem {
   id: number;
   quantity: number;
   unitPrice: number;
   orderId: number;
   productId: number;
+  status: ItemStatus;
 }
+
+export type OrderItemFull = {
+  id: number;
+  quantity: number;
+  unitPrice: number;
+  status: ItemStatus;
+  orderId: number;
+  product: {
+    id: number;
+    name: string;
+    code: string;
+    imageThumbnailUrl: string | null;
+  };
+  orderResolved?: boolean;
+};
+
+export type ItemStatus = 'pending' | 'ready' | 'unavailable';
+
+// Tipo individual de un item con su producto expandido
 
 export interface Order {
   id: number;
@@ -63,13 +85,6 @@ export interface Order {
   updatedAt: string;
 }
 
-export interface OrderItemWithProduct {
-  id: number;
-  quantity: number;
-  unitPrice: number;
-  product: Pick<Product, 'id' | 'name' | 'imageThumbnailUrl' | 'code'>;
-}
-
 export interface OrderFull {
   id: number;
   status: OrderStatus;
@@ -78,7 +93,7 @@ export interface OrderFull {
   createdAt: string;
   updatedAt: string;
   customer: Customer;
-  items: OrderItemWithProduct[];
+  items: OrderItemFull[];
 }
 
 export interface CreateOrderItemDto {
@@ -94,6 +109,8 @@ export interface CreateOrderDto {
 export interface UpdateOrderStatusDto {
   status: OrderStatus;
 }
+
+// _____________________________________________________________
 
 export interface CreateProductDto {
   name: string;

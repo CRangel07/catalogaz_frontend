@@ -34,5 +34,5 @@ export const UpdateClientSchema = z.object({
 });
 
 export const UpdateOrderSchema = z.object({
-  status: z.enum(['pending', 'confirmed', 'preparing', 'cancelled', 'ready']).optional(),
+  status: z.enum(['pending', 'preparing', 'cancelled', 'ready']).optional(),
 });

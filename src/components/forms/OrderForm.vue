@@ -7,7 +7,6 @@
         label="Modificar Estatus Pedido"
         :options="[
           { label: 'Pendiente', value: 'pending' },
-          { label: 'Confirmado', value: 'confirmed' },
           { label: 'Surtiendo', value: 'preparing' },
           { label: 'Cancelado', value: 'cancelled' },
           { label: 'Pedido Listo', value: 'ready' },

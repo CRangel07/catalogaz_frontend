@@ -1,98 +1,169 @@
 <template>
-  <div class="relative">
-    <div v-if="Array.isArray(order.items)" class="flex flex-col gap-2">
-      <!-- Acción -->
-      <div class="flex justify-end" v-if="authStore.isAdmin">
-        <ButtonUI theme="success" size="sm" :icon="QrCode" @click="handleQR(order)">
-          Generar QR
-        </ButtonUI>
-      </div>
+  <div class="flex flex-col gap-1">
+    <!-- Acción QR -->
+    <div class="flex justify-end mb-2" v-if="authStore.isAdmin">
+      <ButtonUI theme="success" size="sm" :icon="QrCode" @click="handleQR(localOrder)">
+        Generar QR
+      </ButtonUI>
+    </div>
 
-      <!-- Items -->
-      <div
-        v-for="item in order.items"
-        :key="item.id"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-200">
-        <!-- Imagen -->
-        <ImageNotFound
-          :url="item.product.imageThumbnailUrl"
-          :alt="item.product.name + 'img'"
-          class="w-11! h-11! rounded-lg object-cover border border-slate-100 shrink-0" />
+    <!-- Timeline -->
+    <div class="relative">
+      <!-- Línea vertical del timeline -->
+      <div class="absolute left-5.5 top-4 bottom-4 w-0.5 bg-slate-100 z-0" />
 
-        <!-- Info producto -->
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-azul truncate leading-tight">
-            {{ item.product.name }}
-          </p>
-          <span class="font-mono text-xs text-slate-600"> # {{ item.product.code }} </span>
-          <div class="flex items-center gap-1.5 mt-1">
-            <span class="text-sm font-bold text-azul">{{ formatMXN(item.unitPrice) }}</span>
-            <span class="text-slate-300 text-xs">c/u</span>
-          </div>
-        </div>
-
-        <!-- Cantidad prominente -->
+      <div class="flex flex-col gap-3">
         <div
-          class="shrink-0 flex flex-col items-center justify-center bg-naranja/5 border border-naranja/15 rounded-xl px-3 py-1.5 min-w-14">
-          <span class="text-2xl font-black text-naranja leading-none tabular-nums">
-            {{ item.quantity }}
-          </span>
-          <span class="text-[9px] font-bold text-naranja uppercase tracking-wider mt-0.5">
-            Unidades
-          </span>
-        </div>
+          v-for="item in localOrder.items"
+          :key="item.id"
+          class="relative flex items-start gap-3">
+          <!-- Nodo del timeline -->
+          <div class="relative z-10 shrink-0 mt-3.5">
+            <div
+              class="w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+              :class="nodeClass(item.status)">
+              <Check
+                v-if="item.status === 'ready'"
+                :size="9"
+                class="text-white"
+                :stroke-width="3.5" />
+              <X
+                v-else-if="item.status === 'unavailable'"
+                :size="9"
+                class="text-white"
+                :stroke-width="3.5" />
+              <span v-else class="w-1.5 h-1.5 rounded-full bg-slate-300 block" />
+            </div>
+          </div>
 
-        <!-- Checkboxes -->
-        <div class="flex items-center gap-3 shrink-0 select-none" v-if="authStore.isAdmin">
-          <!-- No hay -->
-          <label class="flex flex-col items-center gap-1 cursor-pointer group">
-            <span
-              class="text-[10px] font-semibold text-slate-400 group-hover:text-red-400 transition-colors uppercase tracking-wide">
-              No hay
-            </span>
-            <button
-              type="button"
-              role="checkbox"
-              :aria-checked="noHayChecked[item.id]"
-              @click="noHayChecked[item.id] = !noHayChecked[item.id]"
-              class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-150"
-              :class="
-                noHayChecked[item.id]
-                  ? 'bg-red-500 border-red-500'
-                  : 'bg-white border-slate-200 group-hover:border-red-300'
-              ">
-              <X v-if="noHayChecked[item.id]" :size="14" class="text-white" :stroke-width="3" />
-            </button>
-          </label>
+          <!-- Tarjeta -->
+          <div
+            class="flex-1 rounded-2xl border px-3 py-2.5 transition-all duration-300"
+            :class="cardClass(item.status)">
+            <div class="flex items-center gap-3">
+              <!-- Imagen -->
+              <ImageNotFound
+                :url="item.product.imageThumbnailUrl"
+                :alt="item.product.name"
+                class="w-10! h-10! rounded-xl object-cover shrink-0 border border-white/60" />
 
-          <!-- Listo -->
-          <label class="flex flex-col items-center gap-1 cursor-pointer group">
-            <span
-              class="text-[10px] font-semibold text-slate-400 group-hover:text-emerald-500 transition-colors uppercase tracking-wide">
-              Listo
-            </span>
-            <button
-              type="button"
-              role="checkbox"
-              :aria-checked="listoChecked[item.id]"
-              @click="listoChecked[item.id] = !listoChecked[item.id]"
-              class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-150"
-              :class="
-                listoChecked[item.id]
-                  ? 'bg-emerald-500 border-emerald-500'
-                  : 'bg-white border-slate-200 group-hover:border-emerald-300'
-              ">
-              <Check v-if="listoChecked[item.id]" :size="14" class="text-white" :stroke-width="3" />
-            </button>
-          </label>
-        </div>
+              <!-- Info producto -->
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-bold text-sm leading-tight truncate transition-all duration-200"
+                  :class="nameClass(item.status)">
+                  {{ item.product.name }}
+                </p>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-mono text-[10px] text-slate-400">#{{ item.product.code }}</span>
+                  <span class="text-[10px] text-slate-300">·</span>
+                  <span
+                    class="text-xs font-semibold transition-colors duration-200"
+                    :class="priceClass(item.status)">
+                    {{ formatMXN(item.unitPrice) }} c/u
+                  </span>
+                </div>
+              </div>
 
-        <!-- Subtotal -->
-        <div class="shrink-0 text-right">
-          <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Subtotal</p>
-          <p class="text-sm font-extrabold text-azul">
-            {{ formatMXN(item.quantity * item.unitPrice) }}
-          </p>
+              <!-- Cantidad -->
+              <div
+                class="shrink-0 flex flex-col items-center rounded-xl px-2.5 py-1 border transition-all duration-300"
+                :class="qtyClass(item.status)">
+                <span class="text-xl font-black leading-none tabular-nums">{{
+                  item.quantity
+                }}</span>
+                <span class="text-[8px] font-bold uppercase tracking-widest mt-0.5 opacity-60"
+                  >uds</span
+                >
+              </div>
+
+              <!-- Switches (admin) -->
+              <div v-if="authStore.isAdmin" class="flex flex-col gap-2 shrink-0">
+                <!-- Switch No hay -->
+                <div
+                  class="flex items-center gap-2 select-none"
+                  :class="{
+                    'opacity-40 pointer-events-none':
+                      item.status === 'ready' || loadingItem[item.id],
+                  }">
+                  <span
+                    class="text-[10px] font-semibold text-slate-400 w-10 text-right leading-none">
+                    No hay
+                  </span>
+                  <div
+                    class="relative w-9 h-5 rounded-full transition-all duration-200 cursor-pointer shrink-0"
+                    :class="item.status === 'unavailable' ? 'bg-red-500' : 'bg-slate-200'"
+                    @click="toggleStatus(item, 'unavailable')">
+                    <!-- Thumb del switch -->
+                    <div
+                      class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 flex items-center justify-center"
+                      :class="item.status === 'unavailable' ? 'left-4.5' : 'left-0.5'">
+                      <Loader2
+                        v-if="loadingItem[item.id] && pendingStatus[item.id] === 'unavailable'"
+                        :size="9"
+                        class="text-slate-400 animate-spin" />
+                      <X
+                        v-else-if="item.status === 'unavailable'"
+                        :size="9"
+                        class="text-red-500"
+                        :stroke-width="3" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Switch Listo -->
+                <div
+                  class="flex items-center gap-2 select-none"
+                  :class="{
+                    'opacity-40 pointer-events-none':
+                      item.status === 'unavailable' || loadingItem[item.id],
+                  }">
+                  <span
+                    class="text-[10px] font-semibold text-slate-400 w-10 text-right leading-none">
+                    Listo
+                  </span>
+                  <div
+                    class="relative w-9 h-5 rounded-full transition-all duration-200 cursor-pointer shrink-0"
+                    :class="item.status === 'ready' ? 'bg-emerald-500' : 'bg-slate-200'"
+                    @click="toggleStatus(item, 'ready')">
+                    <!-- Thumb del switch -->
+                    <div
+                      class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 flex items-center justify-center"
+                      :class="item.status === 'ready' ? 'left-4.5' : 'left-0.5'">
+                      <Loader2
+                        v-if="loadingItem[item.id] && pendingStatus[item.id] === 'ready'"
+                        :size="9"
+                        class="text-slate-400 animate-spin" />
+                      <Check
+                        v-else-if="item.status === 'ready'"
+                        :size="9"
+                        class="text-emerald-500"
+                        :stroke-width="3" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Badge status (customer) -->
+              <div v-else class="shrink-0">
+                <span
+                  class="text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide whitespace-nowrap"
+                  :class="badgeClass(item.status)">
+                  {{ statusLabel(item.status) }}
+                </span>
+              </div>
+
+              <!-- Subtotal -->
+              <div class="shrink-0 text-right min-w-14">
+                <p class="text-[9px] uppercase tracking-wide font-medium text-slate-400">Total</p>
+                <p
+                  class="text-sm font-extrabold transition-colors duration-200"
+                  :class="nameClass(item.status)">
+                  {{ formatMXN(item.quantity * item.unitPrice) }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -100,29 +171,108 @@
 </template>
 
 <script setup lang="ts">
+import Logo from '@/assets/logo.png';
 import QRCode from '../general/QRCode.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
-
-import type { OrderFull } from '@/types/db';
-
-import { useModal } from '@/composables/useModal';
-import { reactive } from 'vue';
-import { formatMXN } from '@/helpers/currencyMxn';
-import { useAuthStore } from '@/stores/auth.store';
-import { QrCode, Check, X } from 'lucide-vue-next';
-
-import Logo from '@/assets/logo.png';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 
+import type { OrderFull, OrderItemFull } from '@/types/db';
+
+import { reactive, ref } from 'vue';
+import { useModal } from '@/composables/useModal';
+import { formatMXN } from '@/helpers/currencyMxn';
+import { OrderService } from '@/services/order.service';
+import { useAuthStore } from '@/stores/auth.store';
+import { useToastStore } from '@/stores/toast.store';
+import { QrCode, Check, X, Loader2 } from 'lucide-vue-next';
+
+// ─── Tipos ────────────────────────────────────────────────────────────────────
+
+type ItemStatus = 'pending' | 'ready' | 'unavailable';
+
+// ─── Stores ───────────────────────────────────────────────────────────────────
+
 const authStore = useAuthStore();
+const toast = useToastStore();
+
+// ─── Props y Emits ────────────────────────────────────────────────────────────
+//
+// ¿Por qué emit en lugar de mutar la prop?
+// Vue tiene una regla de "one-way data flow": los datos bajan por props,
+// los cambios suben por eventos. Mutar una prop directamente rompe este
+// contrato y hace el flujo de datos imposible de rastrear.
+//
+// La solución: trabajamos sobre `localOrder` (copia reactiva local)
+// y al confirmar con el backend emitimos 'update:order' hacia el padre.
+// El padre usa v-model:order="miOrden" y recibe la orden actualizada.
+
+const props = defineProps<{ order: OrderFull }>();
+
+const emit = defineEmits<{
+  'update:order': [order: OrderFull];
+}>();
+
+// ─── Copia local reactiva ─────────────────────────────────────────────────────
+// Spread superficial: copiamos la orden pero hacemos un nuevo array de items
+// para que las mutaciones de items no afecten la prop original.
+
+const localOrder = ref<OrderFull>({
+  ...props.order,
+  items: props.order.items.map((i) => ({ ...i })),
+});
+
+// ─── Estado de carga por item ─────────────────────────────────────────────────
+
+const loadingItem = reactive<Record<number, boolean>>({});
+const pendingStatus = reactive<Record<number, ItemStatus>>({});
+
+// ─── Toggle de status ─────────────────────────────────────────────────────────
+
+async function toggleStatus(item: OrderItemFull, newStatus: ItemStatus): Promise<void> {
+  // Si ya tiene ese status → volver a pending (comportamiento toggle)
+  const targetStatus: ItemStatus = item.status === newStatus ? 'pending' : newStatus;
+
+  const idx = localOrder.value.items.findIndex((i) => i.id === item.id);
+  if (idx === -1) return;
+
+  const previousStatus = localOrder.value.items[idx]!.status;
+
+  // Actualización optimista: mover el switch de inmediato sin esperar al servidor
+  localOrder.value.items[idx]!.status = targetStatus;
+  loadingItem[item.id] = true;
+  pendingStatus[item.id] = newStatus;
+
+  try {
+    const updated = await OrderService.updateItemStatus(localOrder.value.id, item.id, targetStatus);
+
+    // Confirmar con el valor real devuelto por el servidor
+    localOrder.value.items[idx]!.status = updated.status;
+
+    if (updated.orderResolved) {
+      localOrder.value.status = 'ready';
+      toast.success('¡Pedido completo! Todos los items resueltos.');
+    }
+
+    // Notificar al padre
+    emit('update:order', localOrder.value);
+  } catch {
+    // Revertir optimismo si el servidor falló
+    localOrder.value.items[idx]!.status = previousStatus;
+    toast.error('No se pudo actualizar el item');
+  } finally {
+    loadingItem[item.id] = false;
+    delete pendingStatus[item.id];
+  }
+}
+
+// ─── QR ──────────────────────────────────────────────────────────────────────
 
 const { openModal } = useModal();
 
-defineProps<{ order: OrderFull }>();
-
-const handleQR = (order: OrderFull) => {
+function handleQR(order: OrderFull): void {
   const instructionQR = order.items
-    .map<string>((i) => `${i.quantity}*${i.product.code}`)
+    .filter((i) => i.status === 'ready')
+    .map((i) => `${i.quantity}*${i.product.code}`)
     .join('\r');
 
   openModal(
@@ -131,13 +281,56 @@ const handleQR = (order: OrderFull) => {
       value: instructionQR,
       size: 300,
       logoUrl: Logo,
-      downloadName: order.id + order.customer.name,
+      downloadName: `${order.id}${order.customer.name}`,
     },
     { closeOnBackdrop: true }
   );
-};
+}
 
-// Estado local de checkboxes indexado por item.id
-const noHayChecked = reactive<Record<number, boolean>>({});
-const listoChecked = reactive<Record<number, boolean>>({});
+// ─── Clases dinámicas ─────────────────────────────────────────────────────────
+
+function nodeClass(status: ItemStatus): string {
+  if (status === 'ready') return 'bg-emerald-500 border-emerald-500';
+  if (status === 'unavailable') return 'bg-red-500 border-red-500';
+  return 'bg-white border-slate-200';
+}
+
+function cardClass(status: ItemStatus): string {
+  if (status === 'ready') return 'bg-emerald-50 border-emerald-200';
+  if (status === 'unavailable') return 'bg-red-50/70 border-red-200';
+  return 'bg-white border-slate-100 shadow-sm';
+}
+
+function nameClass(status: ItemStatus): string {
+  if (status === 'ready') return 'text-emerald-800';
+  if (status === 'unavailable') return 'text-red-400 line-through';
+  return 'text-azul';
+}
+
+function priceClass(status: ItemStatus): string {
+  if (status === 'ready') return 'text-emerald-600';
+  if (status === 'unavailable') return 'text-red-400';
+  return 'text-azul/70';
+}
+
+function qtyClass(status: ItemStatus): string {
+  if (status === 'ready') return 'bg-emerald-100 border-emerald-200 text-emerald-700';
+  if (status === 'unavailable') return 'bg-red-100 border-red-200 text-red-500';
+  return 'bg-naranja/5 border-naranja/20 text-naranja';
+}
+
+function badgeClass(status: ItemStatus): string {
+  if (status === 'ready') return 'bg-emerald-100 text-emerald-700';
+  if (status === 'unavailable') return 'bg-red-100 text-red-600';
+  return 'bg-slate-100 text-slate-500';
+}
+
+function statusLabel(status: ItemStatus): string {
+  const map: Record<ItemStatus, string> = {
+    pending: 'Pendiente',
+    ready: 'Listo',
+    unavailable: 'No hay',
+  };
+  return map[status];
+}
 </script>

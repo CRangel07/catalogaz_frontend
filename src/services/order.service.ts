@@ -1,8 +1,17 @@
 import { http } from './http';
-
-import type { CreateOrderDto, OrderFull, UpdateOrderStatusDto } from '@/types/db';
+import type { CreateOrderDto, OrderFull, OrderItemFull, UpdateOrderStatusDto } from '@/types/db';
 
 const BASE = '/orders';
+
+// ─── Tipos del service ────────────────────────────────────────────────────────
+
+export type ItemStatus = 'pending' | 'ready' | 'unavailable';
+
+export interface UpdateItemStatusDto {
+  status: ItemStatus;
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 export const OrderService = {
   getAllAdmin(): Promise<OrderFull[]> {
@@ -18,11 +27,19 @@ export const OrderService = {
   },
 
   create(dto: CreateOrderDto): Promise<OrderFull> {
-    return http<OrderFull>(`${BASE}`, { method: 'POST', body: dto });
+    return http<OrderFull>(BASE, { method: 'POST', body: dto });
   },
 
   update(id: number, dto: UpdateOrderStatusDto): Promise<OrderFull> {
     return http<OrderFull>(`${BASE}/${id}/status`, { method: 'PATCH', body: dto });
+  },
+
+  // PATCH /orders/:orderId/items/:itemId/status
+  updateItemStatus(orderId: number, itemId: number, status: ItemStatus): Promise<OrderItemFull> {
+    return http<OrderItemFull>(`${BASE}/${orderId}/items/${itemId}/status`, {
+      method: 'PATCH',
+      body: { status } satisfies UpdateItemStatusDto,
+    });
   },
 
   delete(id: number): Promise<void> {
