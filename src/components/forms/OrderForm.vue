@@ -5,12 +5,7 @@
       <AppSelect
         :id="'order-status'"
         label="Modificar Estatus Pedido"
-        :options="[
-          { label: 'Pendiente', value: 'pending' },
-          { label: 'Surtiendo', value: 'preparing' },
-          { label: 'Cancelado', value: 'cancelled' },
-          { label: 'Pedido Listo', value: 'ready' },
-        ]"
+        :options="[{ label: 'Cancelado', value: 'cancelled' }]"
         :attrs-vee="statusAttr"
         v-model="status" />
 

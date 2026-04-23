@@ -1,11 +1,12 @@
+import { es } from 'date-fns/locale';
 import { formatInTimeZone } from 'date-fns-tz';
 
 const getTimezone = (): string => {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 };
 
-export function formatDate(date: Date | string) {
-  return formatInTimeZone(date, getTimezone(), 'dd/MM/yyyy hh:mm:ss aaa');
+export function formatDate(date: Date | string): string {
+  return formatInTimeZone(date, getTimezone(), 'cccc dd/MM/yy hh:mm aaa', { locale: es });
 }
 
 export function formatDateOnly(date: Date | string) {

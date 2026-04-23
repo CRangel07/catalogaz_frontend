@@ -68,7 +68,7 @@ export type OrderItemFull = {
     code: string;
     imageThumbnailUrl: string | null;
   };
-  orderResolved?: boolean;
+  orderResolved?: OrderStatus;
 };
 
 export type ItemStatus = 'pending' | 'ready' | 'unavailable';

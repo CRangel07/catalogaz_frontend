@@ -47,14 +47,21 @@ const navItems: NavItem[] = [
     label: 'Productos',
     icon: h(Package2, { size: 18 }),
     routeName: RouteNames.Admin.PRODUCTS,
-    section: 'Principal',
+    section: 'Productos',
+  },
+  {
+    id: 'productos_negados',
+    label: 'Productos Negados',
+    icon: h(Package2, { size: 18 }),
+    routeName: RouteNames.Admin.PRODUCTS_NOSTOCK,
+    section: 'Productos',
   },
   {
     id: 'pedidos',
     label: 'Pedidos',
     icon: h(NotebookPen, { size: 18 }),
     routeName: RouteNames.Admin.ORDERS,
-    section: 'Principal',
+    section: 'Ventas',
   },
   {
     id: 'clientes',

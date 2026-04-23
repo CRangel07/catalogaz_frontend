@@ -1,8 +1,17 @@
 <template>
   <div class="flex flex-col gap-1">
-    <!-- Acción QR -->
     <div class="flex justify-end mb-2" v-if="authStore.isAdmin">
-      <ButtonUI theme="success" size="sm" :icon="QrCode" @click="handleQR(localOrder)">
+      <ButtonUI
+        theme="success"
+        size="sm"
+        :icon="QrCode"
+        :disabled="!allMarked"
+        :title="
+          allMarked
+            ? 'Click para generar QR'
+            : 'Deben estar marcados todos los items con un estado diferente a pendiente para generar el QR'
+        "
+        @click="handleQR(localOrder)">
         Generar QR
       </ButtonUI>
     </div>
@@ -178,12 +187,12 @@ import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 
 import type { OrderFull, OrderItemFull } from '@/types/db';
 
-import { reactive, ref } from 'vue';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { OrderService } from '@/services/order.service';
 import { useAuthStore } from '@/stores/auth.store';
 import { useToastStore } from '@/stores/toast.store';
+import { computed, h, reactive, ref } from 'vue';
 import { QrCode, Check, X, Loader2 } from 'lucide-vue-next';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
@@ -195,26 +204,11 @@ type ItemStatus = 'pending' | 'ready' | 'unavailable';
 const authStore = useAuthStore();
 const toast = useToastStore();
 
-// ─── Props y Emits ────────────────────────────────────────────────────────────
-//
-// ¿Por qué emit en lugar de mutar la prop?
-// Vue tiene una regla de "one-way data flow": los datos bajan por props,
-// los cambios suben por eventos. Mutar una prop directamente rompe este
-// contrato y hace el flujo de datos imposible de rastrear.
-//
-// La solución: trabajamos sobre `localOrder` (copia reactiva local)
-// y al confirmar con el backend emitimos 'update:order' hacia el padre.
-// El padre usa v-model:order="miOrden" y recibe la orden actualizada.
-
 const props = defineProps<{ order: OrderFull }>();
 
 const emit = defineEmits<{
   'update:order': [order: OrderFull];
 }>();
-
-// ─── Copia local reactiva ─────────────────────────────────────────────────────
-// Spread superficial: copiamos la orden pero hacemos un nuevo array de items
-// para que las mutaciones de items no afecten la prop original.
 
 const localOrder = ref<OrderFull>({
   ...props.order,
@@ -223,6 +217,9 @@ const localOrder = ref<OrderFull>({
 
 // ─── Estado de carga por item ─────────────────────────────────────────────────
 
+const allMarked = computed<boolean>(() =>
+  localOrder.value.items.every((i) => i.status != 'pending')
+);
 const loadingItem = reactive<Record<number, boolean>>({});
 const pendingStatus = reactive<Record<number, ItemStatus>>({});
 
@@ -248,17 +245,16 @@ async function toggleStatus(item: OrderItemFull, newStatus: ItemStatus): Promise
     // Confirmar con el valor real devuelto por el servidor
     localOrder.value.items[idx]!.status = updated.status;
 
-    if (updated.orderResolved) {
+    if (updated.orderResolved && updated.orderResolved == 'ready') {
       localOrder.value.status = 'ready';
       toast.success('¡Pedido completo! Todos los items resueltos.');
     }
 
     // Notificar al padre
     emit('update:order', localOrder.value);
-  } catch {
-    // Revertir optimismo si el servidor falló
+  } catch (e) {
     localOrder.value.items[idx]!.status = previousStatus;
-    toast.error('No se pudo actualizar el item');
+    toast.error(String(e));
   } finally {
     loadingItem[item.id] = false;
     delete pendingStatus[item.id];
@@ -275,16 +271,24 @@ function handleQR(order: OrderFull): void {
     .map((i) => `${i.quantity}*${i.product.code}`)
     .join('\r');
 
-  openModal(
-    QRCode,
-    {
+  const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
+    h(
+      'p',
+      {
+        class:
+          'text-xs uppercase font-semibold rounded-xl text-yellow-800 text-center bg-yellow-200 p-3 whitespace-pre-line',
+      },
+      'Escanea en Compucaja para agregar productos Listos\n\nNo olvides revisar tener existencias suficientes en Compucaja de lo contrario los articulos no se pondran de forma correcta'
+    ),
+    h(QRCode, {
       value: instructionQR,
       size: 300,
       logoUrl: Logo,
       downloadName: `${order.id}${order.customer.name}`,
-    },
-    { closeOnBackdrop: true }
-  );
+    }),
+  ]);
+
+  openModal(content, {}, { closeOnBackdrop: true });
 }
 
 // ─── Clases dinámicas ─────────────────────────────────────────────────────────
