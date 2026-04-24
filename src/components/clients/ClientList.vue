@@ -1,8 +1,12 @@
 <template>
   <div>
-    <ButtonUI :icon="Plus" @click="handleModal()" class="ms-auto md:mb-5 mb-3">
-      Nuevo Cliente
-    </ButtonUI>
+    <PageTitle title="Clientes" :icon="BookUser" class="mb-8">
+      <template #actions>
+        <ButtonUI :icon="Plus" @click="handleModal()" class="ms-auto md:mb-5 mb-3">
+          Nuevo Cliente
+        </ButtonUI>
+      </template>
+    </PageTitle>
     <PaginatedTable :response="customers">
       <template #table>
         <AppTable :columns="columns" :rows="customers.data" :skeleton-rows="10" has-actions>
@@ -34,10 +38,11 @@ import ClientForm from '../forms/ClientForm.vue';
 import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
-import { Plus } from 'lucide-vue-next';
+import { BookUser, Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
 import { useCustomers } from '@/composables/useCustomers';
 import { onBeforeMount } from 'vue';
+import PageTitle from '../ui/molecules/PageTitle.vue';
 
 const { openModal } = useModal();
 

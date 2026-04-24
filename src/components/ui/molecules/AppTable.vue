@@ -4,7 +4,7 @@
     <div
       class="relative rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_rgba(30,58,138,0.07)] overflow-hidden">
       <!-- Top accent bar -->
-      <div class="h-0.75 w-full bg-linear-to-r from-blue-700 via-azul to-naranja" />
+      <div class="h-0.75 w-full bg-slate-200" />
 
       <!-- Scroll container (horizontal en mobile) -->
       <div class="overflow-x-auto">
@@ -76,7 +76,7 @@
               :class="[
                 striped && rowIndex % 2 !== 0 ? 'bg-slate-50/60' : 'bg-white',
                 clickable && 'cursor-pointer hover:bg-blue-50/50 active:bg-blue-50',
-                !clickable && 'hover:bg-blue-50/30',
+                !clickable && 'hover:bg-azul/5',
               ]"
               @click="clickable && emit('row-click', row, rowIndex)">
               <!-- Data cells -->

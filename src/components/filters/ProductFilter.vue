@@ -5,11 +5,13 @@
       label="Busca por código o por nombre"
       type="text"
       v-model.trim="search" />
-    <ButtonUI size="sm" theme="warning">Buscar</ButtonUI>
+    <ButtonUI size="sm" theme="warning" :icon="Search" icon-position="right">Buscar</ButtonUI>
   </form>
 </template>
 
 <script setup lang="ts">
+import { Search } from 'lucide-vue-next';
+
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import AppInput from '../ui/forms/AppInput.vue';
 

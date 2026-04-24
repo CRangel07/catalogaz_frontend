@@ -1,8 +1,10 @@
 <template>
   <div>
     <PageTitle
+      :icon="ArchiveX"
       title="Productos Negados"
-      description="Gestiona los productos que se han marcado que no cuentan con existencia de hace 15 días">
+      description="Gestiona los productos que se han marcado que no cuentan con existencia de hace 15 días"
+      class="mb-10">
     </PageTitle>
 
     <PaginatedTable
@@ -48,6 +50,7 @@ import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
 import { useQueryState } from '@/composables/useQueryState';
 import type { PaginatedSearch } from '../filters/types';
+import { ArchiveX } from 'lucide-vue-next';
 
 const { openModal } = useModal();
 

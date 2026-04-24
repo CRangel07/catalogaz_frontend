@@ -1,6 +1,7 @@
 <template>
   <div>
     <PageTitle
+      :icon="Cuboid"
       title="Catalogo de productos"
       description="Gestiona los productos que se muestran en el catalogo">
       <template #actions>
@@ -72,7 +73,7 @@ import ImportProductsExcel from './ImportProductsExcel.vue';
 import type { Product } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
-import { Plus } from 'lucide-vue-next';
+import { Cuboid, Plus } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
