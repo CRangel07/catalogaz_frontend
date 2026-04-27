@@ -19,6 +19,8 @@ export interface Customer {
   updatedAt: string;
 }
 
+// _____________________ PRODUCTOS __________________________
+
 export type Product = {
   id: number;
   name: string;
@@ -43,6 +45,39 @@ export interface ProductCard {
   imageThumbnailUrl: string | null;
   maxQuantity: number | null;
   isActive: boolean;
+}
+
+export interface CreateProductDto {
+  name: string;
+  code: string;
+  description?: string;
+  price: number;
+  stock?: number;
+  imageName?: string;
+  imageThumbnailUrl?: string;
+  imageFullUrl?: string;
+}
+
+export interface UpdateProductDto {
+  name?: string;
+  code?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  isActive?: boolean;
+}
+
+export interface ProductUnavailable {
+  product: {
+    name: string;
+    code: string;
+    imageThumbnailUrl: string | null;
+  };
+  quantity: number;
+  order: {
+    id: number;
+    createdAt: Date;
+  };
 }
 
 // _____________________ ORDENES __________________________
@@ -111,26 +146,6 @@ export interface UpdateOrderStatusDto {
 }
 
 // _____________________________________________________________
-
-export interface CreateProductDto {
-  name: string;
-  code: string;
-  description?: string;
-  price: number;
-  stock?: number;
-  imageName?: string;
-  imageThumbnailUrl?: string;
-  imageFullUrl?: string;
-}
-
-export interface UpdateProductDto {
-  name?: string;
-  code?: string;
-  description?: string;
-  price?: number;
-  stock?: number;
-  isActive?: boolean;
-}
 
 export interface DashboardSummary {
   sales: { today: number; changePercent: number };

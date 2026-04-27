@@ -1,6 +1,11 @@
 import { http } from './http';
 
-import type { ImportingExcelResult, PaginatedResponse, Product } from '@/types/db';
+import type {
+  ImportingExcelResult,
+  PaginatedResponse,
+  Product,
+  ProductUnavailable,
+} from '@/types/db';
 
 export interface CreateProductDto {
   code: string;
@@ -23,6 +28,10 @@ export const ProductService = {
 
   getOne(id: number): Promise<Product> {
     return http<Product>(`/products/${id}`);
+  },
+
+  getUnavailable(): Promise<PaginatedResponse<ProductUnavailable>> {
+    return http<PaginatedResponse<ProductUnavailable>>(`/products/unavailable`);
   },
 
   create(dto: CreateProductDto): Promise<Product> {

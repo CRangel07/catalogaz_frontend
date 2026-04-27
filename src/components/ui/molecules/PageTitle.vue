@@ -69,7 +69,7 @@
             </div>
 
             <!-- Descripción -->
-            <p v-if="description" class="text-xs text-slate-400 leading-relaxed mt-0.5">
+            <p v-if="description" class="text-xs text-azul font-medium leading-relaxed mt-0.5">
               {{ description }}
             </p>
           </div>

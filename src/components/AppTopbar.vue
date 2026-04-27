@@ -16,7 +16,7 @@
           class="text-sm font-medium transition-colors"
           :class="
             idx === breadcrumbs.length - 1
-              ? 'text-blue-700 font-semibold'
+              ? 'text-azul font-semibold'
               : 'text-slate-500 hover:text-blue-600'
           ">
           {{ r.label }}

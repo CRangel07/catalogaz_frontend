@@ -7,26 +7,33 @@
       class="mb-10">
     </PageTitle>
 
-    <PaginatedTable
-      :response="productsData"
-      @change="
-        ({ page, limit }) => {
-          update({ page, limit });
-          fetchProductsWithQuery();
-        }
-      ">
+    <PaginatedTable :response="data">
       <template #table>
-        <AppTable :columns="columns" :rows="productsData.data" has-actions>
-          <template #cell-imageThumbnailUrl="{ value }">
-            <div class="max-w-20">
-              <ImageNotFound :url="String(value)" alt="producto-imagen" />
+        <AppTable :columns="columns" :rows="data.data">
+          <template #cell-product="{ row }">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="block font-mono text-slate-500 font-medium">
+                  {{ row.product.code }}
+                </span>
+                <span class="block text-azul text-[15px] font-semibold">
+                  {{ row.product.name }}
+                </span>
+              </div>
+              <div class="max-w-20">
+                <ImageNotFound :url="String(row.product.imageThumbnailUrl)" alt="producto-imagen" />
+              </div>
             </div>
           </template>
-          <template #cell-isActive="{ value }">
-            <span>{{ !!value ? 'Activo' : 'Inactivo' }}</span>
-          </template>
-          <template #actions="{ row }">
-            <ActionsTools @edit="handleModalProduct(row)" />
+          <template #cell-order="{ row }">
+            <div>
+              <span class="block font-mono text-slate-500 font-medium">
+                {{ formatDate(row.order.createdAt) }}
+              </span>
+              <span class="block text-slate-500 font-mono text-[15px] font-semibold">
+                Id de Orden: {{ row.order.id }}
+              </span>
+            </div>
           </template>
         </AppTable>
       </template>
@@ -36,54 +43,55 @@
 
 <script setup lang="ts">
 import PageTitle from '../ui/molecules/PageTitle.vue';
-import ProductForm from '../forms/ProductForm.vue';
-import ActionsTools from '../ui/molecules/ActionsTools.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
-import type { Product } from '@/types/db';
+import type { PaginatedResponse, ProductUnavailable } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
-import { useModal } from '@/composables/useModal';
-import { formatMXN } from '@/helpers/currencyMxn';
-import { useProducts } from '@/composables/useProducts';
-import { onBeforeMount } from 'vue';
-import { useQueryState } from '@/composables/useQueryState';
-import type { PaginatedSearch } from '../filters/types';
 import { ArchiveX } from 'lucide-vue-next';
+import { useToastStore } from '@/stores/toast.store';
+import { ProductService } from '@/services/product.service';
+import { onBeforeMount, ref } from 'vue';
+import { formatDate } from '@/helpers/dates';
 
-const { openModal } = useModal();
+const toast = useToastStore();
 
-const { query, update } = useQueryState<PaginatedSearch>({
-  search: '',
+const loading = ref<boolean>(false);
+const error = ref<string | null>(null);
+const data = ref<PaginatedResponse<ProductUnavailable>>({
+  data: [],
+  limit: 40,
   page: 1,
-  limit: 10,
+  total: 0,
+  totalPages: 0,
 });
 
-const handleModalProduct = (product?: Product) => {
-  openModal(ProductForm, { product, onSave: () => fetchProducts() });
-};
-
-async function fetchProductsWithQuery() {
-  await fetchProducts(query.value);
+async function fetchProductsUnavailable() {
+  loading.value = true;
+  error.value = null;
+  try {
+    data.value = await ProductService.getUnavailable();
+  } catch (e) {
+    error.value = (e as Error).message;
+    toast.error(error.value, 6000);
+  } finally {
+    loading.value = false;
+  }
 }
 
-const { productsData, fetchProducts } = useProducts();
-
-const columns: TableColumn<Product>[] = [
-  { key: 'imageThumbnailUrl', label: 'Imagen', align: 'center' },
-  { key: 'code', label: 'Código' },
-  { key: 'name', label: 'Nombre' },
+const columns: TableColumn<ProductUnavailable>[] = [
+  { key: 'product', label: 'Producto' },
+  { key: 'order', label: 'Orden' },
   {
-    key: 'price',
-    label: 'Precio',
+    key: 'quantity',
+    label: 'Cantidad pedida',
+    cellClass: 'text-azul! text-[17px]!',
     format(value) {
-      return formatMXN(Number(value));
+      return value + ' Unidades';
     },
   },
-  { key: 'isActive', label: 'Estatus' },
-  { key: 'description', label: 'Descripción' },
 ];
 
-onBeforeMount(() => fetchProductsWithQuery());
+onBeforeMount(() => fetchProductsUnavailable());
 </script>

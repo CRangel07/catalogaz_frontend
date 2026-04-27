@@ -25,7 +25,7 @@ import AppTopbar from '@/components/AppTopbar.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 
 import type { NavItem } from '@/types/components';
-import { Contact, Home, NotebookPen, Package2, Settings } from 'lucide-vue-next';
+import { Contact, Home, NotebookPen, Package2 } from 'lucide-vue-next';
 import { RouteNames } from '@/router/route.names';
 
 // ── State ──────────────────────────────────────────────────────────────
@@ -76,13 +76,6 @@ const navItems: NavItem[] = [
     icon: h(Contact, { size: 18 }),
     routeName: RouteNames.Catalog.PRODUCTS,
     section: 'Ventas',
-  },
-  {
-    id: 'config',
-    label: 'Configuración',
-    icon: h(Settings, { size: 18 }),
-    routeName: RouteNames.Admin.SETTINGS,
-    section: 'Sistema',
   },
 ];
 

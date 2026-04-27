@@ -18,6 +18,7 @@ export const adminChildren: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       roles: AdminPermission,
+      label: 'Dashboard',
     },
   },
   {
@@ -27,6 +28,7 @@ export const adminChildren: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       roles: AdminPermission,
+      label: 'Mis productos',
     },
   },
   {
@@ -36,6 +38,7 @@ export const adminChildren: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       roles: AdminPermission,
+      label: 'Productos Negados',
     },
   },
   {
@@ -45,6 +48,7 @@ export const adminChildren: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       roles: AdminPermission,
+      label: 'Gestión de pedidos',
     },
   },
   {
@@ -52,6 +56,7 @@ export const adminChildren: RouteRecordRaw[] = [
     name: RouteNames.Admin.CLIENTS,
     component: ClientView,
     meta: {
+      label: 'Gestión de Clientes',
       requiresAuth: true,
       roles: AdminPermission,
     },
