@@ -144,7 +144,7 @@
     <!-- Separador -->
     <div class="mt-8 pt-6 border-t border-slate-200">
       <p class="text-center text-sm text-slate-400">
-        ¿Eres administrador?
+        ¿Iniciar sesión con usuario?
         <RouterLink
           :to="{ name: RouteNames.Auth.ADMIN_LOGIN }"
           class="text-slate-700 font-medium hover:underline">

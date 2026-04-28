@@ -30,13 +30,22 @@
       optional />
 
     <AppInput
-      label="Precio"
+      label="Precio #1"
       type="number"
-      id="producto-precio"
+      id="producto-precio-uno"
       :attrs="{ min: 0.01, step: 0.01 }"
-      :attrs-vee="priceAttrs"
-      :errors="errors.price"
-      v-model="price" />
+      :attrs-vee="priceOneAttrs"
+      :errors="errors.priceOne"
+      v-model="priceOne" />
+
+    <AppInput
+      label="Precio #4"
+      type="number"
+      id="producto-precio-cuatro"
+      :attrs="{ min: 0.01, step: 0.01 }"
+      :attrs-vee="priceFourAttrs"
+      :errors="errors.priceFour"
+      v-model="priceFour" />
 
     <AppSelect
       v-if="isEditing"
@@ -121,7 +130,8 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
   initialValues: {
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
-    price: props.product?.price ?? undefined,
+    priceOne: props.product?.price1 ?? undefined,
+    priceFour: props.product?.price4,
     isActive: props.product?.isActive ?? undefined,
     code: props.product?.code,
   },
@@ -129,22 +139,27 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
 
 const [code, codeAttrs] = defineField('code');
 const [name, nameAttrs] = defineField('name');
-const [description, descriptionAttrs] = defineField('description');
-const [price, priceAttrs] = defineField('price');
 const [isActive, isActiveAttrs] = defineField('isActive');
+const [priceOne, priceOneAttrs] = defineField('priceOne');
+const [priceFour, priceFourAttrs] = defineField('priceFour');
+const [description, descriptionAttrs] = defineField('description');
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 const onSubmit = handleSubmit(async () => {
-  const payload = {
+  const payload: NonNullable<CreateProductDto> = {
     name: name.value,
     code: code.value,
     description: description.value,
     isActive: Boolean(!!isActive.value) ?? false,
-    price: price.value,
-  };
+    price1: priceOne.value,
+    price4: priceFour.value,
+  } as NonNullable<CreateProductDto>;
 
   const ok = await (isEditing.value && props.product
-    ? updateProduct(props.product.id, payload)
+    ? updateProduct(props.product.id, {
+        ...payload,
+        image: imageFile.value,
+      })
     : createProduct({
         ...(payload as NonNullable<CreateProductDto>),
         image: imageFile.value,

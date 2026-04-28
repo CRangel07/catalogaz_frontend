@@ -1,24 +1,14 @@
 import { http } from './http';
 
 import type {
+  CreateProductDto,
   ImportingExcelResult,
   PaginatedResponse,
   Product,
+  ProductImage,
   ProductUnavailable,
+  UpdateProductDto,
 } from '@/types/db';
-
-export interface CreateProductDto {
-  code: string;
-  name: string;
-  description?: string | null;
-  price: number;
-  image: File | null;
-}
-
-export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'image'>> {
-  isActive: boolean;
-  image?: File;
-}
 
 export const ProductService = {
   getAll(query?: Record<string, unknown>): Promise<PaginatedResponse<Product>> {
@@ -34,12 +24,13 @@ export const ProductService = {
     return http<PaginatedResponse<ProductUnavailable>>(`/products/unavailable`);
   },
 
-  create(dto: CreateProductDto): Promise<Product> {
+  create(dto: CreateProductDto & ProductImage): Promise<Product> {
     const form = new FormData();
     form.append('name', dto.name);
     form.append('code', dto.code);
     form.append('description', dto.description ?? '');
-    form.append('price', String(dto.price));
+    form.append('price1', String(dto.price1));
+    form.append('price4', String(dto.price4));
     form.append('image', dto.image ?? '');
     return http<Product>('/products', { method: 'POST', body: form });
   },
@@ -49,7 +40,8 @@ export const ProductService = {
     if (dto.name) form.append('name', dto.name);
     if (dto.code) form.append('code', dto.code);
     if (dto.description) form.append('description', dto.description);
-    if (dto.price) form.append('price', String(dto.price));
+    if (dto.price1) form.append('price1', String(dto.price1));
+    if (dto.price4) form.append('price4', String(dto.price1));
     if (dto.image) form.append('image', dto.image);
     form.append('isActive', String(dto.isActive));
     return http<Product>(`/products/${id}`, { method: 'PATCH', body: form });

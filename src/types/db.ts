@@ -22,12 +22,14 @@ export interface Customer {
 // _____________________ PRODUCTOS __________________________
 
 export type Product = {
-  id: number;
   name: string;
+  id: number;
   code: string;
   description: string | null;
-  price: number;
-  normalPrice: number | null;
+  price1: number;
+  price4: number;
+  salePrice: number | null;
+  isOffer: boolean;
   maxQuantity: number | null;
   imageName: string | null;
   imageThumbnailUrl: string | null;
@@ -35,6 +37,7 @@ export type Product = {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  unitId: number | null;
 };
 
 export interface ProductCard {
@@ -47,25 +50,23 @@ export interface ProductCard {
   isActive: boolean;
 }
 
-export interface CreateProductDto {
-  name: string;
-  code: string;
-  description?: string;
-  price: number;
-  stock?: number;
+export type CreateProductDto = Pick<
+  Product,
+  'name' | 'code' | 'description' | 'price1' | 'price4'
+> & {
   imageName?: string;
   imageThumbnailUrl?: string;
   imageFullUrl?: string;
-}
+};
 
-export interface UpdateProductDto {
-  name?: string;
-  code?: string;
-  description?: string;
-  price?: number;
-  stock?: number;
-  isActive?: boolean;
-}
+export type ProductImage = {
+  image: File | null;
+};
+
+export type UpdateProductDto = Partial<CreateProductDto> &
+  ProductImage & {
+    isActive?: boolean;
+  };
 
 export interface ProductUnavailable {
   product: {

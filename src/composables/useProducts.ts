@@ -1,6 +1,12 @@
 import type { PaginatedSearch } from '@/components/filters/types';
-import type { ImportingExcelResult, PaginatedResponse, Product } from '@/types/db';
-import type { CreateProductDto, UpdateProductDto } from '@/services/product.service';
+import type {
+  CreateProductDto,
+  ImportingExcelResult,
+  PaginatedResponse,
+  Product,
+  ProductImage,
+  UpdateProductDto,
+} from '@/types/db';
 
 import { ref } from 'vue';
 import { useToastStore } from '@/stores/toast.store';
@@ -47,7 +53,7 @@ export function useProducts() {
     }
   }
 
-  async function createProduct(dto: CreateProductDto): Promise<boolean> {
+  async function createProduct(dto: CreateProductDto & ProductImage): Promise<boolean> {
     loading.value = true;
     error.value = null;
     try {
