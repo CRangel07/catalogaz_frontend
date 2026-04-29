@@ -55,7 +55,7 @@
           <!-- Precios -->
           <div class="min-h-16">
             <!-- Con precio normal: mostrar oferta vs normal -->
-            <template v-if="product.normalPrice">
+            <template v-if="product.salePrice">
               <!-- Badge oferta -->
               <div class="flex items-center gap-2 mb-0.5">
                 <span
@@ -88,7 +88,7 @@
 
             <!-- Subtotal -->
             <p class="text-xs text-blue-500 font-medium mt-1 h-4">
-              <span v-if="qty > 1">Subtotal: ${{ (product.price * qty).toFixed(2) }}</span>
+              <span v-if="qty > 1">Subtotal: ${{ (product.price1 * qty).toFixed(2) }}</span>
             </p>
           </div>
 
@@ -253,14 +253,14 @@ const qty = computed({
 
 // ── Precio oferta ─────────────────────────────────────────────────────────────
 
-const priceFixed = computed(() => props.product.price.toFixed(2));
+const priceFixed = computed(() => props.product.price1.toFixed(2));
 const priceInt = computed(() => Number(priceFixed.value.split('.')[0]));
 const priceCents = computed(() => priceFixed.value.split('.')[1]);
 
 // ── Precio normal (tachado) ───────────────────────────────────────────────────
 
 const normalPriceFixed = computed(() =>
-  props.product.normalPrice ? props.product.normalPrice.toFixed(2) : null
+  props.product.salePrice ? props.product.salePrice.toFixed(2) : null
 );
 const normalPriceInt = computed(() =>
   normalPriceFixed.value ? Number(normalPriceFixed.value.split('.')[0]) : 0
@@ -288,7 +288,7 @@ function addToCart(): void {
     id: props.product.id,
     name: props.product.name,
     code: props.product.code,
-    price: props.product.price,
+    price: props.product.price1,
     imageThumbnailUrl: props.product.imageThumbnailUrl,
     maxQuantity: props.product.maxQuantity,
     isActive: props.product.isActive,

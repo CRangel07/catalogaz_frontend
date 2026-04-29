@@ -15,6 +15,7 @@ export const RouteNames = {
   Admin: {
     HOME: 'catalogaz_admin_home',
     PRODUCTS: 'catalogaz_admin_products',
+    LIST_ADMINS: 'catalog_az_admin_list',
     PRODUCTS_NOSTOCK: 'catalogaz_catalog_products_no',
     ORDERS: 'catalogaz_admin_orders',
     CLIENTS: 'catalogaz_admin_clients',

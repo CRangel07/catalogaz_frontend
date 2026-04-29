@@ -73,9 +73,16 @@ const navItems: NavItem[] = [
   {
     id: 'catalogo-cliente',
     label: 'Ir al Catalogo',
-    icon: h(Contact, { size: 18 }),
+    icon: h(NotebookPen, { size: 18 }),
     routeName: RouteNames.Catalog.PRODUCTS,
     section: 'Ventas',
+  },
+  {
+    id: 'catalogo-admins',
+    label: 'Gestionar Usuarios',
+    icon: h(Contact, { size: 18 }),
+    routeName: RouteNames.Admin.LIST_ADMINS,
+    section: 'Administración',
   },
 ];
 

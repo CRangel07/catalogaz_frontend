@@ -27,6 +27,7 @@
               <th
                 v-if="hasActions"
                 scope="col"
+                :class="[$props.actionsHeaderClass]"
                 class="px-5 py-3.5 text-right text-[11px] font-black uppercase tracking-[0.14em] text-slate-400 whitespace-nowrap">
                 {{ actionsLabel }}
               </th>
@@ -139,6 +140,7 @@ interface Props {
   rows: T[];
   emptyText?: string;
   hasActions?: boolean;
+  actionsHeaderClass?: string;
   actionsLabel?: string;
   loading?: boolean;
   skeletonRows?: number;

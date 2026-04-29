@@ -52,7 +52,7 @@ import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
 import type { PaginatedSearch } from '../filters/types';
 
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, watch } from 'vue';
 import { useProducts } from '@/composables/useProducts';
 import { useQueryState } from '@/composables/useQueryState';
 
@@ -65,8 +65,13 @@ const { query, update } = useQueryState<PaginatedSearch>({
 async function fetchProductsWithQuery() {
   await fetchProducts(query.value);
 }
-
 const { fetchProducts, productsData } = useProducts();
+watch(
+  () => productsData,
+  (val) => {
+    console.log(val.value);
+  }
+);
 
 onBeforeMount(() => fetchProductsWithQuery());
 </script>

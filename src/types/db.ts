@@ -2,12 +2,18 @@ export type NumericBoolean = 1 | 0;
 
 export type OrderStatus = 'pending' | 'preparing' | 'ready' | 'cancelled';
 
+// _____________________ ADMINISTRADORES __________________________
+
+export type AdminRole = 'admin' | 'pedidos' | 'caja';
+
 export interface Admin {
-  id: number;
   name: string;
+  id: number;
   username: string;
-  createdAt: string;
-  updatedAt: string;
+  password: string;
+  role: AdminRole;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Customer {
@@ -23,7 +29,6 @@ export interface Customer {
 
 export type Product = {
   name: string;
-  id: number;
   code: string;
   description: string | null;
   price1: number;
@@ -37,6 +42,7 @@ export type Product = {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  id: number;
   unitId: number | null;
 };
 

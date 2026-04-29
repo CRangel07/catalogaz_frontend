@@ -10,6 +10,7 @@
           theme="primary"
           :icon="Plus"
           class="ms-auto mb-5"
+          :disabled="loading"
           @click="handleModalProduct()">
           Nuevo Producto
         </ButtonUI>
@@ -18,8 +19,18 @@
           theme="success"
           :icon="Plus"
           class="ms-auto mb-5"
+          :disabled="loading"
           @click="handleModalExcelProduct()">
           Subir Desde Excel
+        </ButtonUI>
+        <ButtonUI
+          size="sm"
+          theme="cyan"
+          :icon="RefreshCcw"
+          class="ms-auto mb-5"
+          :disabled="loading"
+          @click="fetchProductsWithQuery()">
+          Actualizar
         </ButtonUI>
       </template>
     </PageTitle>
@@ -42,7 +53,11 @@
         }
       ">
       <template #table>
-        <AppTable :columns="columns" :rows="productsData.data" has-actions>
+        <AppTable
+          :columns="columns"
+          :rows="productsData.data"
+          has-actions
+          :actions-header-class="'bg-naranja text-white'">
           <template #cell-imageThumbnailUrl="{ value }">
             <div class="max-w-20">
               <ImageNotFound :url="String(value)" alt="producto-imagen" />
@@ -73,7 +88,7 @@ import ImportProductsExcel from './ImportProductsExcel.vue';
 import type { Product } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
-import { Cuboid, Plus } from 'lucide-vue-next';
+import { Cuboid, Plus, RefreshCcw } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
@@ -101,21 +116,27 @@ async function fetchProductsWithQuery() {
   await fetchProducts(query.value);
 }
 
-const { productsData, fetchProducts } = useProducts();
+const { productsData, fetchProducts, loading } = useProducts();
 
 const columns: TableColumn<Product>[] = [
-  { key: 'imageThumbnailUrl', label: 'Imagen', align: 'center' },
-  { key: 'code', label: 'Código' },
-  { key: 'name', label: 'Nombre' },
   {
-    key: 'price',
+    key: 'imageThumbnailUrl',
+    label: 'Imagen',
+    align: 'center',
+    headerClass: 'bg-naranja text-white',
+  },
+  { key: 'code', label: 'Código', headerClass: 'bg-naranja text-white' },
+  { key: 'name', label: 'Nombre', headerClass: 'bg-naranja text-white' },
+  {
+    key: 'price1',
     label: 'Precio',
     format(value) {
       return formatMXN(Number(value));
     },
+    headerClass: 'bg-naranja text-white',
   },
-  { key: 'isActive', label: 'Estatus' },
-  { key: 'description', label: 'Descripción' },
+  { key: 'isActive', label: 'Estatus', headerClass: 'bg-naranja text-white' },
+  { key: 'description', label: 'Descripción', headerClass: 'bg-naranja text-white' },
 ];
 
 onBeforeMount(() => fetchProductsWithQuery());

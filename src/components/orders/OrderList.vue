@@ -8,7 +8,12 @@
       </template>
     </PageTitle>
 
-    <AppTable :columns="columns" :rows="orders" :has-actions="authStore.isAdmin" striped>
+    <AppTable
+      :columns="columns"
+      :rows="orders"
+      :has-actions="authStore.isAdmin"
+      :actions-header-class="'bg-azul text-white'"
+      striped>
       <!-- ── ID / Cliente / Notas ───────────────────────────────────── -->
       <template #cell-id="{ row }">
         <div class="flex flex-col gap-2 py-0.5">
@@ -229,10 +234,10 @@ const STATUS_META: Record<OrderStatus, StatusMeta> = {
 // ─── Columnas ─────────────────────────────────────────────────────────────────
 
 const columns: TableColumn<OrderFull>[] = [
-  { key: 'id', label: 'Pedido' },
-  { key: 'createdAt', label: 'Fecha' },
-  { key: 'status', label: 'Estatus', align: 'center' },
-  { key: 'items', label: 'Resumen' },
+  { key: 'id', label: 'Pedido', headerClass: 'bg-azul text-white' },
+  { key: 'createdAt', label: 'Fecha', headerClass: 'bg-azul text-white' },
+  { key: 'status', label: 'Estatus', align: 'center', headerClass: 'bg-azul text-white' },
+  { key: 'items', label: 'Resumen', headerClass: 'bg-azul text-white' },
 ];
 
 // ─── Handlers ─────────────────────────────────────────────────────────────────

@@ -9,6 +9,7 @@ import type { RouteRecordRaw } from 'vue-router';
 import { RouteNames } from './route.names';
 import { AdminPermission } from './types';
 import ProductNoStock from '@/components/products/ProductNoStock.vue';
+import AdminListView from '@/views/admin/AdminListView.vue';
 
 export const adminChildren: RouteRecordRaw[] = [
   {
@@ -57,6 +58,15 @@ export const adminChildren: RouteRecordRaw[] = [
     component: ClientView,
     meta: {
       label: 'Gestión de Clientes',
+      requiresAuth: true,
+      roles: AdminPermission,
+    },
+  },
+  {
+    path: 'admins',
+    name: RouteNames.Admin.LIST_ADMINS,
+    component: AdminListView,
+    meta: {
       requiresAuth: true,
       roles: AdminPermission,
     },
