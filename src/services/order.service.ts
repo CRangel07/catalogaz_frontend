@@ -9,6 +9,7 @@ export type ItemStatus = 'pending' | 'ready' | 'unavailable';
 
 export interface UpdateItemStatusDto {
   status: ItemStatus;
+  actualQty?: number;
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -35,10 +36,15 @@ export const OrderService = {
   },
 
   // PATCH /orders/:orderId/items/:itemId/status
-  updateItemStatus(orderId: number, itemId: number, status: ItemStatus): Promise<OrderItemFull> {
+  updateItemStatus(
+    orderId: number,
+    itemId: number,
+    status: ItemStatus,
+    actualQty?: number
+  ): Promise<OrderItemFull> {
     return http<OrderItemFull>(`${BASE}/${orderId}/items/${itemId}/status`, {
       method: 'PATCH',
-      body: { status } satisfies UpdateItemStatusDto,
+      body: { status, ...(actualQty !== undefined && { actualQty }) } satisfies UpdateItemStatusDto,
     });
   },
 

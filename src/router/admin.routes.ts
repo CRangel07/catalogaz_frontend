@@ -48,7 +48,7 @@ export const adminChildren: RouteRecordRaw[] = [
     component: OrdersAdminView,
     meta: {
       requiresAuth: true,
-      roles: AdminPermission,
+      roles: [...AdminPermission, 'pedidos', 'caja'],
       label: 'Gestión de pedidos',
     },
   },

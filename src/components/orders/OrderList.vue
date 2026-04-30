@@ -269,7 +269,8 @@ const handleOrderBreakdown = (order: OrderFull) => {
 const route = useRoute();
 
 const makeFetch = async () => {
-  authStore.isAdmin && route.name !== RouteNames.Catalog.MY_ORDERS
+  (authStore.isAdmin || authStore.user?.role == 'caja' || authStore.user?.role == 'pedidos') &&
+  route.name !== RouteNames.Catalog.MY_ORDERS
     ? await fetchOrdersAdm()
     : await fetchOrdersCustomer();
 };

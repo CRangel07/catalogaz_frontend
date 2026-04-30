@@ -4,7 +4,7 @@ import { RouteNames } from './route.names';
 import { authRoutes } from './auth.routes';
 import { adminChildren } from './admin.routes';
 import { customerRoutes } from './customer.routes';
-import { AdminCustomerPermission } from './types';
+import { AllRoles } from './types';
 
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogLayout from '@/layouts/CatalogLayout.vue';
@@ -21,7 +21,7 @@ export const routes: RouteRecordRaw[] = [
         component: ProductCatalog,
         meta: {
           requiresAuth: true,
-          roles: AdminCustomerPermission,
+          roles: AllRoles,
         },
       },
       ...customerRoutes,

@@ -3,7 +3,7 @@
 export type User =
   | {
       sub: number;
-      role: 'admin';
+      role: 'admin' | 'pedidos' | 'caja';
       username: string;
     }
   | {

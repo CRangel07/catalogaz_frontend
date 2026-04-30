@@ -101,6 +101,7 @@ export interface OrderItem {
 export type OrderItemFull = {
   id: number;
   quantity: number;
+  actualQty?: number;
   unitPrice: number;
   status: ItemStatus;
   orderId: number;

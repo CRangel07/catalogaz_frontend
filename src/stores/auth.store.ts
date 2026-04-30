@@ -26,12 +26,15 @@ export const useAuthStore = defineStore('catalog_auth_store', () => {
   const isAuthenticated = computed(() => user.value !== null);
 
   const isAdmin = computed(() => user.value?.role === 'admin');
+  const isCajero = computed(() => user.value?.role === 'caja');
+  const isPedidos = computed(() => user.value?.role === 'pedidos');
 
   const userInitials = computed(() => {
     if (user.value?.role == 'admin' && !user.value.username) return '';
     if (user.value?.role == 'customer' && !user.value.name) return '';
 
-    const name = user.value?.role == 'admin' ? user.value.username : (user.value?.name ?? '');
+    const name =
+      user.value?.role != 'customer' ? (user.value?.username ?? '') : (user.value?.name ?? '');
 
     return name
       .split(' ')
@@ -153,9 +156,11 @@ export const useAuthStore = defineStore('catalog_auth_store', () => {
     authType: computed(() => authType.value),
 
     // Getters
-    isAuthenticated,
     isAdmin,
+    isCajero,
+    isPedidos,
     userInitials,
+    isAuthenticated,
 
     // Actions
     login,
