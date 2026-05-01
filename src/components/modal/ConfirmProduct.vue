@@ -2,22 +2,18 @@
   <div class="w-full max-w-sm mx-auto">
     <!-- ── Cabecera del producto ──────────────────────────────────── -->
     <div class="flex items-center gap-3 mb-5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-      <ImageNotFound
-        :url="item.product.imageThumbnailUrl"
-        :alt="item.product.name"
-        class="w-12! h-12! rounded-lg object-cover shrink-0 border border-white shadow-sm" />
       <div class="flex-1 min-w-0">
         <p class="font-bold text-sm text-slate-800 leading-tight truncate">
           {{ item.product.name }}
         </p>
-        <p class="font-mono text-xs text-slate-400 mt-0.5">#{{ item.product.code }}</p>
+        <p class="font-mono text-sm text-slate-600 mt-0.5">#{{ item.product.code }}</p>
       </div>
       <!-- Qty pedida -->
       <div
         class="flex flex-col items-center px-3 py-1.5 rounded-xl bg-naranja/8 border border-naranja/15">
-        <span class="text-xl font-black text-naranja leading-none tabular-nums">{{
-          item.quantity
-        }}</span>
+        <span class="text-xl font-black text-naranja leading-none tabular-nums">
+          {{ item.quantity }}
+        </span>
         <span class="text-[8px] font-black uppercase tracking-widest text-naranja/60 mt-0.5"
           >pedidas</span
         >
@@ -37,8 +33,8 @@
       mode="out-in">
       <div v-if="step === 'scan'" key="scan">
         <!-- Instrucción -->
-        <div class="flex items-start gap-2 mb-4 p-3 rounded-xl bg-blue-50 border border-blue-100">
-          <ScanBarcode :size="16" class="text-blue-500 shrink-0 mt-0.5" :stroke-width="2" />
+        <div class="flex items-center gap-2 mb-4 p-3 rounded-xl bg-blue-50 border border-blue-100">
+          <ScanBarcode :size="20" class="text-blue-500 shrink-0 mt-0.5" :stroke-width="2" />
           <p class="text-xs text-blue-700 font-medium leading-relaxed">
             Escanea el código de barras del producto para confirmar que es el correcto antes de
             marcarlo como listo.
@@ -61,13 +57,12 @@
             enter-from-class="opacity-0 -translate-y-1"
             enter-to-class="opacity-100 translate-y-0">
             <div v-if="scanError" class="flex items-center gap-1.5 mt-2 text-red-600">
-              <AlertCircle :size="13" :stroke-width="2.5" />
+              <AlertCircle :size="20" :stroke-width="2.5" />
               <span class="text-xs font-semibold">{{ scanError }}</span>
             </div>
           </Transition>
 
           <div class="flex items-center gap-2 mt-4">
-            <!-- Sin código (frutas, verduras, granel) -->
             <button
               type="button"
               class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border-2 border-dashed border-slate-200 text-slate-400 text-xs font-semibold hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all duration-150"
@@ -108,9 +103,9 @@
           <!-- Qty pedida (solo lectura) -->
           <div
             class="flex-1 flex flex-col items-center gap-1 p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-              >Pedidas</span
-            >
+            <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">
+              Cant. en Pedido
+            </span>
             <span class="text-3xl font-black text-slate-400 tabular-nums leading-none">
               {{ item.quantity }}
             </span>
@@ -150,8 +145,8 @@
           enter-to-class="opacity-100 translate-y-0">
           <div
             v-if="actualQty < item.quantity && actualQty > 0"
-            class="flex items-start gap-2 mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200">
-            <AlertTriangle :size="14" class="text-amber-500 shrink-0 mt-0.5" :stroke-width="2.5" />
+            class="flex items-center gap-2 mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertTriangle :size="20" class="text-amber-500 shrink-0 mt-0.5" :stroke-width="2.5" />
             <p class="text-xs text-amber-700 font-medium leading-relaxed">
               Solo hay <strong>{{ actualQty }}</strong> de
               <strong>{{ item.quantity }}</strong> pedidas. Se marcará como listo con la cantidad
@@ -184,7 +179,6 @@
 <script setup lang="ts">
 import AppInput from '../ui/forms/AppInput.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
-import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 
 import type { OrderItemFull } from '@/types/db';
 

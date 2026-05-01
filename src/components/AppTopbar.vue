@@ -27,15 +27,39 @@
     </div>
 
     <div class="flex-1" />
+
+    <div class="flex gap-4 items-center">
+      <div class="flex items-center">
+        <div class="h-8 w-8 mr-2 bg-azul grid place-items-center rounded-full text-white font-bold">
+          {{ authStore.userInitials }}
+        </div>
+        <div class="flex flex-col uppercase">
+          <span class="text-[11px] text-slate-400 font-semibold">
+            Nombre: {{ (authStore.user as UserAdmin)?.username }}
+          </span>
+          <span class="text-[11px] text-slate-400 font-semibold">
+            Rol: {{ (authStore.user as UserAdmin)?.role }}
+          </span>
+        </div>
+      </div>
+
+      <ButtonUI type="button" size="xs" :icon="LogOut" theme="cyan" @click="authStore.logout()">
+        Cerrar Sesión
+      </ButtonUI>
+    </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { ChevronRight, Menu } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth.store';
+import { ChevronRight, LogOut, Menu } from 'lucide-vue-next';
 
 import type { RouteName } from '@/router/route.names';
+
+import ButtonUI from './ui/atoms/ButtonUI.vue';
+import type { UserAdmin } from '@/types/auth.types';
 
 defineProps<{
   activeNav: string;
@@ -45,6 +69,7 @@ const emit = defineEmits<{
   'toggle-sidebar': [];
 }>();
 
+const authStore = useAuthStore();
 const route = useRoute();
 
 type Breadcrumb = {

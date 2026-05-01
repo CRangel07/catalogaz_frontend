@@ -9,9 +9,10 @@ import { ref, computed } from 'vue';
 
 type AuthType = 'otp' | 'admin' | null;
 
-type LoginPayload =
-  | { type: 'admin'; username: string; password: string }
-  | { type: 'otp'; phone: string; code: string };
+type PayloadAdmin = { type: 'admin'; username: string; password: string };
+type PayloadCustomer = { type: 'otp'; phone: string; code: string };
+
+type LoginPayload = PayloadAdmin | PayloadCustomer;
 
 // ─── Store ─────────────────────────────────────────────────────────────────
 

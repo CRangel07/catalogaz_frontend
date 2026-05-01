@@ -6,7 +6,8 @@
       :active-nav="activeNav"
       :nav-items="navItems"
       @update:active-nav="activeNav = $event"
-      @update:mobile-open="mobileSidebarOpen = $event" />
+      @update:mobile-open="mobileSidebarOpen = $event"
+      v-if="authStore.isAdmin" />
 
     <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
       <AppTopbar :active-nav="activeNav" @toggle-sidebar="toggleSidebar" />
@@ -27,8 +28,10 @@ import AppSidebar from '@/components/AppSidebar.vue';
 import type { NavItem } from '@/types/components';
 import { Contact, Home, NotebookPen, Package2 } from 'lucide-vue-next';
 import { RouteNames } from '@/router/route.names';
+import { useAuthStore } from '@/stores/auth.store';
 
 // ── State ──────────────────────────────────────────────────────────────
+const authStore = useAuthStore();
 const sidebarOpen = ref(true);
 const mobileSidebarOpen = ref(false);
 const activeNav = ref('dashboard');
