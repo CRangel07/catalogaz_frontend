@@ -17,11 +17,20 @@
         <ButtonUI
           size="sm"
           theme="success"
-          :icon="Plus"
+          :icon="Sheet"
           class="ms-auto mb-5"
           :disabled="loading"
           @click="handleModalExcelProduct()">
           Subir Desde Excel
+        </ButtonUI>
+        <ButtonUI
+          size="sm"
+          theme="success"
+          :icon="ReceiptText"
+          class="ms-auto mb-5"
+          :disabled="loading"
+          @click="handleModalMatricialProduct()">
+          Subir Matricial
         </ButtonUI>
         <ButtonUI
           size="sm"
@@ -84,17 +93,18 @@ import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import ProductFilter from '../filters/ProductFilter.vue';
 import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 import ImportProductsExcel from './ImportProductsExcel.vue';
+import ImportProductsMatricial from './ImportProductsMatricial.vue';
 
 import type { Product } from '@/types/db';
+import type { PaginatedSearch } from '../filters/types';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
-import { Cuboid, Plus, RefreshCcw } from 'lucide-vue-next';
+import { Cuboid, Plus, ReceiptText, RefreshCcw, Sheet } from 'lucide-vue-next';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { useProducts } from '@/composables/useProducts';
 import { onBeforeMount } from 'vue';
 import { useQueryState } from '@/composables/useQueryState';
-import type { PaginatedSearch } from '../filters/types';
 
 const { openModal } = useModal();
 
@@ -110,6 +120,10 @@ const handleModalProduct = (product?: Product) => {
 
 const handleModalExcelProduct = () => {
   openModal(ImportProductsExcel, { onImported: () => fetchProducts() });
+};
+
+const handleModalMatricialProduct = () => {
+  openModal(ImportProductsMatricial, { onImported: () => fetchProducts() });
 };
 
 async function fetchProductsWithQuery() {

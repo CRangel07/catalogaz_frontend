@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-1">
     <!-- Acción QR -->
-    <div class="flex justify-end mb-2" v-if="authStore.isAdmin">
+    <div class="flex justify-end mb-2" v-if="authStore.isAdmin || authStore.isCajero">
       <ButtonUI
         theme="success"
         size="sm"
@@ -60,7 +60,7 @@
                   {{ item.product.name }}
                 </p>
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span class="font-mono text-[10px] text-slate-400">#{{ item.product.code }}</span>
+                  <span class="font-mono text-[12px] text-slate-500">#{{ item.product.code }}</span>
                   <span class="text-[10px] text-slate-300">·</span>
                   <span
                     class="text-xs font-semibold transition-colors duration-200"
@@ -236,22 +236,12 @@ const allMarked = computed(() => localOrder.value.items.every((i) => i.status !=
 const loadingItem = reactive<Record<number, boolean>>({});
 const pendingStatus = reactive<Record<number, ItemStatus>>({});
 
-// ─── Verificación con promesa ─────────────────────────────────────────────────
-//
-// Abrimos ConfirmProduct y le pasamos una función `resolve` como prop.
-// El modal la llama con el resultado cuando el usuario confirma o cancela.
-// Mientras tanto, awaiteamos la promesa en toggleStatus.
-//
-// Este patrón evita que ConfirmProduct sepa algo de toggleStatus —
-// solo resuelve la promesa con datos y quien la abre decide qué hacer.
-
 function openConfirmModal(item: OrderItemFull): Promise<ConfirmProductOutcome> {
   return new Promise((resolve) => {
     const id = openModal(
       ConfirmProduct,
       {
         item,
-        // resolve cierra el modal Y devuelve el resultado a toggleStatus
         resolve: (result: ConfirmProductOutcome) => {
           closeModal(id);
           resolve(result);
@@ -259,7 +249,7 @@ function openConfirmModal(item: OrderItemFull): Promise<ConfirmProductOutcome> {
       },
       {
         title: 'Verificar producto',
-        closeOnBackdrop: false, // forzamos que el usuario decida explícitamente
+        closeOnBackdrop: false,
         closeOnEsc: false,
         size: 'sm',
       }
@@ -329,10 +319,11 @@ async function toggleStatus(item: LocalItem, newStatus: ItemStatus): Promise<voi
 // ─── QR ──────────────────────────────────────────────────────────────────────
 
 function handleQR(order: OrderFull & { items: LocalItem[] }): void {
-  const instructionQR = order.items
-    .filter((i) => i.status === 'ready')
-    .map((i) => `${i.actualQty ?? i.quantity}*${i.product.code}`)
-    .join('\r');
+  const itemsListos = order.items.filter((i) => i.status === 'ready');
+  itemsListos.forEach((i) => {
+    console.log(i.product.name, ' ', 'Cantidad:', i.quantity, ' - ', i.actualQty);
+  });
+  const instructionQR = itemsListos.map((i) => `${i.quantity}\x09${i.product.code}`).join('\r');
 
   const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
     h(

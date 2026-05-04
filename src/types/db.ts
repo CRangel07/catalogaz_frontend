@@ -196,6 +196,21 @@ export interface ImportingExcelResult {
   errors?: SkippedRow[];
 }
 
+export interface ImportingMatricialResult {
+  data: {
+    fecha: '28/Abr/26';
+    summary: {
+      linesUpserted: number;
+      skippedOffers: number;
+      totalLines: number;
+      totalParsed: number;
+      upserted: number;
+    };
+  };
+  message: string;
+  success: boolean;
+}
+
 // __________ PAGINATION _____________
 
 export interface ApiResponse<T> {

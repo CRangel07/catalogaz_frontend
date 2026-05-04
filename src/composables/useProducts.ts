@@ -121,6 +121,22 @@ export function useProducts() {
     }
   }
 
+  async function uploadMatricial(file: File): Promise<unknown> {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await ProductService.importProducMatricial(file);
+      toast.success('Archivo TXT subido correctamente');
+      return response;
+    } catch (e) {
+      error.value = (e as Error).message;
+      toast.error((e as Error).message);
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function downloadExcel(): Promise<boolean> {
     loading.value = true;
     error.value = null;
@@ -149,5 +165,6 @@ export function useProducts() {
     createProduct,
     updateProduct,
     deleteProduct,
+    uploadMatricial,
   };
 }

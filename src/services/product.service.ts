@@ -1,13 +1,13 @@
 import { http } from './http';
 
 import type {
-  CreateProductDto,
-  ImportingExcelResult,
-  PaginatedResponse,
   Product,
   ProductImage,
-  ProductUnavailable,
   UpdateProductDto,
+  CreateProductDto,
+  PaginatedResponse,
+  ProductUnavailable,
+  ImportingExcelResult,
 } from '@/types/db';
 
 export const ProductService = {
@@ -55,6 +55,12 @@ export const ProductService = {
     const formData = new FormData();
     formData.append('file', file);
     return http.post<ImportingExcelResult>(`/products/import-excel`, formData);
+  },
+
+  importProducMatricial(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return http.post<unknown>(`/price-list/upload`, formData);
   },
 
   downloadProductsTemplate(): Promise<unknown> {
