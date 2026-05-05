@@ -43,7 +43,22 @@ export type Product = {
   createdAt: Date;
   updatedAt: Date;
   id: number;
-  unitId: number | null;
+  line: {
+    code: string;
+    id: number;
+    name: string;
+  };
+  unit: {
+    code: string;
+    id: number;
+    name: string;
+  };
+};
+
+export type ProductLine = {
+  id: number;
+  code: string;
+  name: string;
 };
 
 export interface ProductCard {

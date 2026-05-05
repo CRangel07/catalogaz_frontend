@@ -1,11 +1,11 @@
 import type { PaginatedSearch } from '@/components/filters/types';
 import type {
-  CreateProductDto,
-  ImportingExcelResult,
-  PaginatedResponse,
   Product,
   ProductImage,
   UpdateProductDto,
+  CreateProductDto,
+  PaginatedResponse,
+  ImportingExcelResult,
 } from '@/types/db';
 
 import { ref } from 'vue';
@@ -23,15 +23,28 @@ export function useProducts() {
     totalPages: 0,
   });
 
-  const product = ref<Product | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const product = ref<Product | null>(null);
 
   async function fetchProducts(query?: PaginatedSearch) {
     loading.value = true;
     error.value = null;
     try {
       productsData.value = await ProductService.getAll(query);
+    } catch (e) {
+      error.value = (e as Error).message;
+      toast.error(error.value, 6000);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchLines() {
+    loading.value = true;
+    error.value = null;
+    try {
+      return await ProductService.getLines();
     } catch (e) {
       error.value = (e as Error).message;
       toast.error(error.value, 6000);
@@ -158,6 +171,7 @@ export function useProducts() {
     product,
     loading,
     error,
+    fetchLines,
     uploadExcel,
     fetchProduct,
     downloadExcel,

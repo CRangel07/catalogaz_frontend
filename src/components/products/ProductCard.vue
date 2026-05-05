@@ -1,5 +1,16 @@
 <template>
   <div class="group relative w-64 h-full cursor-pointer select-none">
+    <!-- 🔥 BADGE OFERTA -->
+    <div v-if="product.isOffer" class="absolute top-5 -right-5 z-20">
+      <div class="relative">
+        <span
+          class="bg-linear-to-r from-orange-500 to-red-500 text-white font-extrabold px-3 py-2 rounded-full shadow-lg tracking-wide">
+          🔥 OFERTA
+        </span>
+        <span class="absolute inset-0 rounded-full bg-orange-400 blur-md opacity-40"></span>
+      </div>
+    </div>
+
     <!-- Overlay no disponible -->
     <div
       v-if="!product.isActive"
@@ -88,7 +99,7 @@
 
             <!-- Subtotal -->
             <p class="text-xs text-blue-500 font-medium mt-1 h-4">
-              <span v-if="qty > 1">Subtotal: ${{ (product.price1 * qty).toFixed(2) }}</span>
+              <span v-if="qty > 1">Subtotal: ${{ (unitPrice * qty).toFixed(2) }}</span>
             </p>
           </div>
 
@@ -189,9 +200,9 @@ import ProductFullImage from './ProductFullImage.vue';
 
 import type { Product, ProductCard } from '@/types/db';
 
-import { computed, ref, watch } from 'vue';
-import { ShoppingCart } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
+import { ShoppingCart } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 import { useModal } from '@/composables/useModal';
 import { useCartStore } from '@/stores/cart.store';
@@ -223,6 +234,18 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
 // ── Computed ──────────────────────────────────────────────────────────────────
 
 // Máximo efectivo: el menor entre MAX_QTY del store y maxQuantity del producto
+const unitPrice = computed(() => {
+  if (props.product.isOffer && props.product.salePrice) {
+    return props.product.salePrice;
+  }
+
+  if (qty.value >= 4) {
+    return props.product.price4;
+  }
+
+  return props.product.price1;
+});
+
 const effectiveMax = computed(() => {
   if (props.product.maxQuantity) {
     return Math.min(cartStore.MAX_QTY, props.product.maxQuantity);
@@ -253,14 +276,14 @@ const qty = computed({
 
 // ── Precio oferta ─────────────────────────────────────────────────────────────
 
-const priceFixed = computed(() => props.product.price1.toFixed(2));
+const priceFixed = computed(() => unitPrice.value.toFixed(2));
 const priceInt = computed(() => Number(priceFixed.value.split('.')[0]));
 const priceCents = computed(() => priceFixed.value.split('.')[1]);
 
 // ── Precio normal (tachado) ───────────────────────────────────────────────────
 
 const normalPriceFixed = computed(() =>
-  props.product.salePrice ? props.product.salePrice.toFixed(2) : null
+  props.product.price1 ? props.product.price1.toFixed(2) : null
 );
 const normalPriceInt = computed(() =>
   normalPriceFixed.value ? Number(normalPriceFixed.value.split('.')[0]) : 0
@@ -288,7 +311,7 @@ function addToCart(): void {
     id: props.product.id,
     name: props.product.name,
     code: props.product.code,
-    price: props.product.price1,
+    price: unitPrice.value,
     imageThumbnailUrl: props.product.imageThumbnailUrl,
     maxQuantity: props.product.maxQuantity,
     isActive: props.product.isActive,

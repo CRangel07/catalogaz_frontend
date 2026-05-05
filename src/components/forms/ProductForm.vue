@@ -131,7 +131,7 @@ const { handleSubmit, defineField, errors, isSubmitting, setFieldValue } = useFo
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
     priceOne: props.product?.price1 ?? undefined,
-    priceFour: props.product?.price4,
+    priceFour: props.product?.price4 ?? undefined,
     isActive: props.product?.isActive ?? undefined,
     code: props.product?.code,
   },

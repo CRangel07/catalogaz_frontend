@@ -4,7 +4,8 @@
       <p class="text-xs font-bold uppercase tracking-[0.2em] text-naranja mb-1">
         Nuestros productos
       </p>
-      <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-azul leading-tight">
+      <h2
+        class="text-2xl sm:text-3xl xl:text-4xl font-black tracking-tight font-bungee text-azul leading-tight">
         Catálogo de <span class="text-sky-600">Productos</span>
       </h2>
       <div class="mt-3 flex items-center gap-2">
@@ -26,11 +27,11 @@
         <ProductFilter
           @filter="
             (q) => {
-              update({ search: q, page: 1 });
+              update({ ...q, page: 1 });
               fetchProductsWithQuery();
             }
           "
-          class="sticky top-17 z-20 bg-slate-100" />
+          class="sticky top-17 z-30 bg-slate-100" />
       </template>
       <template #table>
         <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
@@ -52,12 +53,14 @@ import PaginatedTable from '../ui/molecules/PaginatedTable.vue';
 
 import type { PaginatedSearch } from '../filters/types';
 
-import { onBeforeMount, watch } from 'vue';
 import { useProducts } from '@/composables/useProducts';
 import { useQueryState } from '@/composables/useQueryState';
+import { onBeforeMount } from 'vue';
 
 const { query, update } = useQueryState<PaginatedSearch>({
   search: '',
+  lineId: undefined,
+  isOffer: undefined,
   page: 1,
   limit: 10,
 });
@@ -66,12 +69,6 @@ async function fetchProductsWithQuery() {
   await fetchProducts(query.value);
 }
 const { fetchProducts, productsData } = useProducts();
-watch(
-  () => productsData,
-  (val) => {
-    console.log(val.value);
-  }
-);
 
 onBeforeMount(() => fetchProductsWithQuery());
 </script>

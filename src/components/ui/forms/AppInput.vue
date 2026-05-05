@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-0.5 w-full group">
-    <label class="text-azul/80 text-sm font-medium" :for="props.id">
+    <label class="text-azul/80 text-xs font-medium" :for="props.id">
       {{ props.label }}
       <span v-if="props.optional" class="text-xs align-baseline text-slate-400">(Opcional)</span>
     </label>

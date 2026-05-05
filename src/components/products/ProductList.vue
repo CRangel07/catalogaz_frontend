@@ -47,7 +47,7 @@
     <ProductFilter
       @filter="
         (q) => {
-          update({ search: q, page: 1 });
+          update({ ...q, page: 1 });
           fetchProductsWithQuery();
         }
       "
@@ -72,9 +72,70 @@
               <ImageNotFound :url="String(value)" alt="producto-imagen" />
             </div>
           </template>
-          <template #cell-isActive="{ value }">
-            <span>{{ !!value ? 'Activo' : 'Inactivo' }}</span>
+
+          <template #cell-name="{ row }">
+            {{ row.name }}
+            <p v-if="row.line" class="text-xs text-slate-500">
+              {{ row.line?.code }} |
+              {{ row.line?.name }}
+            </p>
           </template>
+
+          <template #cell-isActive="{ value }">
+            <span
+              class="px-3 py-1 rounded-full border"
+              :class="{
+                'bg-lime-100 text-lime-800 border-lime-400': value == true,
+                'bg-yellow-100 text-yellow-800 border-yellow-400 ': value == false,
+              }">
+              {{ !!value ? 'Activo' : 'Inactivo' }}
+            </span>
+          </template>
+
+          <template #cell-price1="{ row }">
+            <div class="bg-gray-50 rounded-lg p-3 min-w-max shadow-sm border border-gray-100">
+              <div class="flex flex-col gap-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Precio 1</span>
+                  <span class="font-bold text-green-600">
+                    {{ formatMXN(row.price1) }}
+                  </span>
+                </div>
+
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Precio 4</span>
+                  <span class="font-bold text-blue-600">
+                    {{ formatMXN(row.price4) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template #cell-isOffer="{ row }">
+            <div
+              class="rounded-lg p-3 border text-sm transition"
+              :class="row.isOffer ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-gray-500">Oferta</span>
+                <span
+                  class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  :class="
+                    row.isOffer ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'
+                  ">
+                  {{ row.isOffer ? 'Activa' : 'Inactiva' }}
+                </span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500 text-xs">Precio</span>
+                <span class="font-bold" :class="row.isOffer ? 'text-green-600' : 'text-gray-400'">
+                  {{ row.isOffer ? formatMXN(row.salePrice!) : '—' }}
+                </span>
+              </div>
+            </div>
+          </template>
+
           <template #actions="{ row }">
             <ActionsTools @edit="handleModalProduct(row)" />
           </template>
@@ -115,19 +176,20 @@ const { query, update } = useQueryState<PaginatedSearch>({
 });
 
 const handleModalProduct = (product?: Product) => {
-  openModal(ProductForm, { product, onSave: () => fetchProducts() });
+  openModal(ProductForm, { product, onSave: () => fetchProductsWithQuery() });
 };
 
 const handleModalExcelProduct = () => {
-  openModal(ImportProductsExcel, { onImported: () => fetchProducts() });
+  openModal(ImportProductsExcel, { onImported: () => fetchProductsWithQuery() });
 };
 
 const handleModalMatricialProduct = () => {
-  openModal(ImportProductsMatricial, { onImported: () => fetchProducts() });
+  openModal(ImportProductsMatricial, { onImported: () => fetchProductsWithQuery() });
 };
 
 async function fetchProductsWithQuery() {
   await fetchProducts(query.value);
+  console.log(productsData.value.data);
 }
 
 const { productsData, fetchProducts, loading } = useProducts();
@@ -143,10 +205,12 @@ const columns: TableColumn<Product>[] = [
   { key: 'name', label: 'Nombre', headerClass: 'bg-naranja text-white' },
   {
     key: 'price1',
-    label: 'Precio',
-    format(value) {
-      return formatMXN(Number(value));
-    },
+    label: 'Precios',
+    headerClass: 'bg-naranja text-white',
+  },
+  {
+    key: 'isOffer',
+    label: 'Oferta',
     headerClass: 'bg-naranja text-white',
   },
   { key: 'isActive', label: 'Estatus', headerClass: 'bg-naranja text-white' },
