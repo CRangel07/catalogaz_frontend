@@ -220,6 +220,8 @@ export interface ImportingMatricialResult {
       totalLines: number;
       totalParsed: number;
       upserted: number;
+      deactivated: number;
+      reactivated: number;
     };
   };
   message: string;

@@ -86,6 +86,11 @@
               :value="result.data.summary.totalLines"
               color="indigo" />
             <ResultBadge
+              v-if="result.data.summary.deactivated > 0"
+              label="Productos Desactivados"
+              :value="result.data.summary.deactivated"
+              color="indigo" />
+            <ResultBadge
               v-if="result.data.summary.totalParsed > 0"
               label="Total Elementos"
               :value="result.data.summary.totalParsed"

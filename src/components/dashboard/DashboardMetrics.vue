@@ -21,12 +21,6 @@
               :class="m.color === 'orange' ? 'text-orange-600' : 'text-blue-800'">
               {{ m.value }}
             </p>
-            <p
-              class="mt-1 flex items-center gap-1 text-[11px] font-semibold"
-              :class="m.up ? 'text-green-600' : 'text-red-500'">
-              <ArrowUp />
-              {{ m.sub }}
-            </p>
           </div>
           <div
             class="flex h-10 w-10 items-center justify-center rounded-xl"
@@ -45,7 +39,6 @@
 <script setup lang="ts">
 import AppCard from '@/components/ui/molecules/AppCard.vue';
 
-import { ArrowUp } from 'lucide-vue-next';
 import { type Metric } from '@/types/components';
 
 defineProps<{

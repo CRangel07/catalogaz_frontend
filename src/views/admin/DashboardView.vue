@@ -57,7 +57,7 @@ const metrics = computed<Metric[]>(() => {
     },
     {
       color: 'orange',
-      label: 'Productos',
+      label: 'Productos Activos',
       value: String(dataDashboard.value?.products.activeCount),
       icon: Grape,
       sub: 'Productos Activos',

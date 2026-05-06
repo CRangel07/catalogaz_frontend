@@ -320,9 +320,7 @@ async function toggleStatus(item: LocalItem, newStatus: ItemStatus): Promise<voi
 
 function handleQR(order: OrderFull & { items: LocalItem[] }): void {
   const itemsListos = order.items.filter((i) => i.status === 'ready');
-  itemsListos.forEach((i) => {
-    console.log(i.product.name, ' ', 'Cantidad:', i.quantity, ' - ', i.actualQty);
-  });
+
   const instructionQR = itemsListos.map((i) => `${i.quantity}\x09${i.product.code}`).join('\r');
 
   const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
