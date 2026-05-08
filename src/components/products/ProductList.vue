@@ -189,7 +189,6 @@ const handleModalMatricialProduct = () => {
 
 async function fetchProductsWithQuery() {
   await fetchProducts(query.value);
-  console.log(productsData.value.data);
 }
 
 const { productsData, fetchProducts, loading } = useProducts();

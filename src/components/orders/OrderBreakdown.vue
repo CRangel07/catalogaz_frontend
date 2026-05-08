@@ -55,12 +55,12 @@
               <!-- Info -->
               <div class="flex-1 min-w-0">
                 <p
-                  class="font-bold text-sm leading-tight truncate transition-all duration-200"
+                  class="font-bold leading-tight truncate transition-all duration-200"
                   :class="nameClass(item.status)">
                   {{ item.product.name }}
                 </p>
                 <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span class="font-mono text-[12px] text-slate-500">#{{ item.product.code }}</span>
+                  <span class="font-mono text-sm text-slate-700">#{{ item.product.code }}</span>
                   <span class="text-[10px] text-slate-300">·</span>
                   <span
                     class="text-xs font-semibold transition-colors duration-200"
@@ -203,6 +203,8 @@ import { QrCode, Check, X, Loader2 } from 'lucide-vue-next';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
+const CLAVE = import.meta.env.VITE_KEY_DIG_PRECIOS;
+
 type ItemStatus = 'pending' | 'ready' | 'unavailable';
 
 // Extendemos OrderItemFull localmente para guardar la qty real
@@ -321,7 +323,9 @@ async function toggleStatus(item: LocalItem, newStatus: ItemStatus): Promise<voi
 function handleQR(order: OrderFull & { items: LocalItem[] }): void {
   const itemsListos = order.items.filter((i) => i.status === 'ready');
 
-  const instructionQR = itemsListos.map((i) => `${i.quantity}\x09${i.product.code}`).join('\r');
+  const instructionQR = itemsListos
+    .map((i) => `${i.quantity}\x09\x05\x42\x06\x44${CLAVE}\r${i.product.code}\r${i.unitPrice}`)
+    .join('\r');
 
   const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
     h(

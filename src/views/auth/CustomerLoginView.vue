@@ -79,6 +79,10 @@
           Enviamos un código de 6 dígitos al número
           <span class="font-medium text-slate-700">+52 {{ phone }}</span>
         </p>
+        <p
+          class="bg-yellow-100 px-3 py-1.5 rounded-md text-xs font-medium mt-2 text-yellow-800 text-center">
+          Revisa tu carpeta de SPAM si no logras ver nuestro mensaje
+        </p>
       </div>
 
       <form class="flex flex-col gap-5" @submit.prevent="handleVerifyOtp">
