@@ -1,14 +1,12 @@
 <template>
   <div class="group relative w-64 h-full cursor-pointer select-none">
-    <!-- Badge OFERTA ribbon en esquina -->
+    <!-- Badge OFERTA pill flotante centrado arriba -->
     <div
       v-if="product.isOffer"
-      class="absolute top-0 left-0 z-20 overflow-hidden w-[72px] h-[72px] pointer-events-none rounded-tl-2xl">
-      <div
-        class="absolute -left-8 -top-8 w-24 h-24 bg-gradient-to-br from-orange-500 to-red-500 rotate-45 shadow-lg" />
+      class="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
       <span
-        class="absolute top-3.5 left-0 w-14 text-center text-[8px] font-black text-white uppercase tracking-widest rotate-[-45deg] leading-none">
-        OFERTA
+        class="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(239,68,68,0.4)]">
+        🔥 OFERTA
       </span>
     </div>
 
@@ -93,6 +91,7 @@
                 </p>
               </div>
               <div
+                v-if="Number(savings) > 0"
                 class="flex flex-col items-center bg-orange-50 border border-orange-200 rounded-xl px-2 py-1.5 shrink-0">
                 <span
                   class="text-[8px] font-black uppercase tracking-widest text-orange-400 leading-none"

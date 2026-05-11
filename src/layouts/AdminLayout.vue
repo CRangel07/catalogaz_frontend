@@ -91,7 +91,10 @@ const navItems: NavItem[] = [
 
 // ── Handlers ──────────────────────────────────────────────────────────
 function toggleSidebar() {
-  sidebarOpen.value = !sidebarOpen.value;
-  mobileSidebarOpen.value = !mobileSidebarOpen.value;
+  if (window.innerWidth < 1024) {
+    mobileSidebarOpen.value = !mobileSidebarOpen.value;
+  } else {
+    sidebarOpen.value = !sidebarOpen.value;
+  }
 }
 </script>

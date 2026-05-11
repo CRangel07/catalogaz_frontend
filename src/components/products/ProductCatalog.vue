@@ -31,12 +31,12 @@
               fetchProductsWithQuery();
             }
           "
-          class="sticky top-17 z-30 bg-slate-100" />
+          class="lg:sticky top-17 z-30 bg-slate-100" />
       </template>
       <template #table>
-        <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-stretch">
+        <div class="grid grid-cols-12 gap-x-2 gap-y-5 md:w-full items-center lg:items-stretch">
           <ProductCard
-            class="col-span-full sm:col-span-4 lg:col-span-3"
+            class="col-span-full m-auto sm:col-span-4 lg:col-span-3"
             v-for="p in productsData.data"
             :key="p.id"
             :product="p" />

@@ -53,7 +53,7 @@
           </button>
         </div>
         <div
-          class="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-naranja via-orange-300 to-azul" />
+          class="absolute bottom-0 left-0 h-1 w-full bg-linear-to-r from-naranja via-orange-300 to-azul" />
       </div>
 
       <!-- Lista de productos -->
@@ -85,7 +85,7 @@
             :key="item.id"
             class="group/item flex items-center gap-3 rounded-2xl border border-blue-50 bg-white p-3 shadow-[0_2px_12px_rgba(30,64,175,0.07)] transition-all duration-300 hover:border-orange-100 hover:shadow-[0_4px_16px_rgba(249,115,22,0.1)]">
             <div
-              class="relative h-16 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+              class="relative h-16 w-14 shrink-0 overflow-hidden rounded-xl bg-linear-to-b from-blue-50 to-white flex items-center justify-center">
               <ImageNotFound :url="item.imageThumbnailUrl" :alt="item.name + ' imagen'" />
             </div>
             <div class="flex-1 min-w-0">
@@ -147,12 +147,12 @@
         <button
           @click="handleConfirmButton"
           :disabled="loading"
-          class="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 hover:shadow-[0_8px_28px_rgba(249,115,22,0.5)] active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-none">
+          class="w-full flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-orange-500 to-orange-600 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 hover:shadow-[0_8px_28px_rgba(249,115,22,0.5)] active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-none">
           <CheckCircle class="h-5 w-5" />
           {{ loading ? 'Guardando…' : 'Confirmar Pedido' }}
         </button>
         <button
-          @click="cart.clearCart()"
+          @click="handleCleanCart"
           class="w-full text-center text-xs text-slate-400 hover:text-red-400 transition-colors font-medium">
           Vaciar carrito
         </button>
@@ -203,10 +203,11 @@ import ConfirmOrderModal from '../modal/ConfirmOrderModal.vue';
 
 import type { CreateOrderItemDto } from '@/types/db';
 
-import { ref, watch } from 'vue';
 import { useModal } from '@/composables/useModal';
 import { useRouter } from 'vue-router';
 import { useOrders } from '@/composables/useOrders';
+import { RouteNames } from '@/router/route.names';
+import { ref, watch } from 'vue';
 import { useCartStore } from '@/stores/cart.store';
 import { ShoppingCart, X, Trash2, CheckCircle } from 'lucide-vue-next';
 
@@ -216,16 +217,6 @@ const { createOrder, loading } = useOrders();
 const cart = useCartStore();
 const notes = ref<string>('');
 const router = useRouter();
-
-// ── Auto-cierre de la pantalla de confirmación ────────────────────────────────
-//
-// Bug corregido: antes la pantalla de confirmación quedaba visible
-// indefinidamente bloqueando el carrito aunque el usuario ya quisiera
-// hacer otro pedido.
-//
-// Fix: un timer de 3s cierra la pantalla automáticamente.
-// El usuario también puede cerrarla manualmente con el botón.
-// La barra de progreso muestra cuánto tiempo queda.
 
 const AUTO_CLOSE_DURATION = 3000;
 const autoCloseProgress = ref(100);
@@ -308,8 +299,13 @@ const handleConfirmButton = (): void => {
   );
 };
 
+const handleCleanCart = () => {
+  const confirm = window.confirm('¿Estás segur@ de vaciar el carrito?');
+  if (confirm) cart.clearCart();
+};
+
 const handleShowCatalog = (): void => {
-  router.push({ name: 'catalogaz_catalog_list' });
+  router.push({ name: RouteNames.Catalog.PRODUCTS });
   cart.isOpen = false;
 };
 </script>

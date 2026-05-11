@@ -1,13 +1,15 @@
 <template>
-  <form @submit.prevent="applyFilter" class="flex bg-white p-4 rounded-xl items-end gap-5">
+  <form
+    @submit.prevent="applyFilter"
+    class="grid grid-cols-12 items-end bg-white p-4 rounded-xl gap-5">
     <AppInput
       id="cat-prod-busqueda"
       label="Busca por código o por nombre"
       type="text"
       v-model.trim="filter.search"
-      class="grow!" />
+      class="grow! col-span-full lg:col-span-5" />
 
-    <div class="w-[10%] self-center">
+    <div class="w-[10%] self-center m-auto col-span-2 lg:col-span-1">
       <label class="flex select-none cursor-pointer flex-col-reverse items-center gap-2">
         <input
           type="checkbox"
@@ -20,7 +22,7 @@
       </label>
     </div>
 
-    <div class="flex w-[40%] flex-col gap-0.5">
+    <div class="flex w-full flex-col gap-0.5 col-span-6 lg:col-span-4">
       <label class="text-xs font-medium text-azul/80" for="cat-prod-linea">Categoria</label>
       <div class="relative">
         <Tags
@@ -45,7 +47,13 @@
       <span v-if="error" class="text-xs font-medium text-red-400">{{ error }}</span>
     </div>
 
-    <ButtonUI size="sm" theme="warning" type="submit" :icon="Search" icon-position="right">
+    <ButtonUI
+      size="sm"
+      theme="warning"
+      type="submit"
+      class="col-span-3 lg:col-span-2"
+      :icon="Search"
+      icon-position="right">
       Buscar
     </ButtonUI>
   </form>

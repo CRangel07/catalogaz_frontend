@@ -332,9 +332,9 @@ function handleQR(order: OrderFull & { items: LocalItem[] }): void {
       'p',
       {
         class:
-          'text-xs uppercase font-semibold rounded-xl text-yellow-800 text-center bg-yellow-200 p-3 whitespace-pre-line',
+          'text-xs uppercase font-semibold rounded-xl text--800 text-center bg-cyan-200 p-3 whitespace-pre-line',
       },
-      'Escanea en Compucaja para agregar productos Listos\n\nNo olvides revisar existencias suficientes en Compucaja'
+      'Escanea en Compucaja para agregar productos Listos\n\nSi la lista no es correcta hay un producto sin existencia suficiente en sistema'
     ),
     h(QRCode, {
       value: instructionQR,
