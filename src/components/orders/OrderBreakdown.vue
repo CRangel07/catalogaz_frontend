@@ -327,6 +327,11 @@ function handleQR(order: OrderFull & { items: LocalItem[] }): void {
     .map((i) => `${i.quantity}\x09\x05\x42\x06\x44${CLAVE}\r${i.product.code}\r${i.unitPrice}`)
     .join('\r');
 
+  if (!instructionQR) {
+    alert('No hay contenido para generar el QR');
+    return;
+  }
+
   const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
     h(
       'p',

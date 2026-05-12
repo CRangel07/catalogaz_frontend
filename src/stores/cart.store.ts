@@ -4,6 +4,10 @@ import type { ProductCard } from '@/types/db';
 
 export interface CartItem extends ProductCard {
   qty: number;
+  price1: number;
+  price4: number;
+  salePrice?: number | null;
+  isOffer: boolean;
 }
 
 export const useCartStore = defineStore(
@@ -34,7 +38,7 @@ export const useCartStore = defineStore(
       { deep: true, immediate: true }
     );
 
-    const totalItems = computed(() => items.value.reduce((sum, item) => sum + item.qty, 0));
+    const totalItems = computed(() => items.value.reduce((sum, item) => sum + 1, 0));
 
     const totalPrice = computed(() =>
       items.value.reduce((sum, item) => sum + item.price * item.qty, 0).toFixed(2)
@@ -45,7 +49,7 @@ export const useCartStore = defineStore(
     // -------------------------
     // 🛒 ACTIONS
     // -------------------------
-    function addItem(product: ProductCard, qty = 1): void {
+    function addItem(product: CartItem, qty = 1): void {
       const safeQty = Math.max(1, qty);
       const existing = itemsMap.value.get(product.id);
 

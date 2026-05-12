@@ -5,7 +5,7 @@
       v-if="product.isOffer"
       class="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
       <span
-        class="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(239,68,68,0.4)]">
+        class="flex items-center gap-1 bg-linear-to-r from-orange-500 to-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(239,68,68,0.4)]">
         🔥 OFERTA
       </span>
     </div>
@@ -25,13 +25,13 @@
         class="h-2.5 w-full shrink-0"
         :class="
           product.isOffer
-            ? 'bg-gradient-to-r from-orange-500 via-red-400 to-orange-500'
-            : 'bg-gradient-to-r from-azul to-naranja'
+            ? 'bg-linear-to-r from-orange-500 via-red-400 to-orange-500'
+            : 'bg-linear-to-r from-azul to-naranja'
         " />
 
       <!-- Image area -->
       <div
-        class="relative flex items-end justify-center bg-gradient-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500"
+        class="relative flex items-end justify-center bg-linear-to-b from-blue-50 to-white px-6 pb-2 pt-8 transition-transform duration-500"
         :class="{ 'group-hover:scale-105': product.isActive }"
         @click.stop="handleClick">
         <div
@@ -63,7 +63,7 @@
             {{ product.name }}
           </h3>
 
-          <div class="my-2 h-px bg-gradient-to-r from-naranja/60 via-naranja/30 to-transparent" />
+          <div class="my-2 h-px bg-linear-to-r from-naranja/60 via-naranja/30 to-transparent" />
 
           <p
             v-if="product.description"
@@ -216,7 +216,7 @@
               class="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-white transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
               :class="
                 product.isOffer
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-[0_4px_14px_rgba(239,68,68,0.3)]'
+                  ? 'bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-[0_4px_14px_rgba(239,68,68,0.3)]'
                   : 'bg-naranja hover:bg-orange-600 shadow-[0_4px_14px_rgba(249,115,22,0.35)]'
               ">
               <ShoppingCart :size="14" />
@@ -264,14 +264,14 @@
 import Image from '../ui/molecules/ImageNotFound.vue';
 import ProductFullImage from './ProductFullImage.vue';
 
-import type { Product, ProductCard } from '@/types/db';
+import type { Product } from '@/types/db';
 
 import { storeToRefs } from 'pinia';
 import { ShoppingCart } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 import { useModal } from '@/composables/useModal';
-import { useCartStore } from '@/stores/cart.store';
+import { useCartStore, type CartItem } from '@/stores/cart.store';
 import { formatMXNNoCents } from '@/helpers/currencyMxn';
 
 const cartStore = useCartStore();
@@ -338,14 +338,26 @@ function decrement(): void {
 
 function addToCart(): void {
   if (!props.product.isActive) return;
-  const productCard: ProductCard = {
+  const productCard: CartItem = {
     id: props.product.id,
     name: props.product.name,
     code: props.product.code,
+
+    // precio actual (opcional)
     price: unitPrice.value,
+
+    // precios reales
+    price1: Number(props.product.price1),
+    price4: Number(props.product.price4),
+    salePrice: props.product.salePrice ? Number(props.product.salePrice) : null,
+
+    isOffer: props.product.isOffer,
+
     imageThumbnailUrl: props.product.imageThumbnailUrl,
     maxQuantity: props.product.maxQuantity,
     isActive: props.product.isActive,
+
+    qty: 1,
   };
   lastAdded.value = localQty.value;
   cartStore.addItem(productCard, localQty.value);

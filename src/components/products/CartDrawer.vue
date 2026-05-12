@@ -2,7 +2,7 @@
   <!-- Botón flotante -->
   <button
     @click="cart.isOpen = true"
-    class="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-2xl bg-azul px-5 py-3.5 text-white shadow-[0_8px_30px_rgba(30,64,175,0.45)] transition-all duration-300 hover:bg-sky-700 cursor-pointer hover:shadow-[0_12px_36px_rgba(30,64,175,0.55)] hover:-translate-y-1 active:scale-95">
+    class="fixed bottom-6 right-6 z-100 flex items-center gap-3 rounded-2xl bg-azul px-5 py-3.5 text-white shadow-[0_8px_30px_rgba(30,64,175,0.45)] transition-all duration-300 hover:bg-sky-700 cursor-pointer hover:shadow-[0_12px_36px_rgba(30,64,175,0.55)] hover:-translate-y-1 active:scale-95">
     <div class="relative">
       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
         <path
@@ -36,7 +36,7 @@
   <Transition name="slide">
     <div
       v-if="cart.isOpen"
-      class="fixed right-0 top-0 z-210 flex h-full w-full max-w-sm flex-col bg-white shadow-[-8px_0_48px_rgba(30,64,175,0.18)]">
+      class="fixed right-0 top-0 z-1000 flex h-full w-full max-w-sm flex-col bg-white shadow-[-8px_0_48px_rgba(30,64,175,0.18)]">
       <!-- Header -->
       <div class="relative overflow-hidden bg-azul px-6 py-5 shrink-0">
         <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-700/70" />
@@ -89,12 +89,17 @@
               <ImageNotFound :url="item.imageThumbnailUrl" :alt="item.name + ' imagen'" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-[10px] font-semibold uppercase tracking-wider text-blue-400">
+              <p
+                class="text-[12px] font-mono font-semibold uppercase tracking-wider text-slate-500">
                 {{ item.code }}
               </p>
               <p class="truncate text-sm font-bold text-blue-900">{{ item.name }}</p>
-              <p class="text-xs font-medium text-orange-500">${{ item.price.toFixed(2) }} c/u</p>
-              <p class="font-bold text-azul text-sm">${{ (item.price * item.qty).toFixed(2) }}</p>
+              <p class="text-xs font-medium text-orange-500">
+                {{ formatMXN(resolveUnitPrice(item)) }} c/u
+              </p>
+              <p class="font-bold text-azul text-sm">
+                {{ formatMXN(resolveUnitPrice(item) * item.qty) }}
+              </p>
             </div>
             <!-- Contador -->
             <div class="flex flex-col items-center gap-1">
@@ -210,6 +215,8 @@ import { RouteNames } from '@/router/route.names';
 import { ref, watch } from 'vue';
 import { useCartStore } from '@/stores/cart.store';
 import { ShoppingCart, X, Trash2, CheckCircle } from 'lucide-vue-next';
+import { formatMXN } from '@/helpers/currencyMxn';
+import { resolveUnitPrice } from '@/helpers/resolve-unit-price';
 
 const { openModal, closeModal } = useModal();
 const { createOrder, loading } = useOrders();
