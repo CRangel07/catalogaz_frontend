@@ -49,7 +49,7 @@ export const authService = {
   },
 
   async loginAdmin(data: { username: string; password: string }): Promise<{ message: string }> {
-    const response = await http.post<{ message: string }>('/auth/admin/login', data);
+    const response = await http.post<{ message: string }>('/auth/login', data);
     return response;
   },
 

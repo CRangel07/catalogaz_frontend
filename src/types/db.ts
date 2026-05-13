@@ -14,6 +14,7 @@ export interface Admin {
   role: AdminRole;
   createdAt: Date;
   updatedAt: Date;
+  phone?: string;
 }
 
 export interface Customer {
@@ -115,17 +116,20 @@ export interface OrderItem {
 
 export type OrderItemFull = {
   id: number;
-  quantity: number;
-  actualQty?: number;
-  unitPrice: number;
-  status: ItemStatus;
   orderId: number;
+  overrideBy: number | null;
+  overridePrice: number | null;
+  overrideReason: string | null;
   product: {
     id: number;
     name: string;
     code: string;
     imageThumbnailUrl: string | null;
   };
+  productId: number;
+  quantity: number;
+  status: ItemStatus;
+  unitPrice: number;
   orderResolved?: OrderStatus;
 };
 

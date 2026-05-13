@@ -59,13 +59,14 @@
                   :class="nameClass(item.status)">
                   {{ item.product.name }}
                 </p>
-                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span class="font-mono text-sm text-slate-700">#{{ item.product.code }}</span>
-                  <span class="text-[10px] text-slate-300">·</span>
+                <div class="flex items-baseline justify-between gap-2 mt-0.5 flex-wrap">
+                  <span class="font-mono text-sm tabular-nums text-slate-800">
+                    #{{ item.product.code }}
+                  </span>
                   <span
-                    class="text-xs font-semibold transition-colors duration-200"
+                    class="text-sm font-num text-slate-500 font-bold tabular-nums transition-colors duration-200"
                     :class="priceClass(item.status)">
-                    {{ formatMXN(item.unitPrice) }} c/u
+                    {{ formatMXN(item.overridePrice ?? item.unitPrice) }} c/u
                   </span>
                 </div>
                 <!-- Qty real si fue diferente a la pedida -->
@@ -85,9 +86,9 @@
                 <span class="text-xl font-black leading-none tabular-nums">
                   {{ item.actualQty ?? item.quantity }}
                 </span>
-                <span class="text-[8px] font-bold uppercase tracking-widest mt-0.5 opacity-60"
-                  >uds</span
-                >
+                <span class="text-[8px] font-bold uppercase tracking-widest mt-0.5 opacity-60">
+                  uds
+                </span>
               </div>
 
               <!-- Switches (admin / pedidos / caja) -->
@@ -170,12 +171,56 @@
               <div class="shrink-0 text-right min-w-14">
                 <p class="text-[9px] uppercase tracking-wide font-medium text-slate-400">Total</p>
                 <p
-                  class="text-sm font-extrabold transition-colors duration-200"
+                  class="font-num text-slate-500 text-lg font-bold tabular-nums line-through"
+                  v-if="item.overridePrice">
+                  {{ formatMXN(item.unitPrice) }}
+                </p>
+                <p
+                  class="font-num text-azul text-xl font-bold tabular-nums"
                   :class="nameClass(item.status)">
-                  {{ formatMXN((item.actualQty ?? item.quantity) * item.unitPrice) }}
+                  {{
+                    formatMXN(
+                      (item.actualQty ?? item.quantity) * (item.overridePrice ?? item.unitPrice)
+                    )
+                  }}
                 </p>
               </div>
+
+              <!-- Botón precio especial (solo admin) -->
+              <button
+                v-if="
+                  authStore.isAdmin &&
+                  localOrder.status !== 'ready' &&
+                  localOrder.status !== 'cancelled'
+                "
+                @click="openOverrideModal(item)"
+                class="shrink-0 flex flex-col items-center gap-0.5 group/price"
+                :title="
+                  item.overridePrice
+                    ? 'Precio especial activo — click para editar'
+                    : 'Aplicar precio especial'
+                ">
+                <div
+                  class="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-150"
+                  :class="
+                    item.overridePrice
+                      ? 'bg-teal-200 text-teal-600 hover:bg-teal-200'
+                      : 'bg-slate-200 text-slate-600 hover:bg-slate-200 hover:text-slate-600'
+                  ">
+                  <BadgeDollarSign :size="14" :stroke-width="2" />
+                </div>
+                <!-- Punto indicador cuando hay override activo -->
+                <span
+                  v-if="item.overridePrice"
+                  class="w-1.5 h-1.5 mt-0.5 rounded-full bg-teal-400 block" />
+              </button>
             </div>
+            <p
+              :class="badgeClass(item.status)"
+              class="px-2 rounded-xl text-center font-medium font-bungee py-1"
+              v-if="item.overridePrice">
+              Se le ha concedido un precio especial!
+            </p>
           </div>
         </div>
       </div>
@@ -189,17 +234,18 @@ import QRCode from '../general/QRCode.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import ConfirmProduct from '../modal/ConfirmProduct.vue';
-import type { ConfirmProductOutcome } from '../modal/ConfirmProduct.vue';
+import OrderOverridePrice from './OrderOverridePrice.vue';
 
+import type { ConfirmProductOutcome } from '../modal/ConfirmProduct.vue';
 import type { OrderFull, OrderItemFull } from '@/types/db';
 
-import { computed, h, reactive, ref } from 'vue';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { OrderService } from '@/services/order.service';
 import { useAuthStore } from '@/stores/auth.store';
 import { useToastStore } from '@/stores/toast.store';
-import { QrCode, Check, X, Loader2 } from 'lucide-vue-next';
+import { computed, h, reactive, ref } from 'vue';
+import { QrCode, Check, X, Loader2, BadgeDollarSign } from 'lucide-vue-next';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -214,7 +260,7 @@ type LocalItem = OrderItemFull & { actualQty?: number };
 
 const authStore = useAuthStore();
 const toast = useToastStore();
-const { openModal, closeModal } = useModal();
+const { openModal, closeModal, closeAllModals } = useModal();
 
 // ─── Props / Emits ────────────────────────────────────────────────────────────
 
@@ -257,6 +303,26 @@ function openConfirmModal(item: OrderItemFull): Promise<ConfirmProductOutcome> {
       }
     );
   });
+}
+
+function openOverrideModal(item: LocalItem): void {
+  openModal(
+    OrderOverridePrice,
+    {
+      item,
+      orderId: localOrder.value.id,
+      onSuccess: () => {
+        closeAllModals();
+        emit('update:order', props.order);
+      },
+    },
+    {
+      title: 'Precio especial',
+      closeOnBackdrop: true,
+      closeOnEsc: true,
+      size: 'sm',
+    }
+  );
 }
 
 // ─── Toggle de status ─────────────────────────────────────────────────────────
@@ -324,7 +390,13 @@ function handleQR(order: OrderFull & { items: LocalItem[] }): void {
   const itemsListos = order.items.filter((i) => i.status === 'ready');
 
   const instructionQR = itemsListos
-    .map((i) => `${i.quantity}\x09\x05\x42\x06\x44${CLAVE}\r${i.product.code}\r${i.unitPrice}`)
+    .map((i) => {
+      const cantidad = i.quantity;
+      const tab = '\x09';
+      const digitarPrecio = `\x05\x42\x06\x44`;
+      const precioATomar = i.overridePrice ?? i.unitPrice;
+      return `${cantidad}${tab}${digitarPrecio}${CLAVE}\r${i.product.code}\r${precioATomar}`;
+    })
     .join('\r');
 
   if (!instructionQR) {
@@ -377,7 +449,7 @@ function priceClass(status: ItemStatus): string {
 function qtyClass(status: ItemStatus): string {
   if (status === 'ready') return 'bg-emerald-100 border-emerald-200 text-emerald-700';
   if (status === 'unavailable') return 'bg-red-100 border-red-200 text-red-500';
-  return 'bg-naranja/5 border-naranja/20 text-naranja';
+  return 'bg-slate-100 border-slate-400/10 text-slate-700';
 }
 function badgeClass(status: ItemStatus): string {
   if (status === 'ready') return 'bg-emerald-100 text-emerald-700';

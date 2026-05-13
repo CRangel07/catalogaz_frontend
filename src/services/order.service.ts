@@ -12,6 +12,11 @@ export interface UpdateItemStatusDto {
   actualQty?: number;
 }
 
+export interface OverrideItemPriceDto {
+  overridePrice: number;
+  overrideReason: string;
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const OrderService = {
@@ -45,6 +50,25 @@ export const OrderService = {
     return http<OrderItemFull>(`${BASE}/${orderId}/items/${itemId}/status`, {
       method: 'PATCH',
       body: { status, ...(actualQty !== undefined && { actualQty }) } satisfies UpdateItemStatusDto,
+    });
+  },
+
+  // PATCH /orders/:orderId/items/:itemId/price
+  overrideItemPrice(
+    orderId: number,
+    itemId: number,
+    dto: OverrideItemPriceDto
+  ): Promise<OrderItemFull> {
+    return http<OrderItemFull>(`${BASE}/${orderId}/items/${itemId}/price`, {
+      method: 'PATCH',
+      body: dto,
+    });
+  },
+
+  // DELETE /orders/:orderId/items/:itemId/price
+  clearItemPriceOverride(orderId: number, itemId: number): Promise<{ message: string }> {
+    return http<{ message: string }>(`${BASE}/${orderId}/items/${itemId}/price`, {
+      method: 'DELETE',
     });
   },
 

@@ -28,6 +28,15 @@
       :attrs-vee="passwordAttrs"
       :errors="errors.password" />
 
+    <AppInput
+      v-if="role == 'cliente'"
+      id="admin-number"
+      label="Número telefono"
+      v-model="phone"
+      :type="'text'"
+      :attrs-vee="phoneAttrs"
+      :errors="errors.phone" />
+
     <AppSelect
       v-model="role"
       :attrs-vee="roleAttrs"
@@ -37,6 +46,7 @@
         { label: 'Administrador Total', value: 'admin' },
         { label: 'Surtidor Pedidos', value: 'pedidos' },
         { label: 'Cajas', value: 'caja' },
+        { label: 'Usuario Tipo Cliente', value: 'cliente' },
       ]" />
 
     <ButtonUI :disabled="loading" :icon="Save" theme="info" class="ms-auto" type="submit">
@@ -74,6 +84,7 @@ const { handleSubmit, defineField, errors } = useForm({
     role: props.admin?.role ?? 'pedidos',
     name: props.admin?.name,
     username: props.admin?.username,
+    phone: props.admin?.phone,
   },
 });
 
@@ -89,6 +100,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 const [role, roleAttrs] = defineField('role');
 const [name, nameAttrs] = defineField('name');
+const [phone, phoneAttrs] = defineField('phone');
 const [username, usernameAttrs] = defineField('username');
 const [password, passwordAttrs] = defineField('password');
 </script>

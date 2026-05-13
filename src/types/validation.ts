@@ -13,7 +13,8 @@ export const CreateAdminDto = z.object({
   name: z.string(),
   username: z.string(),
   password: z.string(),
-  role: z.enum(['admin', 'pedidos', 'caja']),
+  role: z.enum(['admin', 'pedidos', 'caja', 'cliente']),
+  phone: z.string().optional(),
 });
 
 export const UpdateAdminDto = z.object({
@@ -21,6 +22,7 @@ export const UpdateAdminDto = z.object({
   username: z.string(),
   password: z.string().optional(),
   role: z.enum(['admin', 'pedidos', 'caja']),
+  phone: z.string().optional(),
 });
 
 export type CreateAdmin = z.infer<typeof CreateAdminDto>;
