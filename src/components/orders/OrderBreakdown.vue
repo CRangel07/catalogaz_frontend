@@ -1,7 +1,21 @@
 <template>
   <div class="flex flex-col gap-1">
     <!-- Acción QR -->
-    <div class="flex justify-end mb-2" v-if="authStore.isAdmin || authStore.isCajero">
+    <form @submit.prevent="handleFormEntries" :id="'entries-form'">
+      <button type="submit" id="form-entries-btn" class="hidden"></button>
+    </form>
+
+    <div class="flex justify-end gap-3 mb-2" v-if="authStore.isAdmin || authStore.isCajero">
+      <ButtonUI
+        v-if="authStore.isAdmin && props.order.status == 'ready'"
+        theme="warning"
+        size="sm"
+        :icon="QrCode"
+        :disabled="!allMarked"
+        :title="'Generar entradas de inventario'"
+        @click="makeSubmit">
+        Generar Entradas Inv.
+      </ButtonUI>
       <ButtonUI
         theme="success"
         size="sm"
@@ -9,7 +23,7 @@
         :disabled="!allMarked"
         :title="allMarked ? 'Click para generar QR' : 'Todos los items deben estar marcados'"
         @click="handleQR(localOrder)">
-        Generar QR
+        Generar QR Cobro
       </ButtonUI>
     </div>
 
@@ -186,34 +200,49 @@
                 </p>
               </div>
 
-              <!-- Botón precio especial (solo admin) -->
-              <button
-                v-if="
-                  authStore.isAdmin &&
-                  localOrder.status !== 'ready' &&
-                  localOrder.status !== 'cancelled'
-                "
-                @click="openOverrideModal(item)"
-                class="shrink-0 flex flex-col items-center gap-0.5 group/price"
-                :title="
-                  item.overridePrice
-                    ? 'Precio especial activo — click para editar'
-                    : 'Aplicar precio especial'
-                ">
-                <div
-                  class="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-150"
-                  :class="
+              <div class="flex flex-col gap-2">
+                <!-- Botón precio especial (solo admin) -->
+                <button
+                  v-if="
+                    authStore.isAdmin &&
+                    localOrder.status !== 'ready' &&
+                    localOrder.status !== 'cancelled'
+                  "
+                  @click="openOverrideModal(item)"
+                  class="shrink-0 flex flex-col items-center gap-0.5 group/price"
+                  :title="
                     item.overridePrice
-                      ? 'bg-teal-200 text-teal-600 hover:bg-teal-200'
-                      : 'bg-slate-200 text-slate-600 hover:bg-slate-200 hover:text-slate-600'
+                      ? 'Precio especial activo — click para editar'
+                      : 'Aplicar precio especial'
                   ">
-                  <BadgeDollarSign :size="14" :stroke-width="2" />
-                </div>
-                <!-- Punto indicador cuando hay override activo -->
-                <span
-                  v-if="item.overridePrice"
-                  class="w-1.5 h-1.5 mt-0.5 rounded-full bg-teal-400 block" />
-              </button>
+                  <div
+                    class="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-150"
+                    :class="
+                      item.overridePrice
+                        ? 'bg-teal-200 text-teal-600 hover:bg-teal-200'
+                        : 'bg-slate-200 text-slate-600 hover:bg-slate-200 hover:text-slate-600'
+                    ">
+                    <BadgeDollarSign :size="14" :stroke-width="2" />
+                  </div>
+                  <!-- Punto indicador cuando hay override activo -->
+                  <span
+                    v-if="item.overridePrice"
+                    class="w-1.5 h-1.5 mt-0.5 rounded-full bg-teal-400 block" />
+                </button>
+
+                <AppInput
+                  v-if="authStore.isAdmin && order.status === 'ready'"
+                  class="max-w-max font-bold"
+                  type="number"
+                  :attrs="{
+                    name: item.product.code,
+                    min: 1,
+                    max: item.quantity,
+                    form: 'entries-form',
+                  }"
+                  :label="'Entrada'"
+                  :id="item.product.code + '-entrada'" />
+              </div>
             </div>
             <p
               :class="badgeClass(item.status)"
@@ -232,6 +261,7 @@
 import Logo from '@/assets/logo.png';
 import QRCode from '../general/QRCode.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
+import AppInput from '../ui/forms/AppInput.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';
 import ConfirmProduct from '../modal/ConfirmProduct.vue';
 import OrderOverridePrice from './OrderOverridePrice.vue';
@@ -325,6 +355,57 @@ function openOverrideModal(item: LocalItem): void {
   );
 }
 
+const makeSubmit = () => {
+  const formButton = document.getElementById('form-entries-btn') as HTMLFormElement;
+  formButton.click();
+};
+
+const handleFormEntries = (e: Event) => {
+  e.preventDefault();
+  const form = e.target as HTMLFormElement;
+  const formData = new FormData(form);
+  const arrayKeyValues = Array.from(formData.entries());
+  const array = arrayKeyValues
+    .filter((a) => {
+      if (a[1] === '' || Number(a[1]) === 0) {
+        return false;
+      }
+      return true;
+    })
+    .map<{ qty: number; code: string }>((i) => ({ code: i[0], qty: Number(i[1]) }));
+
+  if (array.length === 0) {
+    alert('No hay entradas de inventario por generar');
+    return;
+  }
+
+  const instructionQR = `CEI0266\r\r\r\r\rPED${props.order.id}\r5\r${array.map((i) => `${i.code}\r${i.qty}`).join('\r')}`;
+
+  if (!instructionQR) {
+    alert('No hay contenido para generar el QR');
+    return;
+  }
+
+  const content = h('div', { class: 'flex flex-col items-center gap-2' }, [
+    h(
+      'p',
+      {
+        class:
+          'text-xs uppercase font-semibold rounded-xl text--800 text-center bg-cyan-200 p-3 whitespace-pre-line',
+      },
+      'Escanea en Compucaja para generar estas entradas de inventario\n\nLa entrada se generara con referencia con el número de pedido'
+    ),
+    h(QRCode, {
+      value: instructionQR,
+      size: 300,
+      logoUrl: Logo,
+      downloadName: `qr-entradas`,
+    }),
+  ]);
+
+  openModal(content, {}, { closeOnBackdrop: true });
+};
+
 // ─── Toggle de status ─────────────────────────────────────────────────────────
 
 async function toggleStatus(item: LocalItem, newStatus: ItemStatus): Promise<void> {
@@ -334,14 +415,11 @@ async function toggleStatus(item: LocalItem, newStatus: ItemStatus): Promise<voi
   const idx = localOrder.value.items.findIndex((i) => i.id === item.id);
   if (idx === -1) return;
 
-  // Solo pedimos verificación cuando se quiere marcar como READY
-  // Para 'unavailable' o revertir a 'pending' no hace falta verificar
   let actualQty = item.quantity;
 
   if (targetStatus === 'ready') {
     const result = await openConfirmModal(item);
 
-    // Si el usuario cerró el modal o canceló → abortamos sin cambios
     if (!result.confirmed) return;
 
     actualQty = result.actualQty;

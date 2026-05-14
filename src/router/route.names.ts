@@ -20,6 +20,7 @@ export const RouteNames = {
     ORDERS: 'catalogaz_admin_orders',
     CLIENTS: 'catalogaz_admin_clients',
     SETTINGS: 'catalogaz_admin_settings',
+    TOOLS: 'catalogaz_admin_tools',
   },
 
   // ── Generales ────────────────────────────────────────────────────────────────

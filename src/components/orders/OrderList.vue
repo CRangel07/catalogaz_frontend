@@ -260,7 +260,7 @@ const handleOrderBreakdown = (order: OrderFull) => {
       order,
       'onUpdate:order': () => makeFetch(),
     },
-    { size: 'lg' }
+    { size: 'xl', closeOnBackdrop: false, closeOnEsc: false }
   );
 };
 

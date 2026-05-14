@@ -41,7 +41,10 @@
               ? 'bg-orange-200/40 group-hover:bg-orange-300/50'
               : 'bg-orange-300/20 group-hover:bg-naranja/30'
           " />
-        <Image :url="product.imageThumbnailUrl" :alt="product.name + ' imagen'" />
+        <Image
+          :url="product.imageThumbnailUrl"
+          :alt="product.name + ' imagen'"
+          :updated-at="product.updatedAt" />
       </div>
 
       <!-- Content -->
@@ -271,8 +274,8 @@ import { ShoppingCart } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 import { useModal } from '@/composables/useModal';
-import { useCartStore, type CartItem } from '@/stores/cart.store';
 import { formatMXNNoCents } from '@/helpers/currencyMxn';
+import { useCartStore, type CartItem } from '@/stores/cart.store';
 
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);

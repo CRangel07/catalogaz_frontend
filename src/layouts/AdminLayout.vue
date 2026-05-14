@@ -26,7 +26,7 @@ import AppTopbar from '@/components/AppTopbar.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 
 import type { NavItem } from '@/types/components';
-import { Contact, Home, NotebookPen, Package2 } from 'lucide-vue-next';
+import { Contact, Home, NotebookPen, Package2, ToolCase } from 'lucide-vue-next';
 import { RouteNames } from '@/router/route.names';
 import { useAuthStore } from '@/stores/auth.store';
 
@@ -85,6 +85,13 @@ const navItems: NavItem[] = [
     label: 'Gestionar Usuarios',
     icon: h(Contact, { size: 18 }),
     routeName: RouteNames.Admin.LIST_ADMINS,
+    section: 'Administración',
+  },
+  {
+    id: 'catalogo-tools',
+    label: 'Utilidades',
+    icon: h(ToolCase, { size: 18 }),
+    routeName: RouteNames.Admin.TOOLS,
     section: 'Administración',
   },
 ];

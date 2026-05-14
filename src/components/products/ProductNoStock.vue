@@ -21,7 +21,10 @@
                 </span>
               </div>
               <div class="max-w-20">
-                <ImageNotFound :url="String(row.product.imageThumbnailUrl)" alt="producto-imagen" />
+                <ImageNotFound
+                  :url="String(row.product.imageThumbnailUrl)"
+                  alt="producto-imagen"
+                  :updated-at="row.product.updatedAt" />
               </div>
             </div>
           </template>
@@ -50,10 +53,10 @@ import type { PaginatedResponse, ProductUnavailable } from '@/types/db';
 import AppTable, { type TableColumn } from '../ui/molecules/AppTable.vue';
 
 import { ArchiveX } from 'lucide-vue-next';
+import { formatDate } from '@/helpers/dates';
 import { useToastStore } from '@/stores/toast.store';
 import { ProductService } from '@/services/product.service';
 import { onBeforeMount, ref } from 'vue';
-import { formatDate } from '@/helpers/dates';
 
 const toast = useToastStore();
 

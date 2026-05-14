@@ -10,6 +10,7 @@ import { RouteNames } from './route.names';
 import { AdminPermission } from './types';
 import ProductNoStock from '@/components/products/ProductNoStock.vue';
 import AdminListView from '@/views/admin/AdminListView.vue';
+import ToolsApp from '@/components/general/ToolsApp.vue';
 
 export const adminChildren: RouteRecordRaw[] = [
   {
@@ -75,6 +76,15 @@ export const adminChildren: RouteRecordRaw[] = [
     path: 'settings',
     name: RouteNames.Admin.SETTINGS,
     component: SettingsApp,
+    meta: {
+      requiresAuth: true,
+      roles: AdminPermission,
+    },
+  },
+  {
+    path: 'utils',
+    name: RouteNames.Admin.TOOLS,
+    component: ToolsApp,
     meta: {
       requiresAuth: true,
       roles: AdminPermission,

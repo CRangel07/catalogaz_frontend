@@ -67,9 +67,12 @@
           :rows="productsData.data"
           has-actions
           :actions-header-class="'bg-naranja text-white'">
-          <template #cell-imageThumbnailUrl="{ value }">
+          <template #cell-imageThumbnailUrl="{ value, row }">
             <div class="max-w-20">
-              <ImageNotFound :url="String(value)" alt="producto-imagen" />
+              <ImageNotFound
+                alt="producto-imagen"
+                :url="String(value)"
+                :updated-at="row.updatedAt" />
             </div>
           </template>
 

@@ -95,6 +95,7 @@ export interface ProductUnavailable {
     name: string;
     code: string;
     imageThumbnailUrl: string | null;
+    updatedAt: string;
   };
   quantity: number;
   order: {
