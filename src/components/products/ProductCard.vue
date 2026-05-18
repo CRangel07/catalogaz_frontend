@@ -118,8 +118,8 @@
                 <p
                   class="text-2xl font-black leading-none tabular-nums"
                   :class="qty >= 4 ? 'text-emerald-600' : 'text-azul'">
-                  {{ formatMXNNoCents(priceInt)
-                  }}<span class="text-sm font-bold text-naranja">.{{ priceCents }}</span>
+                  {{ formatMXNNoCents(priceInt) }}
+                  <span class="text-sm font-bold text-naranja">.{{ priceCents }}</span>
                 </p>
               </div>
 
@@ -170,7 +170,9 @@
           <p
             class="text-xs font-semibold mt-1 h-4"
             :class="qty >= 4 && !product.isOffer ? 'text-emerald-600' : 'text-blue-500'">
-            <span v-if="qty > 1">{{ qty }} uds: ${{ (unitPrice * qty).toFixed(2) }}</span>
+            <span v-if="qty > 1">
+              {{ qty.toFixed(2) }} uds: ${{ (unitPrice * qty).toFixed(2) }}
+            </span>
           </p>
 
           <!-- Hint máx cantidad -->
@@ -194,14 +196,14 @@
               </button>
               <input
                 type="number"
-                step="1"
+                :step="step"
                 :min="1"
                 :max="effectiveMax"
                 v-model="qty"
                 :class="{
-                  'pl-5 w-13': qty < 10,
-                  'pl-4 w-13': qty >= 10 && qty < 100,
-                  'pl-3 w-14': qty >= 100,
+                  'pl-5 w-18': qty < 10,
+                  'pl-4 w-18': qty >= 10 && qty < 100,
+                  'pl-3 w-18': qty >= 100,
                 }"
                 class="h-9 flex outline-none items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums" />
               <button
@@ -293,6 +295,13 @@ const effectiveMax = computed(() => {
   return cartStore.MAX_QTY;
 });
 
+const step = computed<number>(() => {
+  if (props.product.kind.isBox) return 0.5;
+  if (props.product.kind.isBulk) return 0.01;
+
+  return 1;
+});
+
 const cartItem = computed(() => items.value.find((i) => i.id === props.product.id));
 const inCart = computed(() => !!cartItem.value);
 
@@ -333,10 +342,10 @@ const priceInt = computed(() => Number(priceFixed.value.split('.')[0]));
 const priceCents = computed(() => priceFixed.value.split('.')[1]);
 
 function increment(): void {
-  if (qty.value < effectiveMax.value) qty.value = qty.value + 1;
+  if (qty.value < effectiveMax.value) qty.value = qty.value + step.value;
 }
 function decrement(): void {
-  if (qty.value > cartStore.MIN_QTY) qty.value = qty.value - 1;
+  if (qty.value > cartStore.MIN_QTY) qty.value = qty.value - step.value;
 }
 
 function addToCart(): void {
@@ -359,6 +368,8 @@ function addToCart(): void {
     imageThumbnailUrl: props.product.imageThumbnailUrl,
     maxQuantity: props.product.maxQuantity,
     isActive: props.product.isActive,
+
+    kind: props.product.kind,
 
     qty: 1,
   };

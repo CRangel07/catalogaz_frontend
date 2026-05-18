@@ -104,16 +104,26 @@
             <!-- Contador -->
             <div class="flex flex-col items-center gap-1">
               <button
-                @click="cart.changeQty(item.id, 1)"
+                @click="
+                  cart.changeQty(
+                    item.id,
+                    item.kind.kind == 'box' ? 0.5 : item.kind.kind == 'bulk' ? 0.01 : 1
+                  )
+                "
                 class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50 text-orange-500 font-bold text-base hover:bg-orange-100 active:scale-90 cursor-pointer transition-all disabled:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-400"
                 :disabled="item.qty === item.maxQuantity">
                 +
               </button>
-              <span class="text-sm font-black text-blue-900 tabular-nums w-5 text-center">{{
-                item.qty
-              }}</span>
+              <span class="text-sm font-black text-blue-900 tabular-nums w-5 text-center">
+                {{ item.qty.toFixed(2) }}
+              </span>
               <button
-                @click="cart.changeQty(item.id, -1)"
+                @click="
+                  cart.changeQty(
+                    item.id,
+                    item.kind.kind == 'box' ? -0.5 : item.kind.kind == 'bulk' ? -0.01 : -1
+                  )
+                "
                 class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 font-bold text-base hover:bg-blue-100 active:scale-90 transition-all">
                 −
               </button>

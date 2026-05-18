@@ -28,6 +28,13 @@ export interface Customer {
 
 // _____________________ PRODUCTOS __________________________
 
+export type ProductClassification = {
+  isBox: boolean;
+  isBulk: boolean;
+  allowsFractionalQuantity: boolean;
+  kind: 'unit' | 'box' | 'bulk';
+};
+
 export type Product = {
   name: string;
   code: string;
@@ -44,16 +51,17 @@ export type Product = {
   createdAt: Date;
   updatedAt: Date;
   id: number;
+  kind: ProductClassification;
   line: {
     code: string;
     id: number;
     name: string;
-  };
+  } | null;
   unit: {
     code: string;
     id: number;
     name: string;
-  };
+  } | null;
 };
 
 export type ProductLine = {
@@ -70,6 +78,7 @@ export interface ProductCard {
   imageThumbnailUrl: string | null;
   maxQuantity: number | null;
   isActive: boolean;
+  kind: ProductClassification;
 }
 
 export type CreateProductDto = Pick<
@@ -115,17 +124,27 @@ export interface OrderItem {
   status: ItemStatus;
 }
 
+export type ChosenPrice = 'price1' | 'price4' | 'offer';
+
 export type OrderItemFull = {
   id: number;
   orderId: number;
   overrideBy: number | null;
   overridePrice: number | null;
   overrideReason: string | null;
+  chosenPrice: ChosenPrice;
   product: {
-    id: number;
-    name: string;
     code: string;
+    description: string;
+    id: number;
     imageThumbnailUrl: string | null;
+    kind: ProductClassification;
+    name: string;
+    unit: {
+      code: string;
+      id: number;
+      name: string;
+    } | null;
   };
   productId: number;
   quantity: number;

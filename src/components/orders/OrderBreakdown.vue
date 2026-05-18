@@ -73,7 +73,7 @@
                   :class="nameClass(item.status)">
                   {{ item.product.name }}
                 </p>
-                <div class="flex items-baseline justify-between gap-2 mt-0.5 flex-wrap">
+                <div class="flex items-baseline justify-around gap-2 mt-0.5 flex-wrap">
                   <span class="font-mono text-sm tabular-nums text-slate-800">
                     #{{ item.product.code }}
                   </span>
@@ -81,6 +81,9 @@
                     class="text-sm font-num text-slate-500 font-bold tabular-nums transition-colors duration-200"
                     :class="priceClass(item.status)">
                     {{ formatMXN(item.overridePrice ?? item.unitPrice) }} c/u
+                  </span>
+                  <span v-if="authStore.isAdmin" class="text-sm font-medium text-slate-500">
+                    {{ item.chosenPrice }}
                   </span>
                 </div>
                 <!-- Qty real si fue diferente a la pedida -->
@@ -269,6 +272,7 @@ import OrderOverridePrice from './OrderOverridePrice.vue';
 import type { ConfirmProductOutcome } from '../modal/ConfirmProduct.vue';
 import type { OrderFull, OrderItemFull } from '@/types/db';
 
+import { QR } from '@/helpers/scanner';
 import { useModal } from '@/composables/useModal';
 import { formatMXN } from '@/helpers/currencyMxn';
 import { OrderService } from '@/services/order.service';
@@ -280,6 +284,7 @@ import { QrCode, Check, X, Loader2, BadgeDollarSign } from 'lucide-vue-next';
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
 const CLAVE = import.meta.env.VITE_KEY_DIG_PRECIOS;
+const CLAVE_LISTA = import.meta.env.VITE_KEY_LISTA_PRECIOS;
 
 type ItemStatus = 'pending' | 'ready' | 'unavailable';
 
@@ -470,10 +475,8 @@ function handleQR(order: OrderFull & { items: LocalItem[] }): void {
   const instructionQR = itemsListos
     .map((i) => {
       const cantidad = i.quantity;
-      const tab = '\x09';
-      const digitarPrecio = `\x05\x42\x06\x44`;
       const precioATomar = i.overridePrice ?? i.unitPrice;
-      return `${cantidad}${tab}${digitarPrecio}${CLAVE}\r${i.product.code}\r${precioATomar}`;
+      return `${cantidad}${QR.TAB}${i.chosenPrice === 'offer' ? `${QR.DIGITAR}${CLAVE}\r${i.product.code}\r${precioATomar}` : i.chosenPrice == 'price4' ? `${QR.F7}${CLAVE_LISTA}\r04\r${i.product.code}` : `${QR.F7}${CLAVE_LISTA}\r01\r${i.product.code}`}`;
     })
     .join('\r');
 
