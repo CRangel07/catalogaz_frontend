@@ -1,6 +1,6 @@
 <template>
   <div class="group relative w-64 h-full cursor-pointer select-none">
-    <!-- Badge OFERTA pill flotante centrado arriba -->
+    <!-- Badge OFERTA -->
     <div
       v-if="product.isOffer"
       class="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
@@ -50,8 +50,22 @@
       <!-- Content -->
       <div class="px-4 pb-4 pt-3 flex flex-col flex-1">
         <div class="flex-1">
+          <!-- Código + status + badge de unidad -->
           <div class="flex items-center justify-between mb-0.5">
-            <h4 class="text-xs font-mono text-slate-400">#{{ product.code }}</h4>
+            <div class="flex items-center gap-1.5">
+              <h4 class="text-xs font-mono text-slate-400">#{{ product.code }}</h4>
+              <!-- Badge de tipo: Caja / Granel -->
+              <span
+                v-if="product.kind.isBox"
+                class="text-[8px] font-black uppercase tracking-wider bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">
+                Caja
+              </span>
+              <span
+                v-else-if="product.kind.isBulk"
+                class="text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded">
+                Granel
+              </span>
+            </div>
             <span class="flex items-center gap-1 text-xs text-slate-400">
               <span
                 class="inline-block h-1.5 w-1.5 rounded-full"
@@ -75,9 +89,9 @@
           </p>
         </div>
 
-        <!-- ── PRECIOS ──────────────────────────────────────────────── -->
+        <!-- ── PRECIOS ── -->
         <div class="mt-2">
-          <!-- OFERTA -->
+          <!-- OFERTA: salePrice siempre, sin importar qty ni kind -->
           <template v-if="product.isOffer && product.salePrice">
             <div class="flex items-start justify-between gap-2 mb-1">
               <div>
@@ -107,7 +121,25 @@
             </div>
           </template>
 
-          <!-- PRECIO ESCALONADO -->
+          <!-- CAJA: siempre price4, sin incentivo de mayoreo (ya es el precio de caja) -->
+          <template v-else-if="product.kind.isBox">
+            <div class="mb-1">
+              <span
+                class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">
+                Precio por caja
+              </span>
+              <p class="text-2xl font-black text-azul leading-none tabular-nums">
+                {{ formatMXNNoCents(priceInt)
+                }}<span class="text-sm font-bold text-naranja">.{{ priceCents }}</span>
+              </p>
+              <!-- Hint de medias cajas -->
+              <p class="text-[10px] text-slate-400 mt-0.5">
+                Media caja disponible: ${{ (Number(product.price4) * 0.5).toFixed(2) }}
+              </p>
+            </div>
+          </template>
+
+          <!-- GRANEL / UNIT: precio escalonado 1-3 → price1, 4+ → price4 -->
           <template v-else>
             <div class="flex items-end justify-between gap-1.5 mb-1">
               <div class="flex-1">
@@ -118,12 +150,12 @@
                 <p
                   class="text-2xl font-black leading-none tabular-nums"
                   :class="qty >= 4 ? 'text-emerald-600' : 'text-azul'">
-                  {{ formatMXNNoCents(priceInt) }}
-                  <span class="text-sm font-bold text-naranja">.{{ priceCents }}</span>
+                  {{ formatMXNNoCents(priceInt)
+                  }}<span class="text-sm font-bold text-naranja">.{{ priceCents }}</span>
                 </p>
               </div>
 
-              <!-- Bloque precio mayoreo — solo si price4 < price1 -->
+              <!-- Bloque mayoreo — solo si price4 < price1 -->
               <div
                 v-if="hasTieredPricing"
                 class="flex flex-col items-center rounded-xl border px-2 py-1.5 transition-all duration-300 shrink-0"
@@ -135,7 +167,7 @@
                 <span
                   class="text-[8px] font-black uppercase tracking-widest leading-none"
                   :class="qty >= 4 ? 'text-emerald-600' : 'text-slate-400'">
-                  4+ uds
+                  4+ {{ product.kind.isBulk ? 'kg' : 'uds' }}
                 </span>
                 <span
                   class="text-sm font-black tabular-nums leading-tight mt-0.5"
@@ -145,12 +177,12 @@
                 <span
                   class="text-[8px] leading-none mt-0.5 font-bold"
                   :class="qty >= 4 ? 'text-emerald-500' : 'text-slate-400'">
-                  {{ qty >= 4 ? '✓ activo' : 'c/u' }}
+                  {{ qty >= 4 ? '✓ activo' : product.kind.isBulk ? '/kg' : 'c/u' }}
                 </span>
               </div>
             </div>
 
-            <!-- Hint incentivo mayoreo -->
+            <!-- Hint incentivo -->
             <Transition
               enter-active-class="transition-all duration-300 ease-out"
               enter-from-class="opacity-0 -translate-y-1 max-h-0"
@@ -161,7 +193,13 @@
               <p
                 v-if="hasTieredPricing && qty < 4"
                 class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1 mb-1">
-                💡 Lleva {{ 4 - qty }} más → ${{ Number(product.price4).toFixed(2) }} c/u
+                💡
+                {{
+                  product.kind.isBulk
+                    ? `Lleva ${(4 - qty).toFixed(2)} kg más`
+                    : `Lleva ${4 - qty} más`
+                }}
+                → ${{ Number(product.price4).toFixed(2) }} {{ product.kind.isBulk ? '/kg' : 'c/u' }}
               </p>
             </Transition>
           </template>
@@ -169,9 +207,15 @@
           <!-- Subtotal -->
           <p
             class="text-xs font-semibold mt-1 h-4"
-            :class="qty >= 4 && !product.isOffer ? 'text-emerald-600' : 'text-blue-500'">
+            :class="
+              qty >= 4 && !product.isOffer && !product.kind.isBox
+                ? 'text-emerald-600'
+                : 'text-blue-500'
+            ">
             <span v-if="qty > 1">
-              {{ qty.toFixed(2) }} uds: ${{ (unitPrice * qty).toFixed(2) }}
+              {{ qty }} {{ product.kind.isBulk ? 'kg' : 'uds' }}: ${{
+                (unitPrice * qty).toFixed(2)
+              }}
             </span>
           </p>
 
@@ -180,32 +224,33 @@
             v-if="product.maxQuantity"
             class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
             <span class="w-1 h-1 rounded-full bg-naranja/60 inline-block" />
-            Máx. {{ product.maxQuantity }} por pedido
+            Máx. {{ product.maxQuantity }} {{ product.kind.isBulk ? 'kg' : 'unidades' }} por pedido
           </p>
 
           <!-- Selector + CTA -->
           <div class="flex items-center justify-between gap-2 mt-2">
             <div
               class="flex items-center rounded-xl border-2 overflow-hidden transition-colors duration-300"
-              :class="qty >= 4 && !product.isOffer ? 'border-emerald-200' : 'border-blue-100'">
+              :class="
+                qty >= 4 && !product.isOffer && !product.kind.isBox
+                  ? 'border-emerald-200'
+                  : 'border-blue-100'
+              ">
               <button
                 @click="decrement"
                 class="w-8 h-9 flex items-center justify-center font-bold text-lg hover:bg-blue-50 transition-colors active:scale-90 disabled:opacity-30 cursor-pointer text-blue-700"
                 :disabled="qty <= cartStore.MIN_QTY">
                 −
               </button>
+
               <input
                 type="number"
                 :step="step"
-                :min="1"
+                :min="step"
                 :max="effectiveMax"
-                v-model="qty"
-                :class="{
-                  'pl-5 w-18': qty < 10,
-                  'pl-4 w-18': qty >= 10 && qty < 100,
-                  'pl-3 w-18': qty >= 100,
-                }"
-                class="h-9 flex outline-none items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums" />
+                v-model.number="qty"
+                class="h-9 w-16 flex outline-none items-center justify-center text-sm font-extrabold text-blue-900 border-x-2 border-blue-100 tabular-nums text-center" />
+
               <button
                 @click="increment"
                 class="w-8 h-9 flex items-center justify-center font-bold text-lg hover:bg-orange-50 transition-colors active:scale-90 disabled:opacity-30 cursor-pointer text-orange-500"
@@ -256,7 +301,8 @@
                 stroke-width="3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
-              {{ lastAdded }} unidad{{ lastAdded !== 1 ? 'es' : '' }} al carrito
+              {{ lastAdded }}
+              {{ product.kind.isBulk ? 'kg' : `unidad${lastAdded !== 1 ? 'es' : ''}` }} al carrito
             </p>
           </Transition>
         </div>
@@ -279,38 +325,64 @@ import { useModal } from '@/composables/useModal';
 import { formatMXNNoCents } from '@/helpers/currencyMxn';
 import { useCartStore, type CartItem } from '@/stores/cart.store';
 
+// ── Stores ────────────────────────────────────────────────────────────────────
+
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
 
+// ── Props ─────────────────────────────────────────────────────────────────────
+
 const props = defineProps<{ product: Product }>();
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+
 const { openModal } = useModal();
+
+// ── Estado local ──────────────────────────────────────────────────────────────
 
 const localQty = ref(1);
 const added = ref(false);
 const lastAdded = ref(1);
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
 
+// ── Step por kind ─────────────────────────────────────────────────────────────
+//
+// Reglas:
+//   box  → 0.5  (medias cajas o cajas enteras)
+//   bulk → 0.01 (granel, se pesa con decimales)
+//   unit → 1    (piezas enteras)
+//
+// Para ofertas el step depende del kind del producto (una oferta de caja
+// sigue siendo caja, una oferta a granel sigue siendo granel).
+const step = computed<number>(() => {
+  const { isBox, isBulk } = props.product.kind;
+  if (isBox) return 0.5;
+  if (isBulk) return 0.01;
+  return 1;
+});
+
+// ── Máximo efectivo ───────────────────────────────────────────────────────────
+
 const effectiveMax = computed(() => {
   if (props.product.maxQuantity) return Math.min(cartStore.MAX_QTY, props.product.maxQuantity);
   return cartStore.MAX_QTY;
 });
 
-const step = computed<number>(() => {
-  if (props.product.kind.isBox) return 0.5;
-  if (props.product.kind.isBulk) return 0.01;
-
-  return 1;
-});
+// ── Item del carrito ──────────────────────────────────────────────────────────
 
 const cartItem = computed(() => items.value.find((i) => i.id === props.product.id));
 const inCart = computed(() => !!cartItem.value);
+
+// ── Cantidad ──────────────────────────────────────────────────────────────────
 
 const qty = computed({
   get() {
     return cartItem.value?.qty ?? localQty.value;
   },
   set(value: number) {
-    const clamped = Math.max(cartStore.MIN_QTY, Math.min(effectiveMax.value, value));
+    // Clampear al paso correcto y al rango válido
+    const stepped = Math.round(value / step.value) * step.value;
+    const clamped = Math.max(step.value, Math.min(effectiveMax.value, stepped));
     if (!cartItem.value) {
       localQty.value = clamped;
       return;
@@ -319,60 +391,82 @@ const qty = computed({
   },
 });
 
-// ── Lógica de precio — espeja resolveUnitPrice() del backend ──────────────────
+// ── Precio unitario ───────────────────────────────────────────────────────────
+//
+// Lógica completa según kind + isOffer:
+//
+//   isOffer               → salePrice (independiente de qty y kind)
+//   kind === 'box'        → siempre price4 (las cajas no tienen precio unitario)
+//   kind === 'bulk'/'unit'→ price1 si qty < 4, price4 si qty >= 4
+//
+// Esta función espeja exactamente resolveUnitPrice() del backend.
 const unitPrice = computed<number>(() => {
+  // 1. Oferta: salePrice siempre
   if (props.product.isOffer && props.product.salePrice) {
     return Number(props.product.salePrice);
   }
+
+  // 2. Caja: siempre price4 sin importar cantidad
+  if (props.product.kind.isBox) {
+    return Number(props.product.price4);
+  }
+
+  // 3. Granel / unidad: precio escalonado
   return qty.value >= 4 ? Number(props.product.price4) : Number(props.product.price1);
 });
 
-// price4 < price1 → el precio baja con más volumen → mostramos incentivo
+// ── Precio escalonado disponible (granel/unit, no oferta, no caja) ─────────────
+
 const hasTieredPricing = computed(
-  () => !props.product.isOffer && Number(props.product.price4) < Number(props.product.price1)
+  () =>
+    !props.product.isOffer &&
+    !props.product.kind.isBox &&
+    Number(props.product.price4) < Number(props.product.price1)
 );
+
+// ── Ahorro en ofertas ─────────────────────────────────────────────────────────
 
 const savings = computed(() => {
   if (!props.product.salePrice) return '0.00';
   return (Number(props.product.price1) - Number(props.product.salePrice)).toFixed(2);
 });
 
+// ── Formato de precio ─────────────────────────────────────────────────────────
+
 const priceFixed = computed(() => unitPrice.value.toFixed(2));
 const priceInt = computed(() => Number(priceFixed.value.split('.')[0]));
 const priceCents = computed(() => priceFixed.value.split('.')[1]);
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function increment(): void {
   if (qty.value < effectiveMax.value) qty.value = qty.value + step.value;
 }
+
 function decrement(): void {
-  if (qty.value > cartStore.MIN_QTY) qty.value = qty.value - step.value;
+  const next = qty.value - step.value;
+  if (next >= step.value) qty.value = next;
 }
 
 function addToCart(): void {
   if (!props.product.isActive) return;
+
   const productCard: CartItem = {
     id: props.product.id,
     name: props.product.name,
     code: props.product.code,
-
-    // precio actual (opcional)
     price: unitPrice.value,
-
-    // precios reales
     price1: Number(props.product.price1),
     price4: Number(props.product.price4),
     salePrice: props.product.salePrice ? Number(props.product.salePrice) : null,
-
     isOffer: props.product.isOffer,
-
     imageThumbnailUrl: props.product.imageThumbnailUrl,
     maxQuantity: props.product.maxQuantity,
     isActive: props.product.isActive,
-
     kind: props.product.kind,
-
     qty: 1,
   };
+
   lastAdded.value = localQty.value;
   cartStore.addItem(productCard, localQty.value);
   added.value = true;
@@ -388,7 +482,10 @@ function removeFromCart(): void {
 function handleClick(): void {
   openModal(
     ProductFullImage,
-    { name: props.product.name, imageFullUrl: props.product.imageFullUrl },
+    {
+      name: props.product.name,
+      imageFullUrl: props.product.imageFullUrl,
+    },
     { closeOnBackdrop: true, closeOnEsc: true, size: 'xl' }
   );
 }
