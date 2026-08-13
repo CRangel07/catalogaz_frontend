@@ -1,14 +1,15 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+import { AllRoles } from './types';
 import { RouteNames } from './route.names';
 import { authRoutes } from './auth.routes';
 import { adminChildren } from './admin.routes';
 import { customerRoutes } from './customer.routes';
-import { AllRoles } from './types';
 
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogLayout from '@/layouts/CatalogLayout.vue';
 import ProductCatalog from '@/components/products/ProductCatalog.vue';
+import { ticketsRoutes } from './tickets.routes';
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -33,6 +34,7 @@ export const routes: RouteRecordRaw[] = [
     children: [...adminChildren],
   },
   ...authRoutes,
+  ...ticketsRoutes,
   {
     path: '/not-allowed',
     name: RouteNames.UNAUTHORIZED,

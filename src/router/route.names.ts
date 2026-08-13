@@ -23,6 +23,10 @@ export const RouteNames = {
     TOOLS: 'catalogaz_admin_tools',
   },
 
+  // ── Tickets Novacaja ──────────────────────────────────────────────────────────────
+  TICKET: {
+    HOME: 'catalogaz_ticket_home',
+  },
   // ── Generales ────────────────────────────────────────────────────────────────
   NOT_FOUND: 'catalogaz_not_found',
   UNAUTHORIZED: 'catalogaz_unauthorized',

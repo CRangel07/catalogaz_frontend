@@ -10,7 +10,7 @@ import { RouteNames } from './route.names';
 import { AdminPermission } from './types';
 import ProductNoStock from '@/components/products/ProductNoStock.vue';
 import AdminListView from '@/views/admin/AdminListView.vue';
-import ToolsApp from '@/components/general/ToolsApp.vue';
+import ToolsApp from '@/components/common/ToolsApp.vue';
 
 export const adminChildren: RouteRecordRaw[] = [
   {

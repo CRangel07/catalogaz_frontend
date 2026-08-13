@@ -262,7 +262,7 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/logo.png';
-import QRCode from '../general/QRCode.vue';
+import QRCode from '../common/QRCode.vue';
 import ButtonUI from '../ui/atoms/ButtonUI.vue';
 import AppInput from '../ui/forms/AppInput.vue';
 import ImageNotFound from '../ui/molecules/ImageNotFound.vue';

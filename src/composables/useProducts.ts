@@ -1,4 +1,5 @@
 import type { PaginatedSearch } from '@/components/filters/types';
+
 import type {
   Product,
   ProductImage,
