@@ -47,6 +47,7 @@
         { label: 'Surtidor Pedidos', value: 'pedidos' },
         { label: 'Cajas', value: 'caja' },
         { label: 'Usuario Tipo Cliente', value: 'cliente' },
+        { label: 'Usuario Gen. Tickets', value: 'tickets' },
       ]" />
 
     <ButtonUI :disabled="loading" :icon="Save" theme="info" class="ms-auto" type="submit">

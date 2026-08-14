@@ -164,8 +164,6 @@ function onDrop(event: DragEvent): void {
 }
 
 function setFile(selected: File | null): void {
-  console.log(selected?.name);
-
   if (selected && !selected.name.endsWith('.xlsx') && !selected.name.endsWith('.xls')) {
     toastStore.error('Solo se permiten archivos .xlsx o .xls', 6000);
     return;

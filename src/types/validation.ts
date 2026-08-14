@@ -13,7 +13,7 @@ export const CreateAdminDto = z.object({
   name: z.string(),
   username: z.string(),
   password: z.string(),
-  role: z.enum(['admin', 'pedidos', 'caja', 'cliente']),
+  role: z.enum(['admin', 'pedidos', 'caja', 'cliente', 'tickets']),
   phone: z.string().optional(),
 });
 

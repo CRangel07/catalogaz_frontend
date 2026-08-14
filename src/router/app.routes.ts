@@ -4,26 +4,26 @@ import { AllRoles } from './types';
 import { RouteNames } from './route.names';
 import { authRoutes } from './auth.routes';
 import { adminChildren } from './admin.routes';
+import { ticketsRoutes } from './tickets.routes';
 import { customerRoutes } from './customer.routes';
 
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogLayout from '@/layouts/CatalogLayout.vue';
 import ProductCatalog from '@/components/products/ProductCatalog.vue';
-import { ticketsRoutes } from './tickets.routes';
 
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: CatalogLayout,
+    meta: {
+      requiresAuth: true,
+      roles: AllRoles,
+    },
     children: [
       {
         path: 'products',
         name: RouteNames.Catalog.PRODUCTS,
         component: ProductCatalog,
-        meta: {
-          requiresAuth: true,
-          roles: AllRoles,
-        },
       },
       ...customerRoutes,
     ],

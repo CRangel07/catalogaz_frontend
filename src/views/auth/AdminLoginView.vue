@@ -96,6 +96,8 @@ const onSubmit = handleSubmit(async (values) => {
     (authStore.user?.role === 'caja' || authStore.user?.role == 'pedidos')
   ) {
     router.replace({ name: redirect ?? RouteNames.Admin.ORDERS });
+  } else if (authStore.isAuthenticated && authStore.user?.role == 'tickets') {
+    router.replace({ name: redirect ?? RouteNames.TICKET.HOME });
   } else if (authStore.isAuthenticated && !authStore.isAdmin) {
     router.replace({ name: redirect ?? RouteNames.Catalog.PRODUCTS });
   }

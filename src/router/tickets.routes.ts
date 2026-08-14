@@ -12,7 +12,11 @@ export const ticketsRoutes: RouteRecordRaw[] = [
         path: '',
         name: RouteNames.TICKET.HOME,
         component: () => import('@/views/tickets/HomeTickets.vue'),
-        meta: { requiresGuest: true },
+
+        meta: {
+          requiresAuth: true,
+          roles: ['tickets'],
+        },
       },
     ],
   },

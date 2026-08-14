@@ -2,7 +2,7 @@
 
 export type UserAdmin = {
   sub: number;
-  role: 'admin' | 'pedidos' | 'caja';
+  role: 'admin' | 'pedidos' | 'caja' | 'tickets';
   username: string;
 };
 export type UserCustomer = {
